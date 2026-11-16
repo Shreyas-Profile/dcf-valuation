@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DCF Sandbox</title>
+<meta name="description" content="Pick a company and explore its discounted cash flow valuation.">
+<meta name="theme-color" content="#0b0d10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0d10;
+    --surface: #15181d;
+    --surface-2: #1c2027;
+    --border: #262b33;
+    --text: #f2f4f7;
+    --muted: #8b93a1;
+    --accent: #2fd27a;
+    --accent-soft: rgba(47, 210, 122, 0.12);
+    --down: #ff5c5c;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); }
+  body {
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+  }
+  .app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+  }
+  header {
+    padding: 28px 4px 16px;
+    position: sticky;
+    top: 0;
+    background: linear-gradient(var(--bg) 85%, transparent);
+    z-index: 2;
+  }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 { font-size: 26px; font-weight: 700; margin-top: 6px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  .search {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0 14px;
+    height: 48px;
+    transition: border-color .15s;
+  }
+  .search:focus-within { border-color: var(--accent); }
+  .search svg { flex: none; color: var(--muted); }
+  .search input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font: inherit;
+    font-size: 16px;
+  }
+  .search input::placeholder { color: var(--muted); }
+
+  .list { display: flex; flex-direction: column; gap: 12px; padding: 8px 0 120px; }
+  .card {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    text-align: left;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+  .card:hover { background: var(--surface-2); }
+  .card:active { transform: scale(0.985); }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .card.selected { border-color: var(--accent); background: linear-gradient(135deg, var(--accent-soft), var(--surface) 60%); }
+
+  .logo {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+  }
+  .logo .mask {
+    width: 26px; height: 26px;
+    background: #fff;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+  .ms { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 24px; height: 24px; }
+  .ms span:nth-child(1) { background: #f25022; }
+  .ms span:nth-child(2) { background: #7fba00; }
+  .ms span:nth-child(3) { background: #00a4ef; }
+  .ms span:nth-child(4) { background: #ffb900; }
+
+  .ticker { font-weight: 700; font-size: 17px; letter-spacing: 0.01em; }
+  .name { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .spark { width: 84px; height: 30px; }
+  .price { font-family: "JetBrains Mono", monospace; font-size: 13px; }
+  .chg { font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .up { color: var(--accent); }
+  .down { color: var(--down); }
+
+  .empty { text-align: center; color: var(--muted); padding: 40px 0; display: none; }
+  .note { text-align: center; color: var(--muted); font-size: 12px; padding: 4px 0 0; }
+
+  .cta {
+    position: fixed;
+    left: 50%;
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 20px);
+    width: calc(100% - 32px);
+    max-width: 448px;
+    height: 54px;
+    border: none;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #04140b;
+    font: inherit;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    z-index: 3;
+  }
+  .cta.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+
+  nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    background: rgba(11, 13, 16, 0.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    z-index: 4;
+  }
+  nav button {
+    background: none; border: none; color: var(--muted);
+    font: inherit; font-size: 10.5px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 4px 0; cursor: pointer;
+  }
+  nav button.active { color: var(--accent); }
+  nav svg { width: 22px; height: 22px; }
+
+  .toast {
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translate(-50%, -80px);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: transform .25s;
+    z-index: 10;
+    max-width: calc(100% - 32px);
+    text-align: center;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">DCF Sandbox</div>
+    <h1>Select a company</h1>
+    <p class="sub">Pick a company to see what it's really worth.</p>
+    <label class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search companies" autocomplete="off" aria-label="Search companies">
+    </label>
+  </header>
+
+  <main class="list" id="list" aria-label="Companies"></main>
+  <p class="empty" id="empty">No companies match your search.</p>
+</div>
+
+<button class="cta" id="cta">Continue</button>
+
+<nav aria-label="Main">
+  <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</button>
+  <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</button>
+  <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</button>
+  <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</button>
+  <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</button>
+  <button data-soon><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</button>
+</nav>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Demo data only — not live prices. Real figures come later from the research data files.
+  const SI = "https://cdn.jsdelivr.net/npm/simple-icons@13.0.0/icons/";
+  const companies = [
+    { ticker: "MSFT", name: "Microsoft", logo: "ms",            price: 412.30, seed: 3 },
+    { ticker: "AAPL", name: "Apple",     logo: SI + "apple.svg",  price: 228.15, seed: 7 },
+    { ticker: "GOOGL",name: "Alphabet (Google)", logo: SI + "google.svg", price: 176.40, seed: 11 },
+    { ticker: "NVDA", name: "Nvidia",    logo: SI + "nvidia.svg", price: 138.90, seed: 5 },
+    { ticker: "TSLA", name: "Tesla",     logo: SI + "tesla.svg",  price: 251.70, seed: 2 },
+  ];
+
+  // Seeded random walk so each sparkline looks the same on every load.
+  function series(seed, n = 30) {
+    let s = seed * 9301 + 49297, v = 100, out = [];
+    for (let i = 0; i < n; i++) {
+      s = (s * 9301 + 49297) % 233280;
+      v += (s / 233280 - 0.46) * 4;
+      out.push(v);
+    }
+    return out;
+  }
+
+  function spark(data, up) {
+    const w = 84, h = 30, min = Math.min(...data), max = Math.max(...data);
+    const pts = data.map((d, i) => [i / (data.length - 1) * w, h - 2 - (d - min) / (max - min) * (h - 4)]);
+    const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+    const color = up ? "var(--accent)" : "var(--down)";
+    const id = "g" + Math.random().toString(36).slice(2, 7);
+    return `<svg class="spark" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+      <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/>
+      </linearGradient></defs>
+      <path d="${line} L${w} ${h} L0 ${h} Z" fill="url(#${id})"/>
+      <path d="${line}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>`;
+  }
+
+  const list = document.getElementById("list");
+  const cta = document.getElementById("cta");
+  let selected = null;
+
+  list.innerHTML = companies.map(c => {
+    const s = series(c.seed);
+    const chg = (s[s.length - 1] - s[0]) / s[0] * 100;
+    const up = chg >= 0;
+    const logo = c.logo === "ms"
+      ? `<div class="ms"><span></span><span></span><span></span><span></span></div>`
+      : `<div class="mask" style="--icon:url('${c.logo}')"></div>`;
+    return `<button class="card" data-ticker="${c.ticker}" data-search="${(c.ticker + " " + c.name).toLowerCase()}">
+      <div class="logo">${logo}</div>
+      <div><div class="ticker">${c.ticker}</div><div class="name">${c.name}</div></div>
+      <div class="right">
+        ${spark(s, up)}
+        <div><span class="price">$${c.price.toFixed(2)}</span>
+        <span class="chg ${up ? "up" : "down"}">${up ? "+" : ""}${chg.toFixed(1)}%</span></div>
+      </div>
+    </button>`;
+  }).join("") + `<p class="note">Demo data, not live prices.</p>`;
+
+  list.addEventListener("click", e => {
+    const card = e.target.closest(".card");
+    if (!card) return;
+    list.querySelectorAll(".card").forEach(c => c.classList.toggle("selected", c === card));
+    selected = companies.find(c => c.ticker === card.dataset.ticker);
+    cta.textContent = `Continue with ${selected.name.split(" ")[0]}`;
+    cta.classList.add("show");
+  });
+
+  document.getElementById("q").addEventListener("input", e => {
+    const q = e.target.value.trim().toLowerCase();
+    let shown = 0;
+    list.querySelectorAll(".card").forEach(c => {
+      const hit = c.dataset.search.includes(q);
+      c.style.display = hit ? "" : "none";
+      shown += hit;
+    });
+    document.getElementById("empty").style.display = shown ? "none" : "block";
+  });
+
+  const toast = document.getElementById("toast");
+  let t;
+  function say(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(t);
+    t = setTimeout(() => toast.classList.remove("show"), 2200);
+  }
+  cta.addEventListener("click", () => say(`${selected.name} base case page is coming soon.`));
+  document.querySelectorAll("[data-soon]").forEach(b => b.addEventListener("click", () => say("This page is coming soon.")));
+</script>
+</body>
+</html>
