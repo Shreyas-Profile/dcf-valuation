@@ -150,6 +150,7 @@
   .spark { width: 84px; height: 30px; }
   .price { font-family: "JetBrains Mono", monospace; font-size: 13px; }
   .chg { font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .chg small { color: var(--muted); font-size: 10px; }
   .up { color: var(--accent); }
   .down { color: var(--down); }
 
@@ -263,7 +264,7 @@
   const companies = [
     { ticker: "MSFT", name: "Microsoft", logo: "ms",            price: 412.30, seed: 3 },
     { ticker: "AAPL", name: "Apple",     logo: SI + "apple.svg",  price: 228.15, seed: 7 },
-    { ticker: "GOOGL",name: "Alphabet (Google)", logo: SI + "google.svg", price: 176.40, seed: 11 },
+    { ticker: "GOOGL",name: "Alphabet", logo: SI + "google.svg", price: 176.40, seed: 11 },
     { ticker: "NVDA", name: "Nvidia",    logo: SI + "nvidia.svg", price: 138.90, seed: 5 },
     { ticker: "TSLA", name: "Tesla",     logo: SI + "tesla.svg",  price: 251.70, seed: 2 },
   ];
@@ -298,23 +299,37 @@
   const cta = document.getElementById("cta");
   let selected = null;
 
-  list.innerHTML = companies.map(c => {
-    const s = series(c.seed);
-    const chg = (s[s.length - 1] - s[0]) / s[0] * 100;
-    const up = chg >= 0;
-    const logo = c.logo === "ms"
-      ? `<div class="ms"><span></span><span></span><span></span><span></span></div>`
-      : `<div class="mask" style="--icon:url('${c.logo}')"></div>`;
-    return `<button class="card" data-ticker="${c.ticker}" data-search="${(c.ticker + " " + c.name).toLowerCase()}">
-      <div class="logo">${logo}</div>
-      <div><div class="ticker">${c.ticker}</div><div class="name">${c.name}</div></div>
-      <div class="right">
-        ${spark(s, up)}
-        <div><span class="price">$${c.price.toFixed(2)}</span>
-        <span class="chg ${up ? "up" : "down"}">${up ? "+" : ""}${chg.toFixed(1)}%</span></div>
-      </div>
-    </button>`;
-  }).join("") + `<p class="note">Demo data, not live prices.</p>`;
+  // live: { TICKER: { price, change1m, closes } } from /api/quotes, or null for demo data.
+  function render(live, meta) {
+    list.innerHTML = companies.map(c => {
+      const q = live && live[c.ticker];
+      const s = q ? q.closes : series(c.seed);
+      const price = q ? q.price : c.price;
+      const chg = q ? q.change1m : (s[s.length - 1] - s[0]) / s[0] * 100;
+      const up = chg >= 0;
+      const logo = c.logo === "ms"
+        ? `<div class="ms"><span></span><span></span><span></span><span></span></div>`
+        : `<div class="mask" style="--icon:url('${c.logo}')"></div>`;
+      return `<button class="card${selected && selected.ticker === c.ticker ? " selected" : ""}" data-ticker="${c.ticker}" data-search="${(c.ticker + " " + c.name).toLowerCase()}">
+        <div class="logo">${logo}</div>
+        <div><div class="ticker">${c.ticker}</div><div class="name">${c.name}</div></div>
+        <div class="right">
+          ${spark(s, up)}
+          <div><span class="price">$${price.toFixed(2)}</span>
+          <span class="chg ${up ? "up" : "down"}">${up ? "+" : ""}${chg.toFixed(1)}% <small>1M</small></span></div>
+        </div>
+      </button>`;
+    }).join("") + `<p class="note">${meta
+      ? `Prices delayed · ${meta.source.replace(/ \(delayed\)$/, "")} · updated ${new Date(meta.updated).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+      : "Demo data, not live prices."}</p>`;
+    filter();
+  }
+
+  render(null);
+  fetch("/api/quotes")
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(d => render(Object.fromEntries(d.quotes.map(q => [q.ticker, q])), d))
+    .catch(() => {}); // keep demo data if live prices are unavailable
 
   list.addEventListener("click", e => {
     const card = e.target.closest(".card");
@@ -326,8 +341,9 @@
     document.querySelector("nav").classList.add("show");
   });
 
-  document.getElementById("q").addEventListener("input", e => {
-    const q = e.target.value.trim().toLowerCase();
+  document.getElementById("q").addEventListener("input", filter);
+  function filter() {
+    const q = document.getElementById("q").value.trim().toLowerCase();
     let shown = 0;
     list.querySelectorAll(".card").forEach(c => {
       const hit = c.dataset.search.includes(q);
@@ -335,7 +351,7 @@
       shown += hit;
     });
     document.getElementById("empty").style.display = shown ? "none" : "block";
-  });
+  }
 
   const toast = document.getElementById("toast");
   let t;
