@@ -192,7 +192,10 @@
     border-top: 1px solid var(--border);
     padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
     z-index: 4;
+    transform: translate(-50%, 110%);
+    transition: transform .25s;
   }
+  nav.show { transform: translate(-50%, 0); }
   nav button {
     background: none; border: none; color: var(--muted);
     font: inherit; font-size: 10.5px;
@@ -320,6 +323,7 @@
     selected = companies.find(c => c.ticker === card.dataset.ticker);
     cta.textContent = `Continue with ${selected.name.split(" ")[0]}`;
     cta.classList.add("show");
+    document.querySelector("nav").classList.add("show");
   });
 
   document.getElementById("q").addEventListener("input", e => {
