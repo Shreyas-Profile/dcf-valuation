@@ -162,6 +162,8 @@
   .definition p { font-size: 19px; line-height: 1.6; color: var(--text); }
   .definition .src { display: block; margin-top: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 
+  .explain { margin-top: 18px; }
+  .explain + p { margin-top: 14px; }
   .card { margin-top: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); overflow: hidden; }
   .card-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--line); }
   .card-label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
@@ -198,13 +200,7 @@
   table.cmp td { padding: 12px 10px 12px 0; border-top: 1px solid var(--line); color: var(--body); vertical-align: top; }
   table.cmp td:first-child { color: var(--text); font-weight: 600; }
 
-  /* ---------- takeaways / footer ---------- */
-  .remember { margin-top: 64px; padding: 28px 24px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); }
-  .remember h2 { font-family: var(--serif); font-weight: 400; font-size: 30px; margin-bottom: 16px; }
-  .remember ol { list-style: none; counter-reset: r; display: grid; gap: 14px; }
-  .remember li { counter-increment: r; display: grid; grid-template-columns: 34px 1fr; gap: 12px; font-size: 16px; line-height: 1.55; color: var(--body); }
-  .remember li::before { content: counter(r, decimal-leading-zero); font-family: var(--mono); font-size: 13px; color: var(--accent); padding-top: 3px; }
-  .remember b { color: var(--text); }
+  /* ---------- footer ---------- */
 
   .next {
     display: block; margin-top: 40px; padding: 28px 24px; border-radius: 20px; text-decoration: none;
@@ -241,7 +237,7 @@ const tex = (s, display = true) => window.katex
   ? katex.renderToString(s, { displayMode: display, throwOnError: false })
   : `<code>${s}</code>`;
 
-const def = (html, src) => `<blockquote class="definition"><p>${html}</p>${src ? `<span class="src">${src}</span>` : ""}</blockquote>`;
+const def = (html, plain) => `<blockquote class="definition"><p>${html}</p></blockquote>${plain ? `<p class="explain"><b>In plain English:</b> ${plain}</p>` : ""}`;
 
 const formula = (eqs, where) => `<div class="card"><div class="card-head"><span class="card-label">Formula</span></div><div class="card-body">
   ${eqs.map(e => `<div class="math">${tex(e)}</div>`).join("")}
@@ -269,7 +265,7 @@ const GUIDES = [
   sections: [
     { id: "definition", h: "The idea", html: `
       ${def(`The <b>time value of money</b> is the idea that a dollar today is worth more than a dollar in the future. Money you have now can be invested to earn a return, and money promised later carries the risk that it may never arrive.`)}
-      <p style="margin-top:22px"><b>Discounting</b> is how we apply that idea. It converts a cash flow expected in the future into its <b>present value</b>, what it is worth today, by shrinking it at a chosen rate for every year you have to wait.</p>
+      <p class="explain"><b>Discounting</b> is how we apply that idea. It converts a cash flow expected in the future into its <b>present value</b>, what it is worth today, by shrinking it at a chosen rate for every year you have to wait.</p>
       <p>It is compound interest run in reverse: instead of multiplying to grow money forward, you divide to bring it back.</p>` },
     { id: "formula", h: "The formula", html: formula(
       ["PV = \\dfrac{CF}{(1+r)^{n}}", "\\text{Discount factor} = \\dfrac{1}{(1+r)^{n}}"],
@@ -280,11 +276,6 @@ const GUIDES = [
       <p class="note">The same $100 received in each of the next five years:</p>
       ${ledger([["Year 1", "$92.59"], ["Year 2", "$85.73"], ["Year 3", "$79.38"], ["Year 4", "$73.50"], ["Year 5", "$68.06"]])}`) },
   ],
-  takeaways: [
-    "The further away a cash flow is, the <b>less</b> it is worth today.",
-    "A higher discount rate shrinks every future cash flow <b>more</b>.",
-    "A DCF discounts each year's free cash flow, and the terminal value, then adds them all up.",
-  ],
 },
 {
   id: "free-cash-flow", group: "core", tag: "The input",
@@ -292,17 +283,12 @@ const GUIDES = [
   summary: "The cash a DCF actually values: what's left after running and reinvesting in the business.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      ${def(`The cash flows we use for the DCF are called <b>free cash flows</b>, and reflect the capital available from the company's operations after key expenses, capital expenditures, and changes in net working capital have been deducted.`, "Arush")}` },
+      ${def(`The cash flows we use for the DCF are called <b>free cash flows</b>, and reflect the capital available from the company's operations after key expenses, capital expenditures, and changes in net working capital have been deducted.`, `free cash flow is the money a business has left at the end of the year after paying its running costs, its tax, and whatever it had to reinvest to keep going and growing. It is the cash that could actually be handed back to the people who fund the company, which is why a DCF values this instead of profit.`)}` },
     { id: "formula", h: "The formula", html: formula(
       ["FCF = EBIT \\times (1-t) + D\\&A - \\text{CapEx} - \\Delta NWC"],
       [["EBIT", "Earnings before interest and tax: operating profit"], ["t", "Tax rate. EBIT × (1 − t) is called NOPAT, operating profit after tax"], ["D\\&A", "Depreciation & amortisation. Added back because it's an accounting charge, not cash leaving"], ["\\text{CapEx}", "Capital expenditure: cash spent on long-term assets like data centres"], ["\\Delta NWC", "Change in net working capital (see guide 4)"]]) },
     { id: "example", h: "Worked example", html: example(ledger([
       ["EBIT", "$200"], ["Tax at 25%", "−$50"], ["NOPAT", "$150"], ["Add back D&A", "+$30"], ["CapEx", "−$50"], ["Increase in NWC", "−$10"], ["Free cash flow", "$120", true]])) },
-  ],
-  takeaways: [
-    "Free cash flow is <b>cash</b>, not accounting profit.",
-    "Growth usually needs investment (CapEx and working capital), which <b>lowers</b> free cash flow today.",
-    "This is <b>unlevered</b> free cash flow, the version most DCFs use. Guide 3 explains why.",
   ],
 },
 {
@@ -311,10 +297,10 @@ const GUIDES = [
   summary: "Same business, two views of its cash: for everyone who funds it, or for shareholders only.",
   sections: [
     { id: "unlevered", h: "Unlevered free cash flow", html: `
-      ${def(`<b>Unlevered cash flow</b> is the cash generated from the company's operations that is attributable to <b>both debt and equity providers</b> of the business.`, "Arush")}
+      ${def(`<b>Unlevered cash flow</b> is the cash generated from the company's operations that is attributable to <b>both debt and equity providers</b> of the business.`, `this is the cash the business produces before it pays anything to its lenders. It belongs to everyone who has put money in, banks and shareholders alike, so it shows what the business itself generates no matter how it is funded.`)}
       ${formula(["UFCF = EBIT \\times (1-t) + D\\&A - \\text{CapEx} - \\Delta NWC"])}` },
     { id: "levered", h: "Levered free cash flow", html: `
-      ${def(`<b>Levered cash flow</b> is the cash generated from the company's operations that is attributable to <b>only equity holders</b>, which means debt servicing payments like cash interest are deducted.`, "Arush")}
+      ${def(`<b>Levered cash flow</b> is the cash generated from the company's operations that is attributable to <b>only equity holders</b>, which means debt servicing payments like cash interest are deducted.`, `start with unlevered cash flow, take away what the company pays its lenders, and add any new money it borrowed. Whatever is left belongs to shareholders alone.`)}
       ${formula(["LFCF = UFCF - \\text{Interest} \\times (1-t) + \\text{Net borrowing}"],
         [["\\text{Interest}\\times(1-t)", "After-tax interest. Interest reduces taxable profit, so its real cost is lower than the headline amount"], ["\\text{Net borrowing}", "New debt raised minus debt repaid in the year"]])}` },
     { id: "example", h: "Worked example", html: example(ledger([
@@ -327,11 +313,6 @@ const GUIDES = [
         <tr><td>Levered</td><td>Equity holders only</td><td>Cost of equity</td><td>Equity value</td></tr>
       </table></div></div>` },
   ],
-  takeaways: [
-    "<b>Unlevered</b> = before debt payments, for everyone. <b>Levered</b> = after debt payments, for shareholders.",
-    "Never pair levered cash flow with WACC, or unlevered with the cost of equity.",
-    "This app uses <b>unlevered FCF + WACC</b>, then subtracts debt to reach shareholders' value.",
-  ],
 },
 {
   id: "net-working-capital", group: "core", tag: "Cash tied up",
@@ -339,8 +320,8 @@ const GUIDES = [
   summary: "The cash locked into the day-to-day running of a business, and why changes in it move free cash flow.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      ${def(`<b>Net working capital (NWC)</b> is the cash tied up in running the business day to day: money sitting in unpaid customer invoices and stock waiting to be sold, minus the short-term bills the company itself hasn't paid yet.`)}
-      <p style="margin-top:22px">For a DCF, what matters is the <b>change</b> in NWC. When NWC rises, cash gets locked up in the business and free cash flow falls. When NWC falls, cash is released and free cash flow rises.</p>` },
+      ${def(`<b>Net working capital (NWC)</b> is the cash tied up in running the business day to day: money sitting in unpaid customer invoices and stock waiting to be sold, minus the short-term bills the company itself hasn't paid yet.`, `a shop has to buy stock before it can sell it, and often waits weeks for customers to pay. That money is stuck. Meanwhile it can delay paying its own suppliers, which frees some cash back up. Net working capital is the overall amount left stuck.`)}
+      <p>For a DCF, what matters is the <b>change</b> in NWC. When NWC rises, cash gets locked up in the business and free cash flow falls. When NWC falls, cash is released and free cash flow rises.</p>` },
     { id: "formula", h: "The formula", html: formula(
       ["NWC = (\\text{Receivables} + \\text{Inventory}) - (\\text{Payables} + \\text{Accrued})", "\\Delta NWC = NWC_{t} - NWC_{t-1}"],
       [["\\text{Receivables}", "Money customers owe the company"], ["\\text{Inventory}", "Stock and materials not yet sold"], ["\\text{Payables}", "Money the company owes its suppliers"], ["\\text{Accrued}", "Costs incurred but not yet paid, like wages owed"]]) +
@@ -349,18 +330,13 @@ const GUIDES = [
       ${ledger([["Receivables + Inventory", "$80 + $60 = $140"], ["Payables + Accrued", "$70 + $20 = $90"], ["NWC this year", "$50", true]])}
       <p class="note">If NWC grows to $60 next year, ΔNWC = +$10. That $10 is cash stuck in the business, so free cash flow is $10 lower. It's the −$10 in the free cash flow example.</p>`) },
   ],
-  takeaways: [
-    "Rising NWC <b>uses</b> cash; falling NWC <b>frees</b> it.",
-    "Fast-growing companies often absorb lots of cash into working capital.",
-    "Some businesses, like subscriptions paid upfront, run <b>negative</b> NWC: customers effectively fund them.",
-  ],
 },
 {
   id: "wacc", group: "core", tag: "The hurdle rate",
   title: "WACC",
   summary: "The Weighted Average Cost of Capital: the rate that turns future cash flows into today's value.",
   sections: [
-    { id: "what", h: "What WACC is", html: def(`The <b>Weighted Average Cost of Capital (WACC)</b> is the <b>hurdle rate</b> we use to discount the future cash flows to present value. It represents the return required by debt and equity holders for providing their capital to the business.`, "Arush") },
+    { id: "what", h: "What WACC is", html: def(`The <b>Weighted Average Cost of Capital (WACC)</b> is the <b>hurdle rate</b> we use to discount the future cash flows to present value. It represents the return required by debt and equity holders for providing their capital to the business.`, `WACC is the minimum yearly return the business has to earn to keep both its lenders and its shareholders happy. In a DCF, it is the rate used to shrink each future year's cash back to what it is worth today.`) },
     { id: "blend", h: "A blended average", html: `
       <p>It is a blended average of the <b>cost of debt</b> and the <b>cost of equity</b>, weighted by how much of each the company uses. Both of these factors incorporate the risk associated with lending to or investing in the business.</p>
       ${formula(["WACC = \\frac{E}{V}\\,R_e + \\frac{D}{V}\\,R_d\\,(1-t)", "V = E + D"],
@@ -381,15 +357,10 @@ const GUIDES = [
     { id: "together", h: "Putting it together", html: example(`
       <div class="calc-line">80% × 10% + 20% × 4.5%<br>= 8.0% + 0.9% = <b>8.9%</b></div>`) },
     { id: "higher-wacc", h: "Why a higher WACC lowers value", html: `
-      ${def(`A higher WACC will usually mean a <b>lower intrinsic value</b>, as you are physically dividing by a higher number, but also because capital providers require a larger return from the business.`, "Arush")}
+      ${def(`A higher WACC will usually mean a <b>lower intrinsic value</b>, as you are physically dividing by a higher number, but also because capital providers require a larger return from the business.`, `a higher WACC means investors see the business as riskier and want more in return, so every future dollar is worth less to them today. The same cash flows end up producing a lower valuation.`)}
       ${example(`<p class="q">$120 of free cash flow arriving next year is worth today:</p>
         ${ledger([["At 8.9% WACC: 120 ÷ 1.089", "$110.19"], ["At 10.9% WACC: 120 ÷ 1.109", "$108.21"]])}
         <p class="note">The gap grows for cash flows further away, and most of all for the terminal value.</p>`)}` },
-  ],
-  takeaways: [
-    "WACC is the <b>minimum return</b> the business must earn for everyone who funds it.",
-    "Cost of equity is <b>higher</b> than cost of debt, because shareholders take more risk.",
-    "Small changes in WACC have a <b>big</b> effect on the final value.",
   ],
 },
 {
@@ -398,8 +369,8 @@ const GUIDES = [
   summary: "The value of every year after the forecast ends, which is often most of the total.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      ${def(`The <b>terminal value</b> captures the value of all cash flows after the detailed forecast period, assuming the business carries on indefinitely.`)}
-      <p style="margin-top:22px">A DCF usually forecasts 5 to 10 years in detail. Everything after that is the terminal value, and it often makes up <b>60–80%</b> of the total.</p>` },
+      ${def(`The <b>terminal value</b> captures the value of all cash flows after the detailed forecast period, assuming the business carries on indefinitely.`, `we can't forecast every single year forever, so after the last forecast year we capture "everything after" in one number.`)}
+      <p>A DCF usually forecasts 5 to 10 years in detail. Everything after that is the terminal value, and it often makes up <b>60–80%</b> of the total.</p>` },
     { id: "gordon", h: "Method 1: perpetual growth", html: `
       <p>Assume free cash flow grows at a slow, steady rate forever.</p>
       ${formula(["TV = \\dfrac{FCF_{n}\\,(1+g)}{WACC - g}"],
@@ -412,10 +383,6 @@ const GUIDES = [
     { id: "discount", h: "Bring it back to today", html: `
       <p>The terminal value is worth that amount at the <b>end</b> of the forecast, so it is discounted back like any other cash flow.</p>
       ${formula(["PV_{TV} = \\dfrac{TV}{(1+WACC)^{n}}"])}` },
-  ],
-  takeaways: [
-    "Growth must be <b>lower</b> than WACC, or the formula breaks.",
-    "Because it's so large, small changes in growth or WACC move the valuation <b>a lot</b>.",
   ],
 },
 {
@@ -433,10 +400,6 @@ const GUIDES = [
     { id: "example", h: "Worked example", html: example(ledger([
       ["Enterprise value", "$2,000"], ["Debt", "−$200"], ["Cash", "+$100"], ["Equity value", "$1,900"], ["÷ Diluted shares", "50"], ["Value per share", "$38.00", true], ["Market price", "$32.00"], ["Upside", "+18.8%", true]])) },
   ],
-  takeaways: [
-    "Value per share <b>above</b> the market price: looks undervalued. <b>Below</b>: overvalued.",
-    "Always use the <b>diluted</b> share count, or the value per share will be too high.",
-  ],
 },
 {
   id: "sbc", group: "further", tag: "The hidden cost",
@@ -444,8 +407,8 @@ const GUIDES = [
   summary: "Paying staff in shares costs no cash, but it is still a real cost to shareholders.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      ${def(`<b>Stock-based compensation (SBC)</b> is paying employees with shares or share options instead of cash.`)}
-      <p style="margin-top:22px">It doesn't use cash, so it's added back in the cash flow statement, which makes free cash flow look higher. But the new shares <b>dilute</b> existing owners: each share becomes a smaller slice of the company.</p>` },
+      ${def(`<b>Stock-based compensation (SBC)</b> is paying employees with shares or share options instead of cash.`, `instead of paying staff only in cash, the company hands them new shares. No cash leaves the business, but every existing shareholder now owns a slightly smaller slice.`)}
+      <p>It doesn't use cash, so it's added back in the cash flow statement, which makes free cash flow look higher. But the new shares <b>dilute</b> existing owners: each share becomes a smaller slice of the company.</p>` },
     { id: "handling", h: "How to account for it", html: `
       <p>There are two honest ways to handle it. Do one, never neither:</p>
       <ul class="plain">
@@ -456,10 +419,6 @@ const GUIDES = [
     { id: "example", h: "Worked example", html: example(`
       ${ledger([["Free cash flow", "$120"], ["SBC", "−$12"], ["FCF after SBC", "$108", true]])}
       <p class="note">Or as dilution: 100 shares become 110, so owning 1 share falls from 1% to 0.91% of the company.</p>`) },
-  ],
-  takeaways: [
-    "SBC is a <b>real cost</b> even though no cash leaves the business.",
-    "It matters most for large tech companies, where it can be a big share of revenue.",
   ],
 },
 ];
@@ -514,7 +473,6 @@ function renderGuide(g, sub) {
     view.innerHTML = `<div class="guide">
       <nav class="rail" aria-label="On this page"><div class="rail-label">On this page</div>
         ${g.sections.map((s, i) => `<a href="#${g.id}/${s.id}" data-sec="${s.id}"><span>${nums[i]}</span>${s.h}</a>`).join("")}
-        <a href="#${g.id}/remember" data-sec="remember"><span>${String(g.sections.length + 1).padStart(2, "0")}</span>Remember</a>
       </nav>
       <article>
         <header class="g-head">
@@ -525,7 +483,6 @@ function renderGuide(g, sub) {
           <nav class="chips-toc" aria-label="Sections">${g.sections.map(s => `<a href="#${g.id}/${s.id}">${s.h}</a>`).join("")}</nav>
         </header>
         ${g.sections.map((s, i) => `<section class="sec" id="${g.id}/${s.id}"><div class="sec-num">${nums[i]}</div><h2>${s.h}</h2>${s.html}</section>`).join("")}
-        <section class="remember sec" id="${g.id}/remember"><h2>Remember</h2><ol>${g.takeaways.map(t => `<li><span>${t}</span></li>`).join("")}</ol></section>
         ${next
           ? `<a class="next" href="#${next.id}"><small>Next · Guide ${String(next.n).padStart(2, "0")}</small><strong>${next.title}</strong><span>${next.summary}</span></a>`
           : `<a class="next" href="/"><small>You've finished the guide</small><strong>Now try it on a real company</strong><span>Pick Microsoft, Apple, Alphabet, Nvidia or Tesla and test your own assumptions.</span></a>`}
