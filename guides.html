@@ -283,7 +283,7 @@ const GUIDES = [
   summary: "The cash a DCF actually values: what's left after running and reinvesting in the business.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      ${def(`The cash flows we use for the DCF are called <b>free cash flows</b>, and reflect the capital available from the company's operations after key expenses, capital expenditures, and changes in net working capital have been deducted.`free cash flow is the money a business has left at the end of the year after paying its running costs, its tax, and whatever it had to reinvest to keep going and growing. It is the cash that could actually be handed back to the people who fund the company, which is why a DCF values this instead of profit.`)}` },
+      ${def(`The cash flows we use for the DCF are called <b>free cash flows</b>, and reflect the capital available from the company's operations after key expenses, capital expenditures, and changes in net working capital have been deducted.`)}` },
     { id: "formula", h: "The formula", html: formula(
       ["FCF = EBIT \\times (1-t) + D\\&A - \\text{CapEx} - \\Delta NWC"],
       [["EBIT", "Earnings before interest and tax: operating profit"], ["t", "Tax rate. EBIT × (1 − t) is called NOPAT, operating profit after tax"], ["D\\&A", "Depreciation & amortisation. Added back because it's an accounting charge, not cash leaving"], ["\\text{CapEx}", "Capital expenditure: cash spent on long-term assets like data centres"], ["\\Delta NWC", "Change in net working capital (see guide 4)"]]) },
@@ -297,10 +297,10 @@ const GUIDES = [
   summary: "Same business, two views of its cash: for everyone who funds it, or for shareholders only.",
   sections: [
     { id: "unlevered", h: "Unlevered free cash flow", html: `
-      ${def(`<b>Unlevered cash flow</b> is the cash generated from the company's operations that is attributable to <b>both debt and equity providers</b> of the business.`this is the cash the business produces before it pays anything to its lenders. It belongs to everyone who has put money in, banks and shareholders alike, so it shows what the business itself generates no matter how it is funded.`)}
+      ${def(`<b>Unlevered cash flow</b> is the cash generated from the company's operations that is attributable to <b>both debt and equity providers</b> of the business.`)}
       ${formula(["UFCF = EBIT \\times (1-t) + D\\&A - \\text{CapEx} - \\Delta NWC"])}` },
     { id: "levered", h: "Levered free cash flow", html: `
-      ${def(`<b>Levered cash flow</b> is the cash generated from the company's operations that is attributable to <b>only equity holders</b>, which means debt servicing payments like cash interest are deducted.`start with unlevered cash flow, take away what the company pays its lenders, and add any new money it borrowed. Whatever is left belongs to shareholders alone.`)}
+      ${def(`<b>Levered cash flow</b> is the cash generated from the company's operations that is attributable to <b>only equity holders</b>, which means debt servicing payments like cash interest are deducted.`)}
       ${formula(["LFCF = UFCF - \\text{Interest} \\times (1-t) + \\text{Net borrowing}"],
         [["\\text{Interest}\\times(1-t)", "After-tax interest. Interest reduces taxable profit, so its real cost is lower than the headline amount"], ["\\text{Net borrowing}", "New debt raised minus debt repaid in the year"]])}` },
     { id: "example", h: "Worked example", html: example(ledger([
@@ -320,7 +320,7 @@ const GUIDES = [
   summary: "The cash locked into the day-to-day running of a business, and why changes in it move free cash flow.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      ${def(`<b>Net working capital (NWC)</b> is the cash tied up in running the business day to day: money sitting in unpaid customer invoices and stock waiting to be sold, minus the short-term bills the company itself hasn't paid yet.`a shop has to buy stock before it can sell it, and often waits weeks for customers to pay. That money is stuck. Meanwhile it can delay paying its own suppliers, which frees some cash back up. Net working capital is the overall amount left stuck.`)}
+      ${def(`<b>Net working capital (NWC)</b> is the cash tied up in running the business day to day: money sitting in unpaid customer invoices and stock waiting to be sold, minus the short-term bills the company itself hasn't paid yet.`)}
       <p>For a DCF, what matters is the <b>change</b> in NWC. When NWC rises, cash gets locked up in the business and free cash flow falls. When NWC falls, cash is released and free cash flow rises.</p>` },
     { id: "formula", h: "The formula", html: formula(
       ["NWC = (\\text{Receivables} + \\text{Inventory}) - (\\text{Payables} + \\text{Accrued})", "\\Delta NWC = NWC_{t} - NWC_{t-1}"],
@@ -336,7 +336,7 @@ const GUIDES = [
   title: "WACC",
   summary: "The Weighted Average Cost of Capital: the rate that turns future cash flows into today's value.",
   sections: [
-    { id: "what", h: "What WACC is", html: def(`The <b>Weighted Average Cost of Capital (WACC)</b> is the <b>hurdle rate</b> we use to discount the future cash flows to present value. It represents the return required by debt and equity holders for providing their capital to the business.`WACC is the minimum yearly return the business has to earn to keep both its lenders and its shareholders happy. In a DCF, it is the rate used to shrink each future year's cash back to what it is worth today.`) },
+    { id: "what", h: "What WACC is", html: def(`The <b>Weighted Average Cost of Capital (WACC)</b> is the <b>hurdle rate</b> we use to discount the future cash flows to present value. It represents the return required by debt and equity holders for providing their capital to the business.`) },
     { id: "blend", h: "A blended average", html: `
       <p>It is a blended average of the <b>cost of debt</b> and the <b>cost of equity</b>, weighted by how much of each the company uses. Both of these factors incorporate the risk associated with lending to or investing in the business.</p>
       ${formula(["WACC = \\frac{E}{V}\\,R_e + \\frac{D}{V}\\,R_d\\,(1-t)", "V = E + D"],
@@ -357,7 +357,7 @@ const GUIDES = [
     { id: "together", h: "Putting it together", html: example(`
       <div class="calc-line">80% × 10% + 20% × 4.5%<br>= 8.0% + 0.9% = <b>8.9%</b></div>`) },
     { id: "higher-wacc", h: "Why a higher WACC lowers value", html: `
-      ${def(`A higher WACC will usually mean a <b>lower intrinsic value</b>, as you are physically dividing by a higher number, but also because capital providers require a larger return from the business.`a higher WACC means investors see the business as riskier and want more in return, so every future dollar is worth less to them today. The same cash flows end up producing a lower valuation.`)}
+      ${def(`A higher WACC will usually mean a <b>lower intrinsic value</b>, as you are physically dividing by a higher number, but also because capital providers require a larger return from the business.`)}
       ${example(`<p class="q">$120 of free cash flow arriving next year is worth today:</p>
         ${ledger([["At 8.9% WACC: 120 ÷ 1.089", "$110.19"], ["At 10.9% WACC: 120 ÷ 1.109", "$108.21"]])}
         <p class="note">The gap grows for cash flows further away, and most of all for the terminal value.</p>`)}` },
@@ -369,7 +369,7 @@ const GUIDES = [
   summary: "The value of every year after the forecast ends, which is often most of the total.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      ${def(`The <b>terminal value</b> captures the value of all cash flows after the detailed forecast period, assuming the business carries on indefinitely.`we can't forecast every single year forever, so after the last forecast year we capture "everything after" in one number.`)}
+      ${def(`The <b>terminal value</b> captures the value of all cash flows after the detailed forecast period, assuming the business carries on indefinitely.`)}
       <p>A DCF usually forecasts 5 to 10 years in detail. Everything after that is the terminal value, and it often makes up <b>60–80%</b> of the total.</p>` },
     { id: "gordon", h: "Method 1: perpetual growth", html: `
       <p>Assume free cash flow grows at a slow, steady rate forever.</p>
@@ -407,7 +407,7 @@ const GUIDES = [
   summary: "Paying staff in shares costs no cash, but it is still a real cost to shareholders.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      ${def(`<b>Stock-based compensation (SBC)</b> is paying employees with shares or share options instead of cash.`instead of paying staff only in cash, the company hands them new shares. No cash leaves the business, but every existing shareholder now owns a slightly smaller slice.`)}
+      ${def(`<b>Stock-based compensation (SBC)</b> is paying employees with shares or share options instead of cash.`)}
       <p>It doesn't use cash, so it's added back in the cash flow statement, which makes free cash flow look higher. But the new shares <b>dilute</b> existing owners: each share becomes a smaller slice of the company.</p>` },
     { id: "handling", h: "How to account for it", html: `
       <p>There are two honest ways to handle it. Do one, never neither:</p>
