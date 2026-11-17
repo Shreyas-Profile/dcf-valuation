@@ -69,6 +69,8 @@
     font-size: 14px;
   }
   .learn span:nth-child(2) { flex: 1; }
+  .learn .learn-icon svg { color: #04140b; }
+  .learn.guides { margin-top: 8px; background: var(--surface); border: 1px solid var(--border); }
   .learn svg { color: var(--accent); flex: none; }
   .learn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .learn-icon {
@@ -233,6 +235,11 @@
     <a class="learn" href="/learn">
       <span class="learn-icon">?</span>
       <span><b>New to DCF?</b> Learn the basics in 7 cards</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+    <a class="learn guides" href="/guides">
+      <span class="learn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg></span>
+      <span><b>In-depth guides</b> with formulas and examples</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
     </a>
     <label class="search">
