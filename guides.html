@@ -198,48 +198,6 @@
   table.cmp td { padding: 12px 10px 12px 0; border-top: 1px solid var(--line); color: var(--body); vertical-align: top; }
   table.cmp td:first-child { color: var(--text); font-weight: 600; }
 
-  /* ---------- calculators ---------- */
-  .calc { border-color: rgba(47, 210, 122, 0.35); background: linear-gradient(180deg, rgba(47,210,122,.06), var(--panel) 40%); }
-  .calc .card-label { color: var(--accent); }
-  .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 8px; box-shadow: 0 0 0 4px rgba(47,210,122,.18); }
-  .reset { background: none; border: 1px solid var(--line-2); color: var(--muted); font: inherit; font-size: 12px; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
-  .reset:hover { color: var(--text); border-color: var(--text); }
-  .calc-grid { display: grid; gap: 18px; }
-  @media (min-width: 640px) { .calc-grid { grid-template-columns: 1fr 1fr; gap: 18px 28px; } }
-  .ctrl label { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--body); margin-bottom: 8px; }
-  .ctrl output { font-family: var(--mono); color: var(--text); }
-  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; }
-  input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--accent) var(--p, 50%), var(--line-2) var(--p, 50%)); }
-  input[type=range]::-moz-range-track { height: 4px; border-radius: 4px; background: var(--line-2); }
-  input[type=range]::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--accent); }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 50%; background: var(--text); border: 3px solid var(--accent); }
-  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--text); border: 3px solid var(--accent); }
-  .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 22px; }
-  .res { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
-  .res small { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .res strong { font-family: var(--mono); font-weight: 500; font-size: 18px; color: var(--text); }
-  .res.big { border-color: rgba(47,210,122,.4); }
-  .res.big strong { color: var(--accent); font-size: 22px; }
-  .warn { margin-top: 12px; font-size: 13.5px; color: var(--warn); }
-
-  .chart { margin-top: 22px; height: 150px; display: flex; align-items: flex-end; gap: 3px; border-bottom: 1px solid var(--line-2); position: relative; }
-  .chart .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; position: relative; }
-  .chart .b { border-radius: 4px 4px 0 0; background: var(--accent); opacity: .35; transition: height .15s; }
-  .chart .col.hl .b { opacity: 1; }
-  .chart-x { display: flex; gap: 3px; margin-top: 6px; }
-  .chart-x span { flex: 1; text-align: center; font-family: var(--mono); font-size: 10px; color: var(--muted); }
-  .wf { margin-top: 22px; display: grid; gap: 8px; }
-  .wf-row { display: grid; grid-template-columns: 92px 1fr 64px; gap: 10px; align-items: center; font-size: 13px; }
-  .wf-row .l { color: var(--body); }
-  .wf-row .v { font-family: var(--mono); text-align: right; color: var(--text); }
-  .wf-track { position: relative; height: 18px; background: var(--bg); border-radius: 4px; }
-  .wf-bar { position: absolute; top: 0; bottom: 0; border-radius: 4px; transition: left .15s, width .15s; }
-  .stack { margin-top: 22px; }
-  .stack-bar { display: flex; height: 26px; border-radius: 8px; overflow: hidden; background: var(--bg); }
-  .stack-bar div { transition: width .15s; }
-  .stack-key { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 12.5px; color: var(--muted); }
-  .stack-key i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
-
   /* ---------- takeaways / footer ---------- */
   .remember { margin-top: 64px; padding: 28px 24px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); }
   .remember h2 { font-family: var(--serif); font-weight: 400; font-size: 30px; margin-bottom: 16px; }
@@ -247,9 +205,6 @@
   .remember li { counter-increment: r; display: grid; grid-template-columns: 34px 1fr; gap: 12px; font-size: 16px; line-height: 1.55; color: var(--body); }
   .remember li::before { content: counter(r, decimal-leading-zero); font-family: var(--mono); font-size: 13px; color: var(--accent); padding-top: 3px; }
   .remember b { color: var(--text); }
-  .inapp { display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; padding: 16px 18px; border-radius: 14px; border: 1px dashed var(--line-2); font-size: 15px; line-height: 1.55; color: var(--body); }
-  .inapp svg { flex: none; color: var(--accent); margin-top: 2px; }
-  .inapp b { color: var(--text); }
 
   .next {
     display: block; margin-top: 40px; padding: 28px 24px; border-radius: 20px; text-decoration: none;
@@ -298,7 +253,6 @@ const example = (inner, label = "Worked example") => `<div class="card"><div cla
 const ledger = items => `<ol class="ledger">${items.map(([l, v, total]) =>
   `<li class="${total ? "total" : ""}"><span class="lab">${l}</span><span class="dots"></span><span class="val${!total && /^−/.test(v) ? " neg" : ""}">${v}</span></li>`).join("")}</ol>`;
 
-const calc = id => `<div class="card calc" data-calc="${id}"></div>`;
 
 const money = (x, dp) => {
   const d = dp ?? (Math.abs(x) < 1000 ? 2 : 0);
@@ -325,14 +279,12 @@ const GUIDES = [
       <div class="calc-line">100 ÷ 1.08³ = 100 ÷ 1.2597 = <b>$79.38</b></div>
       <p class="note">The same $100 received in each of the next five years:</p>
       ${ledger([["Year 1", "$92.59"], ["Year 2", "$85.73"], ["Year 3", "$79.38"], ["Year 4", "$73.50"], ["Year 5", "$68.06"]])}`) },
-    { id: "try", h: "Try it yourself", html: `<p>Drag the sliders. Watch how a higher rate, or a longer wait, shrinks what the money is worth today.</p>${calc("discount")}` },
   ],
   takeaways: [
     "The further away a cash flow is, the <b>less</b> it is worth today.",
     "A higher discount rate shrinks every future cash flow <b>more</b>.",
     "A DCF discounts each year's free cash flow, and the terminal value, then adds them all up.",
   ],
-  inapp: "The <b>WACC slider</b> sets the discount rate used for every forecast year.",
 },
 {
   id: "free-cash-flow", group: "core", tag: "The input",
@@ -346,16 +298,12 @@ const GUIDES = [
       [["EBIT", "Earnings before interest and tax: operating profit"], ["t", "Tax rate. EBIT × (1 − t) is called NOPAT, operating profit after tax"], ["D\\&A", "Depreciation & amortisation. Added back because it's an accounting charge, not cash leaving"], ["\\text{CapEx}", "Capital expenditure: cash spent on long-term assets like data centres"], ["\\Delta NWC", "Change in net working capital (see guide 4)"]]) },
     { id: "example", h: "Worked example", html: example(ledger([
       ["EBIT", "$200"], ["Tax at 25%", "−$50"], ["NOPAT", "$150"], ["Add back D&A", "+$30"], ["CapEx", "−$50"], ["Increase in NWC", "−$10"], ["Free cash flow", "$120", true]])) },
-    { id: "why-cash", h: "Why cash, not profit?", html: `
-      <p>Accounting profit includes non-cash charges, and ignores the money a company must reinvest to keep growing. Free cash flow is much closer to what could actually be handed back to the people who fund the business, and that is what an investor ultimately owns.</p>` },
-    { id: "try", h: "Try it yourself", html: `<p>Each bar shows how one item pushes free cash flow up or down.</p>${calc("fcf")}` },
   ],
   takeaways: [
     "Free cash flow is <b>cash</b>, not accounting profit.",
     "Growth usually needs investment (CapEx and working capital), which <b>lowers</b> free cash flow today.",
     "This is <b>unlevered</b> free cash flow, the version most DCFs use. Guide 3 explains why.",
   ],
-  inapp: "The <b>5-year bar chart</b> shows the free cash flow for each forecast year.",
 },
 {
   id: "unlevered-vs-levered", group: "core", tag: "Two flavours",
@@ -384,7 +332,6 @@ const GUIDES = [
     "Never pair levered cash flow with WACC, or unlevered with the cost of equity.",
     "This app uses <b>unlevered FCF + WACC</b>, then subtracts debt to reach shareholders' value.",
   ],
-  inapp: "The app forecasts <b>unlevered</b> free cash flow and discounts it at WACC.",
 },
 {
   id: "net-working-capital", group: "core", tag: "Cash tied up",
@@ -407,7 +354,6 @@ const GUIDES = [
     "Fast-growing companies often absorb lots of cash into working capital.",
     "Some businesses, like subscriptions paid upfront, run <b>negative</b> NWC: customers effectively fund them.",
   ],
-  inapp: "Working capital is one of the assumptions in <b>Forensic Settings</b>.",
 },
 {
   id: "wacc", group: "core", tag: "The hurdle rate",
@@ -439,14 +385,12 @@ const GUIDES = [
       ${example(`<p class="q">$120 of free cash flow arriving next year is worth today:</p>
         ${ledger([["At 8.9% WACC: 120 ÷ 1.089", "$110.19"], ["At 10.9% WACC: 120 ÷ 1.109", "$108.21"]])}
         <p class="note">The gap grows for cash flows further away, and most of all for the terminal value.</p>`)}` },
-    { id: "try", h: "Build your own WACC", html: `<p>Change the inputs and see how each part feeds into the final rate.</p>${calc("wacc")}` },
   ],
   takeaways: [
     "WACC is the <b>minimum return</b> the business must earn for everyone who funds it.",
     "Cost of equity is <b>higher</b> than cost of debt, because shareholders take more risk.",
     "Small changes in WACC have a <b>big</b> effect on the final value.",
   ],
-  inapp: "The <b>WACC slider</b>, and the <b>Rate Spike</b> button, which adds 2% to it.",
 },
 {
   id: "terminal-value", group: "further", tag: "The long tail",
@@ -468,13 +412,11 @@ const GUIDES = [
     { id: "discount", h: "Bring it back to today", html: `
       <p>The terminal value is worth that amount at the <b>end</b> of the forecast, so it is discounted back like any other cash flow.</p>
       ${formula(["PV_{TV} = \\dfrac{TV}{(1+WACC)^{n}}"])}` },
-    { id: "try", h: "Try it yourself", html: `<p>Notice how sensitive the answer is when growth gets close to WACC.</p>${calc("tv")}` },
   ],
   takeaways: [
     "Growth must be <b>lower</b> than WACC, or the formula breaks.",
     "Because it's so large, small changes in growth or WACC move the valuation <b>a lot</b>.",
   ],
-  inapp: "The <b>terminal growth slider</b>, and the <b>heatmap</b> that tests WACC against growth.",
 },
 {
   id: "equity-value", group: "further", tag: "The answer",
@@ -495,7 +437,6 @@ const GUIDES = [
     "Value per share <b>above</b> the market price: looks undervalued. <b>Below</b>: overvalued.",
     "Always use the <b>diluted</b> share count, or the value per share will be too high.",
   ],
-  inapp: "The <b>scoreboard</b> shows market price, base case and your custom price side by side.",
 },
 {
   id: "sbc", group: "further", tag: "The hidden cost",
@@ -520,150 +461,20 @@ const GUIDES = [
     "SBC is a <b>real cost</b> even though no cash leaves the business.",
     "It matters most for large tech companies, where it can be a big share of revenue.",
   ],
-  inapp: "The <b>SBC toggle</b> in Forensic Settings switches this adjustment on and off.",
 },
 ];
 GUIDES.forEach((g, i) => {
   g.n = i + 1;
   const words = g.sections.map(s => s.html).join(" ").replace(/<[^>]+>/g, " ").split(/\s+/).length;
   g.minutes = Math.max(2, Math.round(words / 180));
-  g.hasCalc = g.sections.some(s => s.html.includes("data-calc"));
 });
-
-/* ================= calculators ================= */
-const CALCS = {
-  discount: {
-    title: "Present value calculator",
-    inputs: [
-      { id: "cf", label: "Future cash flow", min: 10, max: 1000, step: 10, value: 100, fmt: v => money(v, 0) },
-      { id: "r", label: "Discount rate", min: 0, max: 20, step: 0.5, value: 8, fmt: v => pct(v) },
-      { id: "n", label: "Years until received", min: 1, max: 20, step: 1, value: 3, fmt: v => v + (v === 1 ? " year" : " years") },
-    ],
-    render(v) {
-      const pv = v.cf / Math.pow(1 + v.r / 100, v.n);
-      const bars = Array.from({ length: 20 }, (_, i) => v.cf / Math.pow(1 + v.r / 100, i + 1));
-      return `<div class="results">
-          <div class="res big"><small>Worth today</small><strong>${money(pv)}</strong></div>
-          <div class="res"><small>Discount factor</small><strong>${(pv / v.cf).toFixed(3)}</strong></div>
-          <div class="res"><small>Cost of waiting</small><strong>${money(v.cf - pv)}</strong></div>
-        </div>
-        <div class="chart" aria-hidden="true">${bars.map((b, i) => `<div class="col${i + 1 === v.n ? " hl" : ""}"><div class="b" style="height:${(b / v.cf * 100).toFixed(1)}%"></div></div>`).join("")}</div>
-        <div class="chart-x" aria-hidden="true">${bars.map((_, i) => `<span>${(i + 1) % 5 === 0 || i === 0 ? "Y" + (i + 1) : ""}</span>`).join("")}</div>
-        <p class="note">Each bar is today's value of ${money(v.cf, 0)} received in that year. The highlighted bar is your year.</p>`;
-    },
-  },
-  fcf: {
-    title: "Free cash flow builder",
-    inputs: [
-      { id: "ebit", label: "EBIT", min: 0, max: 500, step: 10, value: 200, fmt: v => money(v, 0) },
-      { id: "t", label: "Tax rate", min: 0, max: 40, step: 1, value: 25, fmt: v => pct(v, 0) },
-      { id: "da", label: "D&A", min: 0, max: 150, step: 5, value: 30, fmt: v => money(v, 0) },
-      { id: "capex", label: "CapEx", min: 0, max: 300, step: 5, value: 50, fmt: v => money(v, 0) },
-      { id: "nwc", label: "Increase in NWC", min: -50, max: 100, step: 5, value: 10, fmt: v => money(v, 0) },
-    ],
-    render(v) {
-      const tax = v.ebit * v.t / 100;
-      const steps = [["EBIT", v.ebit], ["Tax", -tax], ["D&A", v.da], ["CapEx", -v.capex], ["Δ NWC", -v.nwc]];
-      let run = 0; const rows = [];
-      for (const [l, d] of steps) { rows.push([l, run, run + d, d]); run += d; }
-      rows.push(["FCF", 0, run, run, true]);
-      const vals = rows.flatMap(r => [r[1], r[2]]);
-      const lo = Math.min(0, ...vals), hi = Math.max(...vals, 1), span = hi - lo;
-      const x = n => ((n - lo) / span * 100);
-      return `<div class="wf" aria-label="Waterfall chart">${rows.map(([l, a, b, d, tot]) => {
-          const left = x(Math.min(a, b)), w = Math.max(0.8, Math.abs(x(b) - x(a)));
-          const color = tot ? "var(--accent)" : d >= 0 ? "rgba(47,210,122,.45)" : "var(--neg)";
-          return `<div class="wf-row"><span class="l">${tot ? "<b style='color:var(--text)'>" + l + "</b>" : l}</span>
-            <div class="wf-track"><div class="wf-bar" style="left:${left}%;width:${w}%;background:${color}"></div></div>
-            <span class="v">${tot ? money(d, 0) : (d >= 0 ? "+" : "−") + "$" + Math.abs(d).toFixed(0)}</span></div>`;
-        }).join("")}</div>
-        <div class="results">
-          <div class="res"><small>NOPAT</small><strong>${money(v.ebit - tax, 0)}</strong></div>
-          <div class="res big"><small>Free cash flow</small><strong>${money(run, 0)}</strong></div>
-        </div>`;
-    },
-  },
-  wacc: {
-    title: "WACC builder",
-    inputs: [
-      { id: "we", label: "Equity share of funding", min: 0, max: 100, step: 5, value: 80, fmt: v => pct(v, 0) },
-      { id: "rf", label: "Risk-free rate", min: 0, max: 8, step: 0.1, value: 4, fmt: v => pct(v) },
-      { id: "b", label: "Beta", min: 0.3, max: 2.5, step: 0.05, value: 1.2, fmt: v => v.toFixed(2) },
-      { id: "erp", label: "Equity risk premium", min: 3, max: 8, step: 0.1, value: 5, fmt: v => pct(v) },
-      { id: "rd", label: "Cost of debt (pre-tax)", min: 1, max: 12, step: 0.1, value: 6, fmt: v => pct(v) },
-      { id: "t", label: "Tax rate", min: 0, max: 40, step: 1, value: 25, fmt: v => pct(v, 0) },
-    ],
-    render(v) {
-      const re = v.rf + v.b * v.erp, rdat = v.rd * (1 - v.t / 100);
-      const eq = v.we / 100 * re, dt = (1 - v.we / 100) * rdat, w = eq + dt;
-      return `<div class="results">
-          <div class="res"><small>Cost of equity</small><strong>${pct(re, 2)}</strong></div>
-          <div class="res"><small>After-tax cost of debt</small><strong>${pct(rdat, 2)}</strong></div>
-          <div class="res big"><small>WACC</small><strong>${pct(w, 2)}</strong></div>
-        </div>
-        <div class="stack">
-          <div class="stack-bar" role="img" aria-label="Equity contributes ${pct(eq, 2)}, debt contributes ${pct(dt, 2)}">
-            <div style="width:${w ? eq / w * 100 : 0}%;background:var(--accent)"></div>
-            <div style="width:${w ? dt / w * 100 : 0}%;background:#4b8bff"></div>
-          </div>
-          <div class="stack-key"><span><i style="background:var(--accent)"></i>Equity part ${pct(eq, 2)}</span><span><i style="background:#4b8bff"></i>Debt part ${pct(dt, 2)}</span></div>
-        </div>`;
-    },
-  },
-  tv: {
-    title: "Terminal value calculator",
-    inputs: [
-      { id: "fcf", label: "Final-year FCF", min: 10, max: 500, step: 10, value: 120, fmt: v => money(v, 0) },
-      { id: "g", label: "Terminal growth", min: 0, max: 6, step: 0.1, value: 2.5, fmt: v => pct(v) },
-      { id: "w", label: "WACC", min: 4, max: 15, step: 0.1, value: 8.9, fmt: v => pct(v) },
-      { id: "n", label: "Forecast years", min: 3, max: 10, step: 1, value: 5, fmt: v => v + " years" },
-    ],
-    render(v) {
-      if (v.g >= v.w) return `<div class="results"><div class="res big"><small>Terminal value</small><strong>n/a</strong></div></div>
-        <p class="warn">Growth must be lower than WACC. Otherwise the formula says the business is worth infinity, which is a sign the assumptions are broken.</p>`;
-      const tv = v.fcf * (1 + v.g / 100) / ((v.w - v.g) / 100);
-      const pv = tv / Math.pow(1 + v.w / 100, v.n);
-      return `<div class="results">
-          <div class="res"><small>Terminal value (year ${v.n})</small><strong>${money(tv, 0)}</strong></div>
-          <div class="res big"><small>Worth today</small><strong>${money(pv, 0)}</strong></div>
-          <div class="res"><small>Multiple of final FCF</small><strong>${(tv / v.fcf).toFixed(1)}×</strong></div>
-        </div>
-        ${v.w - v.g < 2 ? `<p class="warn">WACC and growth are very close, so the value is extremely sensitive. Small changes now cause huge swings.</p>` : ""}`;
-    },
-  },
-};
-
-function mountCalc(el) {
-  const c = CALCS[el.dataset.calc];
-  const state = Object.fromEntries(c.inputs.map(i => [i.id, i.value]));
-  el.innerHTML = `<div class="card-head"><span class="card-label"><span class="live-dot"></span>${c.title}</span><button class="reset" type="button">Reset</button></div>
-    <div class="card-body"><div class="calc-grid">${c.inputs.map(i => `
-      <div class="ctrl"><label for="${el.dataset.calc}-${i.id}">${i.label}<output id="${el.dataset.calc}-${i.id}-o"></output></label>
-      <input type="range" id="${el.dataset.calc}-${i.id}" data-k="${i.id}" min="${i.min}" max="${i.max}" step="${i.step}" value="${i.value}"></div>`).join("")}
-    </div><div class="calc-out" aria-live="polite"></div></div>`;
-  const out = el.querySelector(".calc-out");
-  const paint = () => {
-    c.inputs.forEach(i => {
-      const inp = el.querySelector(`[data-k="${i.id}"]`);
-      inp.style.setProperty("--p", ((state[i.id] - i.min) / (i.max - i.min) * 100) + "%");
-      el.querySelector(`#${el.dataset.calc}-${i.id}-o`).textContent = i.fmt(state[i.id]);
-    });
-    out.innerHTML = c.render(state);
-  };
-  el.addEventListener("input", e => { if (e.target.dataset.k) { state[e.target.dataset.k] = parseFloat(e.target.value); paint(); } });
-  el.querySelector(".reset").addEventListener("click", () => {
-    c.inputs.forEach(i => { state[i.id] = i.value; el.querySelector(`[data-k="${i.id}"]`).value = i.value; });
-    paint();
-  });
-  paint();
-}
 
 /* ================= views ================= */
 const view = document.getElementById("view");
 const crumb = document.getElementById("crumb");
 const back = document.getElementById("back");
 const arrow = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
-const chips = g => `<span class="chip">${g.minutes} min read</span>${g.hasCalc ? `<span class="chip live">Live calculator</span>` : ""}`;
+const chips = g => `<span class="chip">${g.minutes} min read</span>`;
 let current = null;
 
 function renderIndex() {
@@ -682,8 +493,8 @@ function renderIndex() {
     <section class="hero">
       <div class="kicker">The DCF field guide</div>
       <h1>Learn to value a company, <em>one idea</em> at a time.</h1>
-      <p>Every guide gives you the definition, the formula, a worked example and, where it helps, a calculator you can play with.</p>
-      <div class="stats"><span class="stat"><b>${GUIDES.length}</b> guides</span><span class="stat"><b>~${total}</b> min total</span><span class="stat"><b>${GUIDES.filter(g => g.hasCalc).length}</b> live calculators</span></div>
+      <p>Every guide gives you the definition, the formula and a worked example.</p>
+      <div class="stats"><span class="stat"><b>${GUIDES.length}</b> guides</span><span class="stat"><b>~${total}</b> min total</span></div>
     </section>
     <div class="path-head"><h2>The core path</h2><span>Start here, in order</span></div>
     <ol class="path">${list("core")}</ol>
@@ -715,13 +526,11 @@ function renderGuide(g, sub) {
         </header>
         ${g.sections.map((s, i) => `<section class="sec" id="${g.id}/${s.id}"><div class="sec-num">${nums[i]}</div><h2>${s.h}</h2>${s.html}</section>`).join("")}
         <section class="remember sec" id="${g.id}/remember"><h2>Remember</h2><ol>${g.takeaways.map(t => `<li><span>${t}</span></li>`).join("")}</ol></section>
-        <p class="inapp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 15l3-3 3 2 4-5"/></svg><span><b>In the app:</b> ${g.inapp}</span></p>
         ${next
           ? `<a class="next" href="#${next.id}"><small>Next · Guide ${String(next.n).padStart(2, "0")}</small><strong>${next.title}</strong><span>${next.summary}</span></a>`
           : `<a class="next" href="/"><small>You've finished the guide</small><strong>Now try it on a real company</strong><span>Pick Microsoft, Apple, Alphabet, Nvidia or Tesla and test your own assumptions.</span></a>`}
         ${prev ? `<a class="prev-link" href="#${prev.id}">← ${prev.title}</a>` : ""}
       </article></div>`;
-    view.querySelectorAll("[data-calc]").forEach(mountCalc);
     observeSections(g);
   }
   const target = sub && document.getElementById(`${g.id}/${sub}`);
