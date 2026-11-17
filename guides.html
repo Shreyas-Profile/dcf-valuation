@@ -3,424 +3,757 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DCF Guides</title>
-<meta name="description" content="In-depth guides to the ideas behind a discounted cash flow valuation, with formulas and worked examples.">
-<meta name="theme-color" content="#0b0d10">
+<title>DCF Field Guide</title>
+<meta name="description" content="Learn discounted cash flow valuation one idea at a time, with formulas, worked examples and live calculators.">
+<meta name="theme-color" content="#0a0b0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <style>
   :root {
-    --bg: #0b0d10;
-    --surface: #15181d;
-    --surface-2: #1c2027;
-    --border: #262b33;
-    --text: #f2f4f7;
-    --body: #d6dae1;
-    --muted: #8b93a1;
+    --bg: #0a0b0d;
+    --panel: #111316;
+    --panel-2: #171a1e;
+    --line: #23272d;
+    --line-2: #2e333a;
+    --text: #f3f1ec;
+    --body: #c4c8ce;
+    --muted: #7f8590;
     --accent: #2fd27a;
-    --accent-soft: rgba(47, 210, 122, 0.12);
-    --down: #ff5c5c;
+    --accent-ink: #04140b;
+    --accent-soft: rgba(47, 210, 122, 0.10);
+    --warn: #ffb547;
+    --neg: #ff6b6b;
+    --serif: "Instrument Serif", Georgia, serif;
+    --sans: Inter, system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--bg); color: var(--text); }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: Inter, system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(1200px 500px at 50% -200px, rgba(47, 210, 122, 0.10), transparent 70%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
-    display: flex;
-    justify-content: center;
+    min-height: 100dvh;
   }
-  .app { width: 100%; max-width: 640px; padding: 0 16px 48px; }
-  header {
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+  /* ---------- top bar ---------- */
+  .bar {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(10, 11, 13, 0.82);
+    backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar-inner {
+    max-width: 1120px; margin: 0 auto;
     display: flex; align-items: center; gap: 12px;
-    padding: 20px 0 12px;
-    position: sticky; top: 0; z-index: 2;
-    background: linear-gradient(var(--bg) 80%, transparent);
+    height: 56px; padding: 0 16px;
   }
-  .back {
-    width: 40px; height: 40px; flex: none;
+  .icon-btn {
+    width: 36px; height: 36px; flex: none;
     display: grid; place-items: center;
-    border-radius: 12px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; border: 1px solid var(--line-2);
     color: var(--text); text-decoration: none;
+    transition: border-color .15s, background .15s;
   }
-  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
-  header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin-top: 2px; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .icon-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .crumb { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .crumb b { color: var(--text); font-weight: 600; }
+  .brand { margin-left: auto; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+  .progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--accent); transition: width .1s linear; }
 
-  /* Index */
-  .intro { color: var(--muted); font-size: 15px; line-height: 1.5; margin: 4px 0 20px; }
-  .group { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 24px 0 10px; }
-  .topics { display: flex; flex-direction: column; gap: 10px; }
-  .topic {
-    display: grid; grid-template-columns: 36px 1fr auto; gap: 14px; align-items: center;
-    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-    padding: 14px 16px; color: inherit; text-decoration: none;
-    transition: background .15s, border-color .15s;
-  }
-  .topic:hover { background: var(--surface-2); border-color: #333a44; }
-  .num {
-    width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
-    background: var(--accent-soft); color: var(--accent);
-    font-family: "JetBrains Mono", monospace; font-size: 14px;
-  }
-  .topic h2 { font-size: 16px; font-weight: 600; }
-  .topic p { color: var(--muted); font-size: 13.5px; margin-top: 3px; line-height: 1.4; }
-  .topic svg { color: var(--muted); }
+  main { max-width: 1120px; margin: 0 auto; padding: 0 16px 80px; }
 
-  /* Article */
-  article .tag {
-    display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--accent); background: var(--accent-soft); padding: 5px 10px; border-radius: 999px;
+  /* ---------- index ---------- */
+  .hero { padding: 56px 0 40px; max-width: 760px; }
+  .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+  .hero h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(44px, 9vw, 84px); line-height: .98; letter-spacing: -0.02em;
+    margin-top: 16px;
   }
-  article > h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 8px; }
-  article > .summary { color: var(--muted); font-size: 16px; line-height: 1.5; }
-  .toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 4px; }
-  .toc a {
-    font-size: 12.5px; color: var(--body); text-decoration: none;
-    border: 1px solid var(--border); border-radius: 999px; padding: 5px 10px;
+  .hero h1 em { color: var(--accent); }
+  .hero p { color: var(--body); font-size: 18px; line-height: 1.6; margin-top: 20px; max-width: 560px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .stat {
+    font-size: 13px; color: var(--body);
+    border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 12px;
   }
-  .toc a:hover { border-color: var(--accent); color: var(--text); }
-  section { margin-top: 28px; scroll-margin-top: 80px; }
-  section h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.01em; }
-  section p { font-size: 15.5px; line-height: 1.65; color: var(--body); }
-  section p + p { margin-top: 10px; }
-  section b { color: var(--text); }
-  section ul.plain { margin: 10px 0 0 18px; color: var(--body); font-size: 15px; line-height: 1.6; }
+  .stat b { color: var(--text); font-weight: 600; }
 
-  .box { margin-top: 14px; border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); background: var(--surface); }
-  .box-label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-  .formula .eq {
-    font-family: "JetBrains Mono", monospace; font-size: 14.5px; color: var(--accent);
-    line-height: 1.7; overflow-wrap: anywhere;
+  .path-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 40px 0 8px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .path-head h2 { font-family: var(--serif); font-weight: 400; font-size: 32px; letter-spacing: -0.01em; }
+  .path-head span { font-size: 13px; color: var(--muted); }
+  .path { list-style: none; position: relative; }
+  .path li { position: relative; }
+  .step {
+    display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: center;
+    padding: 20px 4px; text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    transition: background .15s;
   }
-  .formula .eq + .eq { margin-top: 6px; }
-  .legend { margin-top: 12px; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 13.5px; line-height: 1.45; }
-  .legend dt { font-family: "JetBrains Mono", monospace; color: var(--text); white-space: nowrap; }
-  .legend dd { color: var(--muted); }
+  .step:hover { background: linear-gradient(90deg, var(--accent-soft), transparent 70%); }
+  .step:hover .go { transform: translateX(4px); color: var(--accent); }
+  .step-num { font-family: var(--serif); font-size: 44px; line-height: 1; color: var(--muted); transition: color .15s; }
+  .step:hover .step-num { color: var(--accent); }
+  .step h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .step p { color: var(--muted); font-size: 14.5px; line-height: 1.5; margin-top: 4px; }
+  .step .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .chip { font-family: var(--mono); font-size: 11px; color: var(--body); border: 1px solid var(--line-2); border-radius: 6px; padding: 2px 7px; }
+  .chip.live { color: var(--accent); border-color: rgba(47,210,122,.35); }
+  .go { color: var(--muted); transition: transform .15s, color .15s; }
 
-  .example { background: var(--surface-2); }
-  .example p { font-size: 14.5px; }
-  .rows { margin-top: 4px; }
-  .row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 14px; }
-  .row + .row { border-top: 1px dashed var(--border); }
-  .row span:first-child { color: var(--body); }
-  .row span:last-child { font-family: "JetBrains Mono", monospace; color: var(--text); white-space: nowrap; }
-  .row.total span { font-weight: 700; color: var(--accent); }
-  .row.total span:first-child { color: var(--text); }
-  .working { font-family: "JetBrains Mono", monospace; font-size: 13.5px; color: var(--body); line-height: 1.8; overflow-wrap: anywhere; }
-  .working b { color: var(--accent); }
-
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 4px; }
-  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
-  td { color: var(--body); }
-  td:first-child { color: var(--text); font-weight: 600; }
-
-  .takeaways { margin-top: 28px; }
-  .takeaways ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .takeaways li { display: flex; gap: 10px; font-size: 15px; line-height: 1.5; color: var(--body); }
-  .takeaways li::before {
-    content: ""; flex: none; width: 18px; height: 18px; margin-top: 2px; border-radius: 50%;
-    background: var(--accent-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232fd27a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E") center / 12px no-repeat;
+  /* ---------- guide ---------- */
+  .guide { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  .guide article { min-width: 0; }
+  @media (min-width: 980px) { .guide { grid-template-columns: 220px minmax(0, 700px); justify-content: center; } }
+  .rail { display: none; }
+  @media (min-width: 980px) {
+    .rail { display: block; position: sticky; top: 88px; align-self: start; padding-top: 72px; }
   }
-  .inapp { margin-top: 20px; padding: 12px 14px; border-radius: 12px; background: var(--accent-soft); font-size: 14px; line-height: 1.5; color: var(--body); }
+  .rail-label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .rail a {
+    display: flex; gap: 10px; align-items: baseline;
+    padding: 7px 0 7px 12px; border-left: 2px solid var(--line);
+    font-size: 13.5px; color: var(--muted); text-decoration: none;
+    transition: color .15s, border-color .15s;
+  }
+  .rail a span { font-family: var(--mono); font-size: 11px; }
+  .rail a:hover { color: var(--text); }
+  .rail a.on { color: var(--text); border-left-color: var(--accent); }
+
+  .g-head { padding: 48px 0 8px; }
+  .g-head h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(40px, 8vw, 68px); line-height: 1; letter-spacing: -0.02em;
+    margin: 14px 0 18px;
+  }
+  .g-head .lede { font-size: 19px; line-height: 1.55; color: var(--body); }
+  .g-head .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+  .chips-toc { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 24px -16px 0; padding: 0 16px 4px; }
+  .chips-toc::-webkit-scrollbar { display: none; }
+  .chips-toc a { flex: none; font-size: 13px; color: var(--body); text-decoration: none; border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 12px; }
+  @media (min-width: 980px) { .chips-toc { display: none; } }
+
+  .sec { padding-top: 56px; scroll-margin-top: 72px; }
+  .sec-num { font-family: var(--mono); font-size: 12px; color: var(--accent); letter-spacing: .1em; }
+  .sec h2 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.1; letter-spacing: -0.01em; margin: 6px 0 16px; }
+  .sec p { font-size: 17px; line-height: 1.75; color: var(--body); }
+  .sec p + p { margin-top: 14px; }
+  .sec b { color: var(--text); font-weight: 600; }
+  .sec ul.plain { margin: 14px 0 0 20px; font-size: 17px; line-height: 1.7; color: var(--body); }
+  .sec ul.plain li + li { margin-top: 6px; }
+
+  .definition {
+    position: relative; margin: 4px 0 0;
+    padding: 22px 22px 22px 24px;
+    border-left: 3px solid var(--accent);
+    background: linear-gradient(90deg, var(--accent-soft), transparent);
+    border-radius: 0 14px 14px 0;
+  }
+  .definition p { font-size: 19px; line-height: 1.6; color: var(--text); }
+  .definition .src { display: block; margin-top: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+  .card { margin-top: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); overflow: hidden; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+  .card-label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .card-body { padding: 20px 18px; }
+
+  .math { overflow-x: auto; overflow-y: hidden; padding: 6px 0; }
+  .math + .math { margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 14px; }
+  .math .katex-display { margin: 0; text-align: left; }
+  .math .katex-display > .katex { text-align: left; }
+  .math .katex { font-size: 1.28em; color: var(--text); }
+  .where { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(64px, auto) 1fr; gap: 10px 16px; align-items: baseline; }
+  .where dt { color: var(--accent); white-space: nowrap; }
+  .where dt .katex { font-size: 1.08em; color: var(--accent); }
+  .where dd { font-size: 14.5px; line-height: 1.5; color: var(--body); }
+
+  .ledger { list-style: none; counter-reset: step; }
+  .ledger li { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; font-size: 15px; }
+  .ledger li + li { border-top: 1px solid var(--line); }
+  .ledger .lab { color: var(--body); }
+  .ledger .dots { flex: 1; border-bottom: 1px dotted var(--line-2); transform: translateY(-4px); min-width: 12px; }
+  .ledger .val { font-family: var(--mono); color: var(--text); white-space: nowrap; }
+  .ledger .neg { color: var(--neg); }
+  .ledger li.total { border-top: 1px solid var(--line-2); padding-top: 14px; margin-top: 4px; }
+  .ledger li.total .lab { color: var(--text); font-weight: 600; }
+  .ledger li.total .val { color: var(--accent); font-weight: 500; font-size: 18px; }
+  .q { font-size: 15.5px; color: var(--body); line-height: 1.6; }
+  .q + .ledger, .q + .calc-line { margin-top: 12px; }
+  .calc-line { font-family: var(--mono); font-size: 15px; color: var(--body); line-height: 1.9; overflow-x: auto; }
+  .calc-line b { color: var(--accent); font-weight: 500; }
+  .note { font-size: 14.5px; color: var(--muted); line-height: 1.6; margin-top: 14px; }
+
+  table.cmp { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  table.cmp th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 400; padding: 0 10px 10px 0; }
+  table.cmp td { padding: 12px 10px 12px 0; border-top: 1px solid var(--line); color: var(--body); vertical-align: top; }
+  table.cmp td:first-child { color: var(--text); font-weight: 600; }
+
+  /* ---------- calculators ---------- */
+  .calc { border-color: rgba(47, 210, 122, 0.35); background: linear-gradient(180deg, rgba(47,210,122,.06), var(--panel) 40%); }
+  .calc .card-label { color: var(--accent); }
+  .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 8px; box-shadow: 0 0 0 4px rgba(47,210,122,.18); }
+  .reset { background: none; border: 1px solid var(--line-2); color: var(--muted); font: inherit; font-size: 12px; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  .reset:hover { color: var(--text); border-color: var(--text); }
+  .calc-grid { display: grid; gap: 18px; }
+  @media (min-width: 640px) { .calc-grid { grid-template-columns: 1fr 1fr; gap: 18px 28px; } }
+  .ctrl label { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--body); margin-bottom: 8px; }
+  .ctrl output { font-family: var(--mono); color: var(--text); }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; }
+  input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--accent) var(--p, 50%), var(--line-2) var(--p, 50%)); }
+  input[type=range]::-moz-range-track { height: 4px; border-radius: 4px; background: var(--line-2); }
+  input[type=range]::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--accent); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 50%; background: var(--text); border: 3px solid var(--accent); }
+  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--text); border: 3px solid var(--accent); }
+  .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 22px; }
+  .res { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .res small { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .res strong { font-family: var(--mono); font-weight: 500; font-size: 18px; color: var(--text); }
+  .res.big { border-color: rgba(47,210,122,.4); }
+  .res.big strong { color: var(--accent); font-size: 22px; }
+  .warn { margin-top: 12px; font-size: 13.5px; color: var(--warn); }
+
+  .chart { margin-top: 22px; height: 150px; display: flex; align-items: flex-end; gap: 3px; border-bottom: 1px solid var(--line-2); position: relative; }
+  .chart .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; position: relative; }
+  .chart .b { border-radius: 4px 4px 0 0; background: var(--accent); opacity: .35; transition: height .15s; }
+  .chart .col.hl .b { opacity: 1; }
+  .chart-x { display: flex; gap: 3px; margin-top: 6px; }
+  .chart-x span { flex: 1; text-align: center; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .wf { margin-top: 22px; display: grid; gap: 8px; }
+  .wf-row { display: grid; grid-template-columns: 92px 1fr 64px; gap: 10px; align-items: center; font-size: 13px; }
+  .wf-row .l { color: var(--body); }
+  .wf-row .v { font-family: var(--mono); text-align: right; color: var(--text); }
+  .wf-track { position: relative; height: 18px; background: var(--bg); border-radius: 4px; }
+  .wf-bar { position: absolute; top: 0; bottom: 0; border-radius: 4px; transition: left .15s, width .15s; }
+  .stack { margin-top: 22px; }
+  .stack-bar { display: flex; height: 26px; border-radius: 8px; overflow: hidden; background: var(--bg); }
+  .stack-bar div { transition: width .15s; }
+  .stack-key { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+  .stack-key i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  /* ---------- takeaways / footer ---------- */
+  .remember { margin-top: 64px; padding: 28px 24px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); }
+  .remember h2 { font-family: var(--serif); font-weight: 400; font-size: 30px; margin-bottom: 16px; }
+  .remember ol { list-style: none; counter-reset: r; display: grid; gap: 14px; }
+  .remember li { counter-increment: r; display: grid; grid-template-columns: 34px 1fr; gap: 12px; font-size: 16px; line-height: 1.55; color: var(--body); }
+  .remember li::before { content: counter(r, decimal-leading-zero); font-family: var(--mono); font-size: 13px; color: var(--accent); padding-top: 3px; }
+  .remember b { color: var(--text); }
+  .inapp { display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; padding: 16px 18px; border-radius: 14px; border: 1px dashed var(--line-2); font-size: 15px; line-height: 1.55; color: var(--body); }
+  .inapp svg { flex: none; color: var(--accent); margin-top: 2px; }
   .inapp b { color: var(--text); }
 
-  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 36px; }
-  .pager a {
-    display: block; padding: 12px 14px; border-radius: 14px; text-decoration: none;
-    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  .next {
+    display: block; margin-top: 40px; padding: 28px 24px; border-radius: 20px; text-decoration: none;
+    background: linear-gradient(135deg, rgba(47,210,122,.16), rgba(47,210,122,.02) 60%), var(--panel);
+    border: 1px solid rgba(47,210,122,.3);
+    transition: transform .15s, border-color .15s;
   }
-  .pager a:hover { border-color: var(--accent); }
-  .pager small { display: block; color: var(--muted); font-size: 12px; margin-bottom: 3px; }
-  .pager span { font-weight: 600; font-size: 14px; }
-  .pager .next { text-align: right; grid-column: 2; }
+  .next:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .next small { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .next strong { display: block; font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.1; margin-top: 8px; }
+  .next span { display: block; color: var(--body); font-size: 15px; margin-top: 8px; }
+  .prev-link { display: inline-block; margin-top: 18px; font-size: 14px; color: var(--muted); text-decoration: none; }
+  .prev-link:hover { color: var(--text); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <a class="back" id="back" href="/" aria-label="Back">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+<header class="bar">
+  <div class="bar-inner">
+    <a class="icon-btn" id="back" href="/" aria-label="Back to companies">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
     </a>
-    <div>
-      <div class="eyebrow">In-depth guides</div>
-      <h1 id="head-title">DCF guides</h1>
-    </div>
-  </header>
-  <main id="view"></main>
-</div>
+    <div class="crumb" id="crumb"><b>Field guide</b></div>
+    <div class="brand">DCF Sandbox</div>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+<main id="view"></main>
 
 <script>
-// ---------- helpers ----------
-const formula = (eqs, legend) => `<div class="box formula"><div class="box-label">Formula</div>
-  ${eqs.map(e => `<div class="eq">${e}</div>`).join("")}
-  ${legend ? `<dl class="legend">${legend.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>` : ""}</div>`;
-const example = (inner, label = "Worked example") => `<div class="box example"><div class="box-label">${label}</div>${inner}</div>`;
-const rows = items => `<div class="rows">${items.map(([l, v, total]) => `<div class="row${total ? " total" : ""}"><span>${l}</span><span>${v}</span></div>`).join("")}</div>`;
+/* ================= helpers ================= */
+const tex = (s, display = true) => window.katex
+  ? katex.renderToString(s, { displayMode: display, throwOnError: false })
+  : `<code>${s}</code>`;
 
-// ---------- content ----------
+const def = (html, src) => `<blockquote class="definition"><p>${html}</p>${src ? `<span class="src">${src}</span>` : ""}</blockquote>`;
+
+const formula = (eqs, where) => `<div class="card"><div class="card-head"><span class="card-label">Formula</span></div><div class="card-body">
+  ${eqs.map(e => `<div class="math">${tex(e)}</div>`).join("")}
+  ${where ? `<dl class="where">${where.map(([k, v]) => `<dt>${tex(k, false)}</dt><dd>${v}</dd>`).join("")}</dl>` : ""}
+</div></div>`;
+
+const example = (inner, label = "Worked example") => `<div class="card"><div class="card-head"><span class="card-label">${label}</span></div><div class="card-body">${inner}</div></div>`;
+
+const ledger = items => `<ol class="ledger">${items.map(([l, v, total]) =>
+  `<li class="${total ? "total" : ""}"><span class="lab">${l}</span><span class="dots"></span><span class="val${!total && /^−/.test(v) ? " neg" : ""}">${v}</span></li>`).join("")}</ol>`;
+
+const calc = id => `<div class="card calc" data-calc="${id}"></div>`;
+
+const money = (x, dp) => {
+  const d = dp ?? (Math.abs(x) < 1000 ? 2 : 0);
+  return (x < 0 ? "−$" : "$") + Math.abs(x).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+};
+const pct = (x, dp = 1) => x.toFixed(dp) + "%";
+
+/* ================= content ================= */
 const GUIDES = [
 {
-  id: "discounting", group: "Core concepts", tag: "The key trick",
+  id: "discounting", group: "core", tag: "The key trick",
   title: "Discounting & the time value of money",
-  summary: "Why money in the future is worth less than money today, and how a DCF converts it.",
+  summary: "Why a dollar tomorrow is worth less than a dollar today, and how a DCF converts one into the other.",
   sections: [
-    { id: "definition", h: "Definition", html: `
-      <p>The <b>time value of money</b> is the idea that a dollar today is worth more than a dollar in the future. Money you have now can be invested to earn a return, and money promised later carries the risk that it may never arrive.</p>
-      <p><b>Discounting</b> is how we apply that idea. It converts a cash flow expected in the future into its <b>present value</b>, what it is worth today, by shrinking it at a chosen rate for every year you have to wait. It is compound interest run in reverse: instead of multiplying to grow money forward, you divide to bring it back.</p>` },
+    { id: "definition", h: "The idea", html: `
+      ${def(`The <b>time value of money</b> is the idea that a dollar today is worth more than a dollar in the future. Money you have now can be invested to earn a return, and money promised later carries the risk that it may never arrive.`)}
+      <p style="margin-top:22px"><b>Discounting</b> is how we apply that idea. It converts a cash flow expected in the future into its <b>present value</b>, what it is worth today, by shrinking it at a chosen rate for every year you have to wait.</p>
+      <p>It is compound interest run in reverse: instead of multiplying to grow money forward, you divide to bring it back.</p>` },
     { id: "formula", h: "The formula", html: formula(
-      ["PV = CF ÷ (1 + r)<sup>n</sup>", "Discount factor = 1 ÷ (1 + r)<sup>n</sup>"],
-      [["PV", "Present value: what the cash flow is worth today"], ["CF", "The cash flow received in the future"], ["r", "The discount rate per year (in a DCF, this is the WACC)"], ["n", "Number of years until the cash flow arrives"]]) },
-    { id: "example", h: "Example", html: example(`
-      <p>What is $100 received in 3 years worth today, at an 8% discount rate?</p>
-      <div class="working" style="margin:10px 0">100 ÷ 1.08³ = 100 ÷ 1.2597 = <b>$79.38</b></div>
-      <p>The same $100, received in different years:</p>
-      ${rows([["Year 1", "$92.59"], ["Year 2", "$85.73"], ["Year 3", "$79.38"], ["Year 4", "$73.50"], ["Year 5", "$68.06"]])}`) },
+      ["PV = \\dfrac{CF}{(1+r)^{n}}", "\\text{Discount factor} = \\dfrac{1}{(1+r)^{n}}"],
+      [["PV", "Present value: what the cash flow is worth today"], ["CF", "The cash flow received in the future"], ["r", "Discount rate per year. In a DCF this is the WACC"], ["n", "Number of years until the cash flow arrives"]]) },
+    { id: "example", h: "Worked example", html: example(`
+      <p class="q">What is $100 received in 3 years worth today, at an 8% discount rate?</p>
+      <div class="calc-line">100 ÷ 1.08³ = 100 ÷ 1.2597 = <b>$79.38</b></div>
+      <p class="note">The same $100 received in each of the next five years:</p>
+      ${ledger([["Year 1", "$92.59"], ["Year 2", "$85.73"], ["Year 3", "$79.38"], ["Year 4", "$73.50"], ["Year 5", "$68.06"]])}`) },
+    { id: "try", h: "Try it yourself", html: `<p>Drag the sliders. Watch how a higher rate, or a longer wait, shrinks what the money is worth today.</p>${calc("discount")}` },
   ],
   takeaways: [
-    "The further away a cash flow is, the less it is worth today.",
-    "A higher discount rate shrinks every future cash flow more.",
+    "The further away a cash flow is, the <b>less</b> it is worth today.",
+    "A higher discount rate shrinks every future cash flow <b>more</b>.",
     "A DCF discounts each year's free cash flow, and the terminal value, then adds them all up.",
   ],
-  inapp: "The WACC slider sets the discount rate <b>r</b> used for every year.",
+  inapp: "The <b>WACC slider</b> sets the discount rate used for every forecast year.",
 },
 {
-  id: "free-cash-flow", group: "Core concepts", tag: "The input",
+  id: "free-cash-flow", group: "core", tag: "The input",
   title: "Free cash flow",
   summary: "The cash a DCF actually values: what's left after running and reinvesting in the business.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      <p>The cash flows we use for the DCF are called <b>free cash flows</b>, and reflect the capital available from the company's operations after key expenses, capital expenditures, and changes in net working capital have been deducted.</p>` },
+      ${def(`The cash flows we use for the DCF are called <b>free cash flows</b>, and reflect the capital available from the company's operations after key expenses, capital expenditures, and changes in net working capital have been deducted.`, "Arush")}` },
     { id: "formula", h: "The formula", html: formula(
-      ["FCF = EBIT × (1 − t) + D&amp;A − CapEx − ΔNWC"],
-      [["EBIT", "Earnings before interest and tax: operating profit"], ["t", "Tax rate. EBIT × (1 − t) is called NOPAT, operating profit after tax"], ["D&amp;A", "Depreciation & amortisation. Added back because it's an accounting charge, not cash leaving the business"], ["CapEx", "Capital expenditure: cash spent on long-term assets like data centres and equipment"], ["ΔNWC", "Change in net working capital (see the Net working capital guide)"]]) },
-    { id: "example", h: "Example", html: example(rows([
-      ["EBIT", "$200"], ["− Tax at 25%", "−$50"], ["= NOPAT", "$150"], ["+ D&amp;A", "+$30"], ["− CapEx", "−$50"], ["− Increase in NWC", "−$10"], ["Free cash flow", "$120", true]])) },
+      ["FCF = EBIT \\times (1-t) + D\\&A - \\text{CapEx} - \\Delta NWC"],
+      [["EBIT", "Earnings before interest and tax: operating profit"], ["t", "Tax rate. EBIT × (1 − t) is called NOPAT, operating profit after tax"], ["D\\&A", "Depreciation & amortisation. Added back because it's an accounting charge, not cash leaving"], ["\\text{CapEx}", "Capital expenditure: cash spent on long-term assets like data centres"], ["\\Delta NWC", "Change in net working capital (see guide 4)"]]) },
+    { id: "example", h: "Worked example", html: example(ledger([
+      ["EBIT", "$200"], ["Tax at 25%", "−$50"], ["NOPAT", "$150"], ["Add back D&A", "+$30"], ["CapEx", "−$50"], ["Increase in NWC", "−$10"], ["Free cash flow", "$120", true]])) },
     { id: "why-cash", h: "Why cash, not profit?", html: `
-      <p>Accounting profit includes non-cash items and ignores the money a company has to reinvest to keep growing. Free cash flow is closer to what could actually be paid out to the people who fund the business, which is what an investor ultimately owns.</p>` },
+      <p>Accounting profit includes non-cash charges, and ignores the money a company must reinvest to keep growing. Free cash flow is much closer to what could actually be handed back to the people who fund the business, and that is what an investor ultimately owns.</p>` },
+    { id: "try", h: "Try it yourself", html: `<p>Each bar shows how one item pushes free cash flow up or down.</p>${calc("fcf")}` },
   ],
   takeaways: [
-    "Free cash flow is cash, not accounting profit.",
-    "Growth usually needs investment (CapEx and working capital), which lowers free cash flow today.",
-    "The formula above is <b>unlevered</b> free cash flow, the version most DCFs use. The next guide explains the difference.",
+    "Free cash flow is <b>cash</b>, not accounting profit.",
+    "Growth usually needs investment (CapEx and working capital), which <b>lowers</b> free cash flow today.",
+    "This is <b>unlevered</b> free cash flow, the version most DCFs use. Guide 3 explains why.",
   ],
-  inapp: "The 5-year bar chart shows the free cash flow for each forecast year.",
+  inapp: "The <b>5-year bar chart</b> shows the free cash flow for each forecast year.",
 },
 {
-  id: "unlevered-vs-levered", group: "Core concepts", tag: "Two flavours",
+  id: "unlevered-vs-levered", group: "core", tag: "Two flavours",
   title: "Unlevered vs levered free cash flow",
-  summary: "The difference is who the cash belongs to: everyone who funds the company, or only the shareholders.",
+  summary: "Same business, two views of its cash: for everyone who funds it, or for shareholders only.",
   sections: [
     { id: "unlevered", h: "Unlevered free cash flow", html: `
-      <p><b>Unlevered cash flow</b> is the cash generated from the company's operations that is attributable to <b>both debt and equity providers</b> of the business.</p>
-      ${formula(["Unlevered FCF = EBIT × (1 − t)<br>&nbsp;&nbsp;+ D&amp;A − CapEx − ΔNWC"])}` },
+      ${def(`<b>Unlevered cash flow</b> is the cash generated from the company's operations that is attributable to <b>both debt and equity providers</b> of the business.`, "Arush")}
+      ${formula(["UFCF = EBIT \\times (1-t) + D\\&A - \\text{CapEx} - \\Delta NWC"])}` },
     { id: "levered", h: "Levered free cash flow", html: `
-      <p><b>Levered cash flow</b> is the cash generated from the company's operations that is attributable to <b>only equity holders</b>, which means debt servicing payments like cash interest are deducted.</p>
-      ${formula(["Levered FCF = Unlevered FCF<br>&nbsp;&nbsp;− Interest × (1 − t) + Net borrowing"],
-        [["Interest × (1 − t)", "After-tax interest. Interest reduces taxable profit, so its real cost is lower than the headline amount"], ["Net borrowing", "New debt raised minus debt repaid during the year"]])}` },
-    { id: "example", h: "Example", html: example(rows([
-      ["Unlevered FCF", "$120"], ["− Interest $20 × (1 − 25%)", "−$15"], ["+ Net borrowing", "+$5"], ["Levered FCF", "$110", true]])) },
-    { id: "matching", h: "Match the cash flow to the discount rate", html: `
-      <p>Each type of cash flow must be discounted at the return required by the people it belongs to:</p>
-      <div class="box"><table>
+      ${def(`<b>Levered cash flow</b> is the cash generated from the company's operations that is attributable to <b>only equity holders</b>, which means debt servicing payments like cash interest are deducted.`, "Arush")}
+      ${formula(["LFCF = UFCF - \\text{Interest} \\times (1-t) + \\text{Net borrowing}"],
+        [["\\text{Interest}\\times(1-t)", "After-tax interest. Interest reduces taxable profit, so its real cost is lower than the headline amount"], ["\\text{Net borrowing}", "New debt raised minus debt repaid in the year"]])}` },
+    { id: "example", h: "Worked example", html: example(ledger([
+      ["Unlevered FCF", "$120"], ["Interest $20 × (1 − 25%)", "−$15"], ["Net borrowing", "+$5"], ["Levered FCF", "$110", true]])) },
+    { id: "matching", h: "Match cash flow to discount rate", html: `
+      <p>Each type of cash flow must be discounted at the return required by the people it belongs to. Mixing them up gives the wrong answer.</p>
+      <div class="card"><div class="card-body"><table class="cmp">
         <tr><th></th><th>Belongs to</th><th>Discount at</th><th>Gives you</th></tr>
         <tr><td>Unlevered</td><td>Debt + equity holders</td><td>WACC</td><td>Enterprise value</td></tr>
         <tr><td>Levered</td><td>Equity holders only</td><td>Cost of equity</td><td>Equity value</td></tr>
-      </table></div>` },
+      </table></div></div>` },
   ],
   takeaways: [
-    "Unlevered = before debt payments, for everyone. Levered = after debt payments, for shareholders.",
-    "Mixing them up (e.g. levered cash flow with WACC) gives a wrong answer.",
-    "Most DCFs, including this app, use unlevered FCF and WACC, then subtract debt to reach the shareholders' value.",
+    "<b>Unlevered</b> = before debt payments, for everyone. <b>Levered</b> = after debt payments, for shareholders.",
+    "Never pair levered cash flow with WACC, or unlevered with the cost of equity.",
+    "This app uses <b>unlevered FCF + WACC</b>, then subtracts debt to reach shareholders' value.",
   ],
-  inapp: "The app forecasts unlevered free cash flow and discounts it at WACC.",
+  inapp: "The app forecasts <b>unlevered</b> free cash flow and discounts it at WACC.",
 },
 {
-  id: "net-working-capital", group: "Core concepts", tag: "Cash tied up",
+  id: "net-working-capital", group: "core", tag: "Cash tied up",
   title: "Net working capital",
-  summary: "The cash locked into the day-to-day running of a business, and why changes in it affect free cash flow.",
+  summary: "The cash locked into the day-to-day running of a business, and why changes in it move free cash flow.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      <p><b>Net working capital (NWC)</b> is the cash tied up in running the business day to day. It's the money sitting in short-term operating assets, such as invoices customers haven't paid yet and stock waiting to be sold, minus the short-term bills the company itself hasn't paid yet to suppliers and others.</p>
-      <p>For a DCF, what matters is the <b>change</b> in NWC. When NWC rises, cash gets locked up in the business and free cash flow falls. When NWC falls, cash is released and free cash flow rises.</p>` },
+      ${def(`<b>Net working capital (NWC)</b> is the cash tied up in running the business day to day: money sitting in unpaid customer invoices and stock waiting to be sold, minus the short-term bills the company itself hasn't paid yet.`)}
+      <p style="margin-top:22px">For a DCF, what matters is the <b>change</b> in NWC. When NWC rises, cash gets locked up in the business and free cash flow falls. When NWC falls, cash is released and free cash flow rises.</p>` },
     { id: "formula", h: "The formula", html: formula(
-      ["NWC = (Receivables + Inventory)<br>&nbsp;&nbsp;&nbsp;&nbsp;− (Payables + Accrued expenses)", "ΔNWC = NWC this year − NWC last year"],
-      [["Receivables", "Money customers owe the company"], ["Inventory", "Stock and materials not yet sold"], ["Payables", "Money the company owes its suppliers"], ["Accrued expenses", "Costs incurred but not yet paid, like wages owed"]]) +
-      `<p style="margin-top:12px">Cash and debt are usually left out, because they're financing items rather than part of day-to-day operations.</p>` },
-    { id: "example", h: "Example", html: example(`
-      ${rows([["Receivables + Inventory", "$80 + $60 = $140"], ["Payables + Accrued", "$70 + $20 = $90"], ["NWC this year", "$50", true]])}
-      <p style="margin-top:12px">If NWC grows to $60 next year, ΔNWC = +$10. That $10 is cash stuck in the business, so free cash flow is $10 lower. This is the −$10 in the free cash flow example.</p>`) },
+      ["NWC = (\\text{Receivables} + \\text{Inventory}) - (\\text{Payables} + \\text{Accrued})", "\\Delta NWC = NWC_{t} - NWC_{t-1}"],
+      [["\\text{Receivables}", "Money customers owe the company"], ["\\text{Inventory}", "Stock and materials not yet sold"], ["\\text{Payables}", "Money the company owes its suppliers"], ["\\text{Accrued}", "Costs incurred but not yet paid, like wages owed"]]) +
+      `<p class="note">Cash and debt are usually left out: they're financing items, not part of day-to-day operations.</p>` },
+    { id: "example", h: "Worked example", html: example(`
+      ${ledger([["Receivables + Inventory", "$80 + $60 = $140"], ["Payables + Accrued", "$70 + $20 = $90"], ["NWC this year", "$50", true]])}
+      <p class="note">If NWC grows to $60 next year, ΔNWC = +$10. That $10 is cash stuck in the business, so free cash flow is $10 lower. It's the −$10 in the free cash flow example.</p>`) },
   ],
   takeaways: [
-    "Rising NWC uses up cash; falling NWC frees it.",
+    "Rising NWC <b>uses</b> cash; falling NWC <b>frees</b> it.",
     "Fast-growing companies often absorb lots of cash into working capital.",
-    "Some businesses, like subscriptions paid upfront, have negative NWC: customers effectively fund them.",
+    "Some businesses, like subscriptions paid upfront, run <b>negative</b> NWC: customers effectively fund them.",
   ],
-  inapp: "Working capital is one of the assumptions in Forensic Settings.",
+  inapp: "Working capital is one of the assumptions in <b>Forensic Settings</b>.",
 },
 {
-  id: "wacc", group: "Core concepts", tag: "The hurdle rate",
+  id: "wacc", group: "core", tag: "The hurdle rate",
   title: "WACC",
-  summary: "The Weighted Average Cost of Capital: the rate used to discount future cash flows back to today.",
+  summary: "The Weighted Average Cost of Capital: the rate that turns future cash flows into today's value.",
   sections: [
-    { id: "what", h: "What WACC is", html: `
-      <p>The <b>Weighted Average Cost of Capital (WACC)</b> is the <b>hurdle rate</b> we use to discount the future cash flows to present value. It represents the return required by debt and equity holders for providing their capital to the business.</p>` },
+    { id: "what", h: "What WACC is", html: def(`The <b>Weighted Average Cost of Capital (WACC)</b> is the <b>hurdle rate</b> we use to discount the future cash flows to present value. It represents the return required by debt and equity holders for providing their capital to the business.`, "Arush") },
     { id: "blend", h: "A blended average", html: `
       <p>It is a blended average of the <b>cost of debt</b> and the <b>cost of equity</b>, weighted by how much of each the company uses. Both of these factors incorporate the risk associated with lending to or investing in the business.</p>
-      ${formula(["WACC = (E ÷ V) × Re<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (D ÷ V) × Rd × (1 − t)", "V = E + D"],
-        [["E", "Market value of equity (share price × shares)"], ["D", "Value of debt"], ["V", "Total capital: equity + debt"], ["Re", "Cost of equity"], ["Rd", "Cost of debt (before tax)"], ["t", "Tax rate"]])}` },
+      ${formula(["WACC = \\frac{E}{V}\\,R_e + \\frac{D}{V}\\,R_d\\,(1-t)", "V = E + D"],
+        [["E", "Market value of equity (share price × shares)"], ["D", "Value of debt"], ["V", "Total capital: equity + debt"], ["R_e", "Cost of equity"], ["R_d", "Cost of debt, before tax"], ["t", "Tax rate"]])}` },
     { id: "cost-of-equity", h: "Cost of equity", html: `
-      <p>The <b>cost of equity</b> is the return required by equity holders for investing in the business. It's usually estimated with the Capital Asset Pricing Model (CAPM):</p>
-      ${formula(["Re = Rf + β × (Rm − Rf)"],
-        [["Rf", "Risk-free rate, usually a government bond yield"], ["β", "Beta: how much the share moves compared with the whole market"], ["Rm − Rf", "Equity risk premium: the extra return investors expect from shares over safe bonds"]])}
-      ${example(`<div class="working">4% + 1.2 × 5% = 4% + 6% = <b>10%</b></div>`)}
-      <p style="margin-top:12px">Equity is riskier than debt because shareholders are paid last, so the cost of equity is higher.</p>` },
+      <p>The <b>cost of equity</b> is the return required by equity holders for investing in the business. It's usually estimated with the <b>Capital Asset Pricing Model</b> (CAPM):</p>
+      ${formula(["R_e = R_f + \\beta\\,(R_m - R_f)"],
+        [["R_f", "Risk-free rate, usually a government bond yield"], ["\\beta", "Beta: how much the share moves compared with the whole market"], ["R_m - R_f", "Equity risk premium: extra return investors expect from shares over safe bonds"]])}
+      ${example(`<div class="calc-line">4% + 1.2 × 5% = 4% + 6% = <b>10%</b></div>`)}
+      <p class="note">Equity is riskier than debt because shareholders are paid last, so its cost is higher.</p>` },
     { id: "cost-of-debt", h: "Cost of debt", html: `
       <p>The <b>cost of debt</b> is the return required by debt holders for lending the company money. Interest reduces taxable profit, so we use the after-tax figure:</p>
-      ${formula(["After-tax cost of debt = Rd × (1 − t)"])}
-      ${example(`<div class="working">6% × (1 − 25%) = <b>4.5%</b></div>`)}` },
+      ${formula(["R_d^{\\text{after-tax}} = R_d \\times (1-t)"])}
+      ${example(`<div class="calc-line">6% × (1 − 25%) = <b>4.5%</b></div>`)}` },
     { id: "weights", h: "The weights", html: `
-      <p>The weights are how much of the company's funding comes from each source, using market values.</p>
-      ${example(rows([["Equity (E)", "$800"], ["Debt (D)", "$200"], ["Total (V)", "$1,000"], ["Weights", "80% equity / 20% debt", true]]))}` },
+      <p>The weights are the share of the company's funding that comes from each source, using market values.</p>
+      ${example(ledger([["Equity (E)", "$800"], ["Debt (D)", "$200"], ["Total capital (V)", "$1,000"], ["Weights", "80% / 20%", true]]))}` },
     { id: "together", h: "Putting it together", html: example(`
-      <div class="working">WACC = 80% × 10% + 20% × 4.5%<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 8.0% + 0.9% = <b>8.9%</b></div>`) },
+      <div class="calc-line">80% × 10% + 20% × 4.5%<br>= 8.0% + 0.9% = <b>8.9%</b></div>`) },
     { id: "higher-wacc", h: "Why a higher WACC lowers value", html: `
-      <p>A higher WACC will usually mean a <b>lower intrinsic value</b>, as you are physically dividing by a higher number, but also because capital providers require a larger return from the business.</p>
-      ${example(`<p>$120 of free cash flow arriving next year:</p>
-        ${rows([["At WACC 8.9%: 120 ÷ 1.089", "$110.19"], ["At WACC 10.9%: 120 ÷ 1.109", "$108.21"]])}
-        <p style="margin-top:12px">The gap grows for cash flows further away, and especially for the terminal value.</p>`)}` },
+      ${def(`A higher WACC will usually mean a <b>lower intrinsic value</b>, as you are physically dividing by a higher number, but also because capital providers require a larger return from the business.`, "Arush")}
+      ${example(`<p class="q">$120 of free cash flow arriving next year is worth today:</p>
+        ${ledger([["At 8.9% WACC: 120 ÷ 1.089", "$110.19"], ["At 10.9% WACC: 120 ÷ 1.109", "$108.21"]])}
+        <p class="note">The gap grows for cash flows further away, and most of all for the terminal value.</p>`)}` },
+    { id: "try", h: "Build your own WACC", html: `<p>Change the inputs and see how each part feeds into the final rate.</p>${calc("wacc")}` },
   ],
   takeaways: [
-    "WACC is the minimum return the business must earn for everyone who funds it.",
-    "Cost of equity is higher than cost of debt, because shareholders take more risk.",
-    "Small changes in WACC have a big effect on the final value.",
+    "WACC is the <b>minimum return</b> the business must earn for everyone who funds it.",
+    "Cost of equity is <b>higher</b> than cost of debt, because shareholders take more risk.",
+    "Small changes in WACC have a <b>big</b> effect on the final value.",
   ],
-  inapp: "The WACC slider, and the Rate Spike button, which adds 2% to it.",
+  inapp: "The <b>WACC slider</b>, and the <b>Rate Spike</b> button, which adds 2% to it.",
 },
 {
-  id: "terminal-value", group: "Going further", tag: "The long tail",
+  id: "terminal-value", group: "further", tag: "The long tail",
   title: "Terminal value",
   summary: "The value of every year after the forecast ends, which is often most of the total.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      <p>A DCF forecasts cash flows in detail for a limited period, usually 5 to 10 years. The <b>terminal value</b> captures the value of all the cash flows after that, assuming the business carries on indefinitely. It often makes up 60–80% of the total value.</p>` },
+      ${def(`The <b>terminal value</b> captures the value of all cash flows after the detailed forecast period, assuming the business carries on indefinitely.`)}
+      <p style="margin-top:22px">A DCF usually forecasts 5 to 10 years in detail. Everything after that is the terminal value, and it often makes up <b>60–80%</b> of the total.</p>` },
     { id: "gordon", h: "Method 1: perpetual growth", html: `
-      <p>Assume free cash flow grows at a steady rate forever:</p>
-      ${formula(["TV = FCF<sub>n</sub> × (1 + g) ÷ (WACC − g)"],
-        [["FCF<sub>n</sub>", "Free cash flow in the final forecast year"], ["g", "Terminal growth rate, usually 2–3%, no higher than long-run economic growth"]])}
-      ${example(`<div class="working">120 × 1.025 ÷ (8.9% − 2.5%)<br>= 123 ÷ 0.064 = <b>$1,922</b></div>`)}` },
+      <p>Assume free cash flow grows at a slow, steady rate forever.</p>
+      ${formula(["TV = \\dfrac{FCF_{n}\\,(1+g)}{WACC - g}"],
+        [["FCF_n", "Free cash flow in the final forecast year"], ["g", "Terminal growth rate, usually 2–3%, no higher than long-run economic growth"]])}
+      ${example(`<div class="calc-line">120 × 1.025 ÷ (8.9% − 2.5%)<br>= 123 ÷ 0.064 = <b>$1,922</b></div>`)}` },
     { id: "exit", h: "Method 2: exit multiple", html: `
-      <p>Assume the business could be sold at the end of the forecast for a multiple of its earnings, based on what similar companies trade at:</p>
-      ${formula(["TV = EBITDA<sub>n</sub> × Exit multiple"])}
-      ${example(`<div class="working">$230 × 10 = <b>$2,300</b></div>`)}` },
+      <p>Assume the business could be sold at the end of the forecast for a multiple of its earnings, based on what similar companies trade at.</p>
+      ${formula(["TV = EBITDA_{n} \\times \\text{Exit multiple}"])}
+      ${example(`<div class="calc-line">$230 × 10 = <b>$2,300</b></div>`)}` },
     { id: "discount", h: "Bring it back to today", html: `
-      <p>The terminal value is worth that amount at the <b>end</b> of the forecast, so it must be discounted back like any other cash flow:</p>
-      ${formula(["PV of TV = TV ÷ (1 + WACC)<sup>n</sup>"])}` },
+      <p>The terminal value is worth that amount at the <b>end</b> of the forecast, so it is discounted back like any other cash flow.</p>
+      ${formula(["PV_{TV} = \\dfrac{TV}{(1+WACC)^{n}}"])}` },
+    { id: "try", h: "Try it yourself", html: `<p>Notice how sensitive the answer is when growth gets close to WACC.</p>${calc("tv")}` },
   ],
   takeaways: [
-    "The growth rate must be lower than WACC, otherwise the formula breaks.",
-    "Because it's so large, small changes in g or WACC move the valuation a lot.",
+    "Growth must be <b>lower</b> than WACC, or the formula breaks.",
+    "Because it's so large, small changes in growth or WACC move the valuation <b>a lot</b>.",
   ],
-  inapp: "The terminal growth slider, and the heatmap, which tests WACC against terminal growth.",
+  inapp: "The <b>terminal growth slider</b>, and the <b>heatmap</b> that tests WACC against growth.",
 },
 {
-  id: "equity-value", group: "Going further", tag: "The answer",
+  id: "equity-value", group: "further", tag: "The answer",
   title: "From enterprise value to price per share",
-  summary: "How the discounted cash flows turn into a fair value per share you can compare with the market price.",
+  summary: "How the discounted cash flows become a fair value per share you can compare with the market.",
   sections: [
     { id: "ev", h: "Enterprise value", html: `
-      <p>Discounting unlevered free cash flows at WACC gives the <b>enterprise value (EV)</b>: the value of the whole business to everyone who funds it, both lenders and shareholders.</p>
-      ${formula(["EV = Sum of PV(FCF each year) + PV(Terminal value)"])}` },
-    { id: "bridge", h: "The bridge to equity value", html: `
-      <p>Shareholders only own what's left after lenders are repaid, plus any spare cash:</p>
-      ${formula(["Equity value = EV − Debt + Cash", "Intrinsic value per share = Equity value ÷ Diluted shares", "Upside = Intrinsic value ÷ Market price − 1"],
-        [["Diluted shares", "All shares, including those that options and share awards will create"]])}` },
-    { id: "example", h: "Example", html: example(rows([
-      ["Enterprise value", "$2,000"], ["− Debt", "−$200"], ["+ Cash", "+$100"], ["= Equity value", "$1,900"], ["÷ Diluted shares", "50"], ["Intrinsic value per share", "$38.00", true], ["Market price", "$32.00"], ["Upside", "+18.8%", true]])) },
+      <p>Discounting unlevered free cash flows at WACC gives the <b>enterprise value (EV)</b>: the value of the whole business to everyone who funds it, lenders and shareholders.</p>
+      ${formula(["EV = \\sum_{t=1}^{n} \\frac{FCF_t}{(1+WACC)^{t}} + \\frac{TV}{(1+WACC)^{n}}"])}` },
+    { id: "bridge", h: "The bridge to equity", html: `
+      <p>Shareholders own what's left after lenders are repaid, plus any spare cash.</p>
+      ${formula(["\\text{Equity value} = EV - \\text{Debt} + \\text{Cash}", "\\text{Value per share} = \\dfrac{\\text{Equity value}}{\\text{Diluted shares}}", "\\text{Upside} = \\dfrac{\\text{Value per share}}{\\text{Market price}} - 1"],
+        [["\\text{Diluted shares}", "All shares, including those that options and share awards will create"]])}` },
+    { id: "example", h: "Worked example", html: example(ledger([
+      ["Enterprise value", "$2,000"], ["Debt", "−$200"], ["Cash", "+$100"], ["Equity value", "$1,900"], ["÷ Diluted shares", "50"], ["Value per share", "$38.00", true], ["Market price", "$32.00"], ["Upside", "+18.8%", true]])) },
   ],
   takeaways: [
-    "Intrinsic value above the market price: the share looks undervalued. Below: overvalued.",
-    "Always use the diluted share count, or the value per share will be too high.",
+    "Value per share <b>above</b> the market price: looks undervalued. <b>Below</b>: overvalued.",
+    "Always use the <b>diluted</b> share count, or the value per share will be too high.",
   ],
-  inapp: "The scoreboard shows the market price, the base case and your custom price side by side.",
+  inapp: "The <b>scoreboard</b> shows market price, base case and your custom price side by side.",
 },
 {
-  id: "sbc", group: "Going further", tag: "The hidden cost",
+  id: "sbc", group: "further", tag: "The hidden cost",
   title: "Stock-based compensation",
   summary: "Paying staff in shares costs no cash, but it is still a real cost to shareholders.",
   sections: [
     { id: "definition", h: "Definition", html: `
-      <p><b>Stock-based compensation (SBC)</b> is paying employees with shares or share options instead of cash. It doesn't use cash, so it gets added back in the cash flow statement, which makes free cash flow look higher. But the new shares <b>dilute</b> existing owners: each share becomes a smaller slice of the company.</p>` },
+      ${def(`<b>Stock-based compensation (SBC)</b> is paying employees with shares or share options instead of cash.`)}
+      <p style="margin-top:22px">It doesn't use cash, so it's added back in the cash flow statement, which makes free cash flow look higher. But the new shares <b>dilute</b> existing owners: each share becomes a smaller slice of the company.</p>` },
     { id: "handling", h: "How to account for it", html: `
       <p>There are two honest ways to handle it. Do one, never neither:</p>
       <ul class="plain">
         <li><b>Treat it as a cash cost:</b> subtract SBC from free cash flow.</li>
         <li><b>Count the dilution:</b> forecast the extra shares it creates, and divide by that higher share count.</li>
       </ul>
-      ${formula(["FCF after SBC = FCF − SBC expense", "Your ownership = Your shares ÷ Total shares after new issuance"])}` },
-    { id: "example", h: "Example", html: example(`
-      ${rows([["Free cash flow", "$120"], ["− SBC", "−$12"], ["FCF after SBC", "$108", true]])}
-      <p style="margin-top:12px">Or, as dilution: 100 shares become 110. Owning 1 share falls from 1% to 0.91% of the company.</p>`) },
+      ${formula(["FCF_{\\text{adj}} = FCF - SBC", "\\text{Ownership} = \\dfrac{\\text{Your shares}}{\\text{Total shares after issuance}}"])}` },
+    { id: "example", h: "Worked example", html: example(`
+      ${ledger([["Free cash flow", "$120"], ["SBC", "−$12"], ["FCF after SBC", "$108", true]])}
+      <p class="note">Or as dilution: 100 shares become 110, so owning 1 share falls from 1% to 0.91% of the company.</p>`) },
   ],
   takeaways: [
-    "SBC is a real cost even though no cash leaves the business.",
+    "SBC is a <b>real cost</b> even though no cash leaves the business.",
     "It matters most for large tech companies, where it can be a big share of revenue.",
   ],
-  inapp: "The SBC toggle in Forensic Settings switches this adjustment on and off.",
+  inapp: "The <b>SBC toggle</b> in Forensic Settings switches this adjustment on and off.",
 },
 ];
+GUIDES.forEach((g, i) => {
+  g.n = i + 1;
+  const words = g.sections.map(s => s.html).join(" ").replace(/<[^>]+>/g, " ").split(/\s+/).length;
+  g.minutes = Math.max(2, Math.round(words / 180));
+  g.hasCalc = g.sections.some(s => s.html.includes("data-calc"));
+});
 
-// ---------- rendering ----------
-const view = document.getElementById("view");
-const back = document.getElementById("back");
-const headTitle = document.getElementById("head-title");
-const chevron = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
+/* ================= calculators ================= */
+const CALCS = {
+  discount: {
+    title: "Present value calculator",
+    inputs: [
+      { id: "cf", label: "Future cash flow", min: 10, max: 1000, step: 10, value: 100, fmt: v => money(v, 0) },
+      { id: "r", label: "Discount rate", min: 0, max: 20, step: 0.5, value: 8, fmt: v => pct(v) },
+      { id: "n", label: "Years until received", min: 1, max: 20, step: 1, value: 3, fmt: v => v + (v === 1 ? " year" : " years") },
+    ],
+    render(v) {
+      const pv = v.cf / Math.pow(1 + v.r / 100, v.n);
+      const bars = Array.from({ length: 20 }, (_, i) => v.cf / Math.pow(1 + v.r / 100, i + 1));
+      return `<div class="results">
+          <div class="res big"><small>Worth today</small><strong>${money(pv)}</strong></div>
+          <div class="res"><small>Discount factor</small><strong>${(pv / v.cf).toFixed(3)}</strong></div>
+          <div class="res"><small>Cost of waiting</small><strong>${money(v.cf - pv)}</strong></div>
+        </div>
+        <div class="chart" aria-hidden="true">${bars.map((b, i) => `<div class="col${i + 1 === v.n ? " hl" : ""}"><div class="b" style="height:${(b / v.cf * 100).toFixed(1)}%"></div></div>`).join("")}</div>
+        <div class="chart-x" aria-hidden="true">${bars.map((_, i) => `<span>${(i + 1) % 5 === 0 || i === 0 ? "Y" + (i + 1) : ""}</span>`).join("")}</div>
+        <p class="note">Each bar is today's value of ${money(v.cf, 0)} received in that year. The highlighted bar is your year.</p>`;
+    },
+  },
+  fcf: {
+    title: "Free cash flow builder",
+    inputs: [
+      { id: "ebit", label: "EBIT", min: 0, max: 500, step: 10, value: 200, fmt: v => money(v, 0) },
+      { id: "t", label: "Tax rate", min: 0, max: 40, step: 1, value: 25, fmt: v => pct(v, 0) },
+      { id: "da", label: "D&A", min: 0, max: 150, step: 5, value: 30, fmt: v => money(v, 0) },
+      { id: "capex", label: "CapEx", min: 0, max: 300, step: 5, value: 50, fmt: v => money(v, 0) },
+      { id: "nwc", label: "Increase in NWC", min: -50, max: 100, step: 5, value: 10, fmt: v => money(v, 0) },
+    ],
+    render(v) {
+      const tax = v.ebit * v.t / 100;
+      const steps = [["EBIT", v.ebit], ["Tax", -tax], ["D&A", v.da], ["CapEx", -v.capex], ["Δ NWC", -v.nwc]];
+      let run = 0; const rows = [];
+      for (const [l, d] of steps) { rows.push([l, run, run + d, d]); run += d; }
+      rows.push(["FCF", 0, run, run, true]);
+      const vals = rows.flatMap(r => [r[1], r[2]]);
+      const lo = Math.min(0, ...vals), hi = Math.max(...vals, 1), span = hi - lo;
+      const x = n => ((n - lo) / span * 100);
+      return `<div class="wf" aria-label="Waterfall chart">${rows.map(([l, a, b, d, tot]) => {
+          const left = x(Math.min(a, b)), w = Math.max(0.8, Math.abs(x(b) - x(a)));
+          const color = tot ? "var(--accent)" : d >= 0 ? "rgba(47,210,122,.45)" : "var(--neg)";
+          return `<div class="wf-row"><span class="l">${tot ? "<b style='color:var(--text)'>" + l + "</b>" : l}</span>
+            <div class="wf-track"><div class="wf-bar" style="left:${left}%;width:${w}%;background:${color}"></div></div>
+            <span class="v">${tot ? money(d, 0) : (d >= 0 ? "+" : "−") + "$" + Math.abs(d).toFixed(0)}</span></div>`;
+        }).join("")}</div>
+        <div class="results">
+          <div class="res"><small>NOPAT</small><strong>${money(v.ebit - tax, 0)}</strong></div>
+          <div class="res big"><small>Free cash flow</small><strong>${money(run, 0)}</strong></div>
+        </div>`;
+    },
+  },
+  wacc: {
+    title: "WACC builder",
+    inputs: [
+      { id: "we", label: "Equity share of funding", min: 0, max: 100, step: 5, value: 80, fmt: v => pct(v, 0) },
+      { id: "rf", label: "Risk-free rate", min: 0, max: 8, step: 0.1, value: 4, fmt: v => pct(v) },
+      { id: "b", label: "Beta", min: 0.3, max: 2.5, step: 0.05, value: 1.2, fmt: v => v.toFixed(2) },
+      { id: "erp", label: "Equity risk premium", min: 3, max: 8, step: 0.1, value: 5, fmt: v => pct(v) },
+      { id: "rd", label: "Cost of debt (pre-tax)", min: 1, max: 12, step: 0.1, value: 6, fmt: v => pct(v) },
+      { id: "t", label: "Tax rate", min: 0, max: 40, step: 1, value: 25, fmt: v => pct(v, 0) },
+    ],
+    render(v) {
+      const re = v.rf + v.b * v.erp, rdat = v.rd * (1 - v.t / 100);
+      const eq = v.we / 100 * re, dt = (1 - v.we / 100) * rdat, w = eq + dt;
+      return `<div class="results">
+          <div class="res"><small>Cost of equity</small><strong>${pct(re, 2)}</strong></div>
+          <div class="res"><small>After-tax cost of debt</small><strong>${pct(rdat, 2)}</strong></div>
+          <div class="res big"><small>WACC</small><strong>${pct(w, 2)}</strong></div>
+        </div>
+        <div class="stack">
+          <div class="stack-bar" role="img" aria-label="Equity contributes ${pct(eq, 2)}, debt contributes ${pct(dt, 2)}">
+            <div style="width:${w ? eq / w * 100 : 0}%;background:var(--accent)"></div>
+            <div style="width:${w ? dt / w * 100 : 0}%;background:#4b8bff"></div>
+          </div>
+          <div class="stack-key"><span><i style="background:var(--accent)"></i>Equity part ${pct(eq, 2)}</span><span><i style="background:#4b8bff"></i>Debt part ${pct(dt, 2)}</span></div>
+        </div>`;
+    },
+  },
+  tv: {
+    title: "Terminal value calculator",
+    inputs: [
+      { id: "fcf", label: "Final-year FCF", min: 10, max: 500, step: 10, value: 120, fmt: v => money(v, 0) },
+      { id: "g", label: "Terminal growth", min: 0, max: 6, step: 0.1, value: 2.5, fmt: v => pct(v) },
+      { id: "w", label: "WACC", min: 4, max: 15, step: 0.1, value: 8.9, fmt: v => pct(v) },
+      { id: "n", label: "Forecast years", min: 3, max: 10, step: 1, value: 5, fmt: v => v + " years" },
+    ],
+    render(v) {
+      if (v.g >= v.w) return `<div class="results"><div class="res big"><small>Terminal value</small><strong>n/a</strong></div></div>
+        <p class="warn">Growth must be lower than WACC. Otherwise the formula says the business is worth infinity, which is a sign the assumptions are broken.</p>`;
+      const tv = v.fcf * (1 + v.g / 100) / ((v.w - v.g) / 100);
+      const pv = tv / Math.pow(1 + v.w / 100, v.n);
+      return `<div class="results">
+          <div class="res"><small>Terminal value (year ${v.n})</small><strong>${money(tv, 0)}</strong></div>
+          <div class="res big"><small>Worth today</small><strong>${money(pv, 0)}</strong></div>
+          <div class="res"><small>Multiple of final FCF</small><strong>${(tv / v.fcf).toFixed(1)}×</strong></div>
+        </div>
+        ${v.w - v.g < 2 ? `<p class="warn">WACC and growth are very close, so the value is extremely sensitive. Small changes now cause huge swings.</p>` : ""}`;
+    },
+  },
+};
 
-function renderIndex() {
-  document.title = "DCF Guides";
-  headTitle.textContent = "DCF guides";
-  back.href = "/learn";
-  back.setAttribute("aria-label", "Back to concept cards");
-  const groups = [...new Set(GUIDES.map(g => g.group))];
-  view.innerHTML = `<p class="intro">Each guide explains one idea in depth, with formulas and a worked example. Start with the core concepts.</p>` +
-    groups.map(grp => `<div class="group">${grp}</div><div class="topics">${GUIDES.map((g, i) => g.group !== grp ? "" : `
-      <a class="topic" href="#${g.id}">
-        <span class="num">${i + 1}</span>
-        <span><h2>${g.title}</h2><p>${g.summary}</p></span>
-        ${chevron}
-      </a>`).join("")}</div>`).join("");
+function mountCalc(el) {
+  const c = CALCS[el.dataset.calc];
+  const state = Object.fromEntries(c.inputs.map(i => [i.id, i.value]));
+  el.innerHTML = `<div class="card-head"><span class="card-label"><span class="live-dot"></span>${c.title}</span><button class="reset" type="button">Reset</button></div>
+    <div class="card-body"><div class="calc-grid">${c.inputs.map(i => `
+      <div class="ctrl"><label for="${el.dataset.calc}-${i.id}">${i.label}<output id="${el.dataset.calc}-${i.id}-o"></output></label>
+      <input type="range" id="${el.dataset.calc}-${i.id}" data-k="${i.id}" min="${i.min}" max="${i.max}" step="${i.step}" value="${i.value}"></div>`).join("")}
+    </div><div class="calc-out" aria-live="polite"></div></div>`;
+  const out = el.querySelector(".calc-out");
+  const paint = () => {
+    c.inputs.forEach(i => {
+      const inp = el.querySelector(`[data-k="${i.id}"]`);
+      inp.style.setProperty("--p", ((state[i.id] - i.min) / (i.max - i.min) * 100) + "%");
+      el.querySelector(`#${el.dataset.calc}-${i.id}-o`).textContent = i.fmt(state[i.id]);
+    });
+    out.innerHTML = c.render(state);
+  };
+  el.addEventListener("input", e => { if (e.target.dataset.k) { state[e.target.dataset.k] = parseFloat(e.target.value); paint(); } });
+  el.querySelector(".reset").addEventListener("click", () => {
+    c.inputs.forEach(i => { state[i.id] = i.value; el.querySelector(`[data-k="${i.id}"]`).value = i.value; });
+    paint();
+  });
+  paint();
 }
 
-function renderGuide(g) {
-  const i = GUIDES.indexOf(g), prev = GUIDES[i - 1], next = GUIDES[i + 1];
-  document.title = `${g.title} · DCF Guides`;
-  headTitle.textContent = `Guide ${i + 1} of ${GUIDES.length}`;
-  back.href = "#";
-  back.setAttribute("aria-label", "Back to all guides");
-  view.innerHTML = `<article>
-    <span class="tag">${g.tag}</span>
-    <h2>${g.title}</h2>
-    <p class="summary">${g.summary}</p>
-    <nav class="toc" aria-label="On this page">${g.sections.map(s => `<a href="#${g.id}/${s.id}">${s.h}</a>`).join("")}</nav>
-    ${g.sections.map(s => `<section id="${g.id}/${s.id}"><h3>${s.h}</h3>${s.html}</section>`).join("")}
-    <section class="takeaways"><h3>Key takeaways</h3><ul>${g.takeaways.map(t => `<li><span>${t}</span></li>`).join("")}</ul></section>
-    <p class="inapp"><b>In the app:</b> ${g.inapp}</p>
-    <div class="pager">
-      ${prev ? `<a href="#${prev.id}"><small>← Previous</small><span>${prev.title}</span></a>` : ""}
-      ${next ? `<a class="next" href="#${next.id}"><small>Next →</small><span>${next.title}</span></a>` : `<a class="next" href="/"><small>Done →</small><span>Back to companies</span></a>`}
-    </div>
-  </article>`;
+/* ================= views ================= */
+const view = document.getElementById("view");
+const crumb = document.getElementById("crumb");
+const back = document.getElementById("back");
+const arrow = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+const chips = g => `<span class="chip">${g.minutes} min read</span>${g.hasCalc ? `<span class="chip live">Live calculator</span>` : ""}`;
+let current = null;
+
+function renderIndex() {
+  current = null;
+  document.title = "DCF Field Guide";
+  crumb.innerHTML = "<b>Field guide</b>";
+  back.href = "/"; back.setAttribute("aria-label", "Back to companies");
+  const total = GUIDES.reduce((s, g) => s + g.minutes, 0);
+  const list = grp => GUIDES.filter(g => g.group === grp).map(g => `
+    <li><a class="step" href="#${g.id}">
+      <span class="step-num">${String(g.n).padStart(2, "0")}</span>
+      <span><h3>${g.title}</h3><p>${g.summary}</p><span class="meta">${chips(g)}</span></span>
+      <span class="go">${arrow}</span>
+    </a></li>`).join("");
+  view.innerHTML = `
+    <section class="hero">
+      <div class="kicker">The DCF field guide</div>
+      <h1>Learn to value a company, <em>one idea</em> at a time.</h1>
+      <p>Every guide gives you the definition, the formula, a worked example and, where it helps, a calculator you can play with.</p>
+      <div class="stats"><span class="stat"><b>${GUIDES.length}</b> guides</span><span class="stat"><b>~${total}</b> min total</span><span class="stat"><b>${GUIDES.filter(g => g.hasCalc).length}</b> live calculators</span></div>
+    </section>
+    <div class="path-head"><h2>The core path</h2><span>Start here, in order</span></div>
+    <ol class="path">${list("core")}</ol>
+    <div class="path-head"><h2>Going further</h2><span>Once the core makes sense</span></div>
+    <ol class="path">${list("further")}</ol>`;
+  window.scrollTo(0, 0);
+}
+
+function renderGuide(g, sub) {
+  if (current !== g.id) {
+    current = g.id;
+    const prev = GUIDES[g.n - 2], next = GUIDES[g.n];
+    document.title = `${g.title} · DCF Field Guide`;
+    crumb.innerHTML = `<a href="#" style="text-decoration:none">Field guide</a> / <b>${String(g.n).padStart(2, "0")}</b>`;
+    back.href = "#"; back.setAttribute("aria-label", "Back to all guides");
+    const nums = g.sections.map((_, i) => String(i + 1).padStart(2, "0"));
+    view.innerHTML = `<div class="guide">
+      <nav class="rail" aria-label="On this page"><div class="rail-label">On this page</div>
+        ${g.sections.map((s, i) => `<a href="#${g.id}/${s.id}" data-sec="${s.id}"><span>${nums[i]}</span>${s.h}</a>`).join("")}
+        <a href="#${g.id}/remember" data-sec="remember"><span>${String(g.sections.length + 1).padStart(2, "0")}</span>Remember</a>
+      </nav>
+      <article>
+        <header class="g-head">
+          <div class="kicker">${g.group === "core" ? "Core path" : "Going further"} · Guide ${String(g.n).padStart(2, "0")} · ${g.tag}</div>
+          <h1>${g.title}</h1>
+          <p class="lede">${g.summary}</p>
+          <div class="meta">${chips(g)}</div>
+          <nav class="chips-toc" aria-label="Sections">${g.sections.map(s => `<a href="#${g.id}/${s.id}">${s.h}</a>`).join("")}</nav>
+        </header>
+        ${g.sections.map((s, i) => `<section class="sec" id="${g.id}/${s.id}"><div class="sec-num">${nums[i]}</div><h2>${s.h}</h2>${s.html}</section>`).join("")}
+        <section class="remember sec" id="${g.id}/remember"><h2>Remember</h2><ol>${g.takeaways.map(t => `<li><span>${t}</span></li>`).join("")}</ol></section>
+        <p class="inapp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 15l3-3 3 2 4-5"/></svg><span><b>In the app:</b> ${g.inapp}</span></p>
+        ${next
+          ? `<a class="next" href="#${next.id}"><small>Next · Guide ${String(next.n).padStart(2, "0")}</small><strong>${next.title}</strong><span>${next.summary}</span></a>`
+          : `<a class="next" href="/"><small>You've finished the guide</small><strong>Now try it on a real company</strong><span>Pick Microsoft, Apple, Alphabet, Nvidia or Tesla and test your own assumptions.</span></a>`}
+        ${prev ? `<a class="prev-link" href="#${prev.id}">← ${prev.title}</a>` : ""}
+      </article></div>`;
+    view.querySelectorAll("[data-calc]").forEach(mountCalc);
+    observeSections(g);
+  }
+  const target = sub && document.getElementById(`${g.id}/${sub}`);
+  if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+}
+
+let io;
+function observeSections(g) {
+  io?.disconnect();
+  const links = [...document.querySelectorAll(".rail a")];
+  io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const id = e.target.id.split("/")[1];
+      links.forEach(a => a.classList.toggle("on", a.dataset.sec === id));
+    });
+  }, { rootMargin: "-30% 0px -60% 0px" });
+  document.querySelectorAll(".sec").forEach(s => io.observe(s));
 }
 
 function route() {
   const [id, sub] = decodeURIComponent(location.hash.slice(1)).split("/");
   const g = GUIDES.find(x => x.id === id);
-  if (g) renderGuide(g); else renderIndex();
-  if (g && sub) document.getElementById(`${id}/${sub}`)?.scrollIntoView();
-  else window.scrollTo(0, 0);
+  if (g) renderGuide(g, sub); else renderIndex();
 }
-window.addEventListener("hashchange", route);
+
+const bar = document.getElementById("progress");
+addEventListener("scroll", () => {
+  const h = document.documentElement.scrollHeight - innerHeight;
+  bar.style.width = current && h > 0 ? (scrollY / h * 100) + "%" : "0";
+}, { passive: true });
+addEventListener("hashchange", route);
 route();
 </script>
 </body>
