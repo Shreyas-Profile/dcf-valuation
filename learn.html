@@ -150,6 +150,8 @@
     border-top: 1px solid var(--border); padding-top: 12px;
   }
   .inapp b { color: var(--text); font-weight: 600; }
+  .deep { display: inline-block; margin-top: 6px; color: var(--accent); font-weight: 600; text-decoration: none; }
+  .deep:hover { text-decoration: underline; }
 
   footer {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -202,7 +204,7 @@
             <li>The answer is only as good as the guesses you put in.</li>
           </ul>
         </div>
-        <p class="inapp"><b>In the app:</b> every slider changes one of the guesses, and the price updates live.</p>
+        <p class="inapp"><b>In the app:</b> every slider changes one of the guesses, and the price updates live. <a class="deep" href="/guides">In-depth guide →</a></p>
       </article>
     </section>
 
@@ -227,7 +229,7 @@
             <li>Faster growth and higher margins mean more free cash flow.</li>
           </ul>
         </div>
-        <p class="inapp"><b>In the app:</b> the 5-year bar chart shows this number for each year.</p>
+        <p class="inapp"><b>In the app:</b> the 5-year bar chart shows this number for each year. <a class="deep" href="/guides#free-cash-flow">In-depth guide →</a></p>
       </article>
     </section>
 
@@ -236,7 +238,7 @@
       <article class="card">
         <span class="tag">The key trick</span>
         <h2>Discounting</h2>
-        <p class="def">Money later is worth <b>less</b> than money now, because money now could be earning interest. Discounting <b>shrinks future money</b> back to today's value.</p>
+        <p class="def">The <b>time value of money</b>: money later is worth <b>less</b> than money now, because money now could be earning interest. Discounting <b>shrinks future money</b> back to today's value.</p>
         <div class="visual">
           <div class="cap">$100 received in each future year, valued today (at 10%)</div>
           <div class="bars">
@@ -255,7 +257,7 @@
             <li>The further away the money, the less it's worth today.</li>
           </ul>
         </div>
-        <p class="inapp"><b>In the app:</b> the WACC slider sets how hard future cash gets shrunk.</p>
+        <p class="inapp"><b>In the app:</b> the WACC slider sets how hard future cash gets shrunk. <a class="deep" href="/guides#discounting">In-depth guide →</a></p>
       </article>
     </section>
 
@@ -278,7 +280,7 @@
             <li>Small changes matter a lot: +2% can cut the value by a quarter.</li>
           </ul>
         </div>
-        <p class="inapp"><b>In the app:</b> the "Rate Spike" button raises WACC to show this.</p>
+        <p class="inapp"><b>In the app:</b> the "Rate Spike" button raises WACC to show this. <a class="deep" href="/guides#wacc">In-depth guide →</a></p>
       </article>
     </section>
 
@@ -300,7 +302,7 @@
             <li>So the guess about the far future matters most.</li>
           </ul>
         </div>
-        <p class="inapp"><b>In the app:</b> the heatmap tests every mix of WACC and terminal growth.</p>
+        <p class="inapp"><b>In the app:</b> the heatmap tests every mix of WACC and terminal growth. <a class="deep" href="/guides#terminal-value">In-depth guide →</a></p>
       </article>
     </section>
 
@@ -324,7 +326,7 @@
             <li>Fair value below price: the share looks <b>expensive</b>.</li>
           </ul>
         </div>
-        <p class="inapp"><b>In the app:</b> the scoreboard shows both numbers and the % gap.</p>
+        <p class="inapp"><b>In the app:</b> the scoreboard shows both numbers and the % gap. <a class="deep" href="/guides#equity-value">In-depth guide →</a></p>
       </article>
     </section>
 
@@ -349,7 +351,7 @@
             <li>Ignoring it makes a company look more valuable than it is.</li>
           </ul>
         </div>
-        <p class="inapp"><b>In the app:</b> the SBC toggle in Forensic Settings shows its effect.</p>
+        <p class="inapp"><b>In the app:</b> the SBC toggle in Forensic Settings shows its effect. <a class="deep" href="/guides#sbc">In-depth guide →</a></p>
       </article>
     </section>
   </main>
@@ -377,7 +379,7 @@
     count.textContent = `${i + 1} / ${n}`;
     bars.forEach((b, k) => b.classList.toggle("on", k <= i));
     prev.disabled = i === 0;
-    next.textContent = i === n - 1 ? "Done" : "Next";
+    next.textContent = i === n - 1 ? "Explore the in-depth guides" : "Next";
   }
   function go(k) {
     i = Math.max(0, Math.min(n - 1, k));
@@ -396,7 +398,7 @@
   });
 
   prev.addEventListener("click", () => go(i - 1));
-  next.addEventListener("click", () => i === n - 1 ? (location.href = "/") : go(i + 1));
+  next.addEventListener("click", () => i === n - 1 ? (location.href = "/guides") : go(i + 1));
   document.addEventListener("keydown", e => {
     if (e.key === "ArrowRight") go(i + 1);
     if (e.key === "ArrowLeft") go(i - 1);
