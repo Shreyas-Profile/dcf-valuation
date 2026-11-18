@@ -220,7 +220,7 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script type="module">
-import { runDcf, sensitivity, line } from "/js/dcf.js";
+import { runDcf, sensitivity, line } from "/js/dcf.js?v=2";
 
 const $ = (id) => document.getElementById(id);
 const pct = (x, d = 1) => (x * 100).toFixed(d) + "%";
@@ -248,7 +248,7 @@ function fail(msg) {
 
 async function load() {
   const [modelsRes, liveRes] = await Promise.allSettled([
-    fetch("/data/models.json").then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
+    fetch("/data/models.json?v=2").then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
     fetch("/api/fundamentals").then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
   ]);
   if (modelsRes.status !== "fulfilled") return fail("Couldn't load the model data. Try refreshing.");
