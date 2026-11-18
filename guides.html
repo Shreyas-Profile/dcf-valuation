@@ -485,7 +485,7 @@ function renderGuide(g, sub) {
         ${g.sections.map((s, i) => `<section class="sec" id="${g.id}/${s.id}"><div class="sec-num">${nums[i]}</div><h2>${s.h}</h2>${s.html}</section>`).join("")}
         ${next
           ? `<a class="next" href="#${next.id}"><small>Next · Guide ${String(next.n).padStart(2, "0")}</small><strong>${next.title}</strong><span>${next.summary}</span></a>`
-          : `<a class="next" href="/"><small>You've finished the guide</small><strong>Now try it on a real company</strong><span>Pick Microsoft, Apple, Alphabet, Nvidia or Tesla and test your own assumptions.</span></a>`}
+          : `<a class="next" href="/"><small>You've finished the guide</small><strong>Now try it on a real company</strong><span>Pick Microsoft, Apple, Alphabet, NVIDIA or Meta and test your own assumptions.</span></a>`}
         ${prev ? `<a class="prev-link" href="#${prev.id}">← ${prev.title}</a>` : ""}
       </article></div>`;
     observeSections(g);

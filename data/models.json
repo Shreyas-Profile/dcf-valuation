@@ -1,0 +1,775 @@
+{
+ "author": "Arush Pinisetti",
+ "companies": {
+  "MSFT": {
+   "ticker": "MSFT",
+   "liveTicker": "MSFT",
+   "name": "Microsoft",
+   "units": "USD millions",
+   "historical": {
+    "years": [
+     "FY2021",
+     "FY2022",
+     "FY2023",
+     "FY2024",
+     "FY2025"
+    ],
+    "revenue": [
+     168088.0,
+     198270.0,
+     211915.0,
+     245122.0,
+     281724.0
+    ],
+    "ebit": [
+     69916.0,
+     83383.0,
+     88523.0,
+     109433.0,
+     128528.0
+    ],
+    "da": [
+     11686.0,
+     14460.0,
+     13861.0,
+     22287.0,
+     34153.0
+    ],
+    "capex": [
+     20622.0,
+     23886.0,
+     28107.0,
+     44477.0,
+     64551.0
+    ]
+   },
+   "forecastYears": [
+    "FY2026",
+    "FY2027",
+    "FY2028",
+    "FY2029",
+    "FY2030",
+    "FY2031",
+    "FY2032",
+    "FY2033",
+    "FY2034",
+    "FY2035"
+   ],
+   "drivers": {
+    "growth": [
+     0.14594389174396422,
+     0.1409438917439642,
+     0.1359438917439642,
+     0.1309438917439642,
+     0.1259438917439642,
+     0.1209438917439642,
+     0.11594389174396419,
+     0.11094389174396418,
+     0.10594389174396418,
+     0.10094389174396418
+    ],
+    "ebitMargin": [
+     0.43137858695851766,
+     0.43137858695851766,
+     0.43137858695851766,
+     0.43137858695851766,
+     0.43137858695851766,
+     0.43137858695851766,
+     0.43137858695851766,
+     0.43137858695851766,
+     0.43137858695851766,
+     0.43137858695851766
+    ],
+    "daPct": [
+     0.08400258181873328,
+     0.08400258181873328,
+     0.08400258181873328,
+     0.08400258181873328,
+     0.08400258181873328,
+     0.08400258181873328,
+     0.08400258181873328,
+     0.08400258181873328,
+     0.08400258181873328,
+     0.08400258181873328
+    ],
+    "capexPct": [
+     0.1572736234145941,
+     0.1497736234145941,
+     0.1422736234145941,
+     0.1347736234145941,
+     0.12727362341459408,
+     0.11977362341459408,
+     0.11227362341459407,
+     0.10477362341459406,
+     0.09727362341459406,
+     0.08977362341459405
+    ],
+    "nwc": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "tax": [
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21
+    ]
+   },
+   "balance": {
+    "debt": 133930.0,
+    "cash": 64510.0
+   },
+   "rates": {
+    "erp": 0.0446,
+    "creditSpread": 0.004,
+    "terminalGrowth": 0.0275
+   },
+   "savedLive": {
+    "marketCap": 3737269.26147,
+    "shares": 7426.194,
+    "beta": 1.0442,
+    "riskFree": 0.051210000000000006
+   },
+   "excel": {
+    "wacc": 0.09590738528090592,
+    "sharePrice": 371.88489082507135,
+    "enterpriseValue": 2831109.3449358
+   },
+   "notes": {
+    "margin": "The EBIT Margin is based on Microsoft's FY2021–FY2025 historical average. Operating margins have consistently held in the 40%–47% range in the past 5 years. The current average margin is around ~27% within Microsoft's peer group of Alphabet (~33%), Apple (~33%), Oracle (~33%), Salesforce (~22%), and Amazon (~12.1%), showing that Microsoft has a stable and high-margin operating business model compared to its peers.",
+    "growth": "The Revenue Growth is based on Microsoft's FY2021-FY2025 historical average, with a gradual 0.5 percentage point decline over the 10-year forecast as the company transitions from its high growth phase into its maturity period, approaching closer to the terminal growth rate.",
+    "reinvestment": "The D&A and CapEx margins are based on  Microsoft's FY2021-FY2025 historical average. D&A margins are kept static for simplicity, whilst CapEx margins start high to depict a high-CapEx intensive envrionment, and gradually decrease by 0.75 percentage points annually to reflect the company's transition towards a mature and less investment heavy period, where growth CapEx is virtually zero and maintenance CapEx slowly converges towards D&A."
+   }
+  },
+  "GOOGL": {
+   "ticker": "GOOGL",
+   "liveTicker": "GOOG",
+   "name": "Alphabet",
+   "units": "USD millions",
+   "historical": {
+    "years": [
+     "FY2021",
+     "FY2022",
+     "FY2023",
+     "FY2024",
+     "FY2025"
+    ],
+    "revenue": [
+     257637.0,
+     282836.0,
+     307394.0,
+     350018.0,
+     402836.0
+    ],
+    "ebit": [
+     78714.0,
+     74842.0,
+     84293.0,
+     112390.0,
+     129039.0
+    ],
+    "da": [
+     12441.0,
+     15928.0,
+     11946.0,
+     15311.0,
+     21136.0
+    ],
+    "capex": [
+     24640.0,
+     31485.0,
+     32251.0,
+     52535.0,
+     91447.0
+    ]
+   },
+   "forecastYears": [
+    "FY2026",
+    "FY2027",
+    "FY2028",
+    "FY2029",
+    "FY2030",
+    "FY2031",
+    "FY2032",
+    "FY2033",
+    "FY2034",
+    "FY2035"
+   ],
+   "drivers": {
+    "growth": [
+     0.1771399734049607,
+     0.1721399734049607,
+     0.1671399734049607,
+     0.1621399734049607,
+     0.1571399734049607,
+     0.1521399734049607,
+     0.14713997340496068,
+     0.14213997340496068,
+     0.13713997340496067,
+     0.13213997340496067
+    ],
+    "ebitMargin": [
+     0.29715557155354916,
+     0.29715557155354916,
+     0.29715557155354916,
+     0.29715557155354916,
+     0.29715557155354916,
+     0.29715557155354916,
+     0.29715557155354916,
+     0.29715557155354916,
+     0.29715557155354916,
+     0.29715557155354916
+    ],
+    "daPct": [
+     0.047935567092003056,
+     0.047935567092003056,
+     0.047935567092003056,
+     0.047935567092003056,
+     0.047935567092003056,
+     0.047935567092003056,
+     0.047935567092003056,
+     0.047935567092003056,
+     0.047935567092003056,
+     0.047935567092003056
+    ],
+    "capexPct": [
+     0.13779502510693206,
+     0.12879502510693205,
+     0.11979502510693206,
+     0.11079502510693207,
+     0.10179502510693207,
+     0.09279502510693208,
+     0.08379502510693208,
+     0.07479502510693209,
+     0.0657950251069321,
+     0.056795025106932094
+    ],
+    "nwc": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "tax": [
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21
+    ]
+   },
+   "balance": {
+    "debt": 150330.0,
+    "cash": 265100.0
+   },
+   "rates": {
+    "erp": 0.0446,
+    "creditSpread": 0.0055,
+    "terminalGrowth": 0.0275
+   },
+   "savedLive": {
+    "marketCap": 3456335.16,
+    "shares": 12294.0,
+    "beta": 1.2142,
+    "riskFree": 0.051210000000000006
+   },
+   "excel": {
+    "wacc": 0.1028390078737809,
+    "sharePrice": 252.01142974629346,
+    "enterpriseValue": 2983458.5173009317
+   },
+   "notes": {
+    "margin": "The EBIT Margin is based on Alphabet's FY2021–FY2025 historical average. Operating margins have fluctuated  roughly between the 25%–33% range during the past 5 years, recently sitting on the upper end as seen in Q3 2026 reports (31.8%). A middle ground was chosen to compensate for this unpredictability, and to  balance between Alphabet's steady revenue streams  and heavy AI investment.",
+    "growth": "The Revenue Growth is based on Alphabet's FY2021-FY2025 historical average, with a gradual 0.5 percentage point decline over the 10-year forecast as the company transitions from its high growth phase into its maturity period, approaching closer to the terminal growth rate.",
+    "reinvestment": "The D&A and CapEx margins are based on  Alphabet's FY2021-FY2025 historical average. D&A margins are kept static for simplicity, whilst CapEx margins start high to depict a high-CapEx intensive envrionment, and gradually decrease by 0.9 percentage points annually to reflect the company's transition towards a mature and less investment heavy period, where growth CapEx is virtually zero and maintenance CapEx slowly converges towards D&A."
+   }
+  },
+  "AAPL": {
+   "ticker": "AAPL",
+   "liveTicker": "AAPL",
+   "name": "Apple",
+   "units": "USD millions",
+   "historical": {
+    "years": [
+     "FY2021",
+     "FY2022",
+     "FY2023",
+     "FY2024",
+     "FY2025"
+    ],
+    "revenue": [
+     365817.0,
+     394328.0,
+     383285.0,
+     391035.0,
+     416161.0
+    ],
+    "ebit": [
+     108949.0,
+     119437.0,
+     114301.0,
+     123485.0,
+     132729.0
+    ],
+    "da": [
+     11284.0,
+     11104.0,
+     11519.0,
+     11445.0,
+     11698.0
+    ],
+    "capex": [
+     11085.0,
+     10708.0,
+     11151.0,
+     9958.0,
+     12715.0
+    ]
+   },
+   "forecastYears": [
+    "FY2026",
+    "FY2027",
+    "FY2028",
+    "FY2029",
+    "FY2030",
+    "FY2031",
+    "FY2032",
+    "FY2033",
+    "FY2034",
+    "FY2035"
+   ],
+   "drivers": {
+    "growth": [
+     0.09340043533457244,
+     0.09240043533457244,
+     0.09140043533457244,
+     0.09040043533457244,
+     0.08940043533457244,
+     0.08840043533457244,
+     0.08740043533457244,
+     0.08640043533457244,
+     0.08540043533457244,
+     0.08440043533457244
+    ],
+    "ebitMargin": [
+     0.3067304300151297,
+     0.3067304300151297,
+     0.3067304300151297,
+     0.3067304300151297,
+     0.3067304300151297,
+     0.3067304300151297,
+     0.3067304300151297,
+     0.3067304300151297,
+     0.3067304300151297,
+     0.3067304300151297
+    ],
+    "daPct": [
+     0.029287294156513828,
+     0.029287294156513828,
+     0.029287294156513828,
+     0.029287294156513828,
+     0.029287294156513828,
+     0.029287294156513828,
+     0.029287294156513828,
+     0.029287294156513828,
+     0.029287294156513828,
+     0.029287294156513828
+    ],
+    "capexPct": [
+     0.02851383177121128,
+     0.02881383177121128,
+     0.029113831771211282,
+     0.029413831771211284,
+     0.029713831771211285,
+     0.030013831771211287,
+     0.03031383177121129,
+     0.03061383177121129,
+     0.030913831771211292,
+     0.031213831771211294
+    ],
+    "nwc": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "tax": [
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21
+    ]
+   },
+   "balance": {
+    "debt": 94480.0,
+    "cash": 56720.0
+   },
+   "rates": {
+    "erp": 0.0446,
+    "creditSpread": 0.0055,
+    "terminalGrowth": 0.0275
+   },
+   "savedLive": {
+    "marketCap": 5118522.986382,
+    "shares": 14532.18,
+    "beta": 1.0721,
+    "riskFree": 0.051210000000000006
+   },
+   "excel": {
+    "wacc": 0.09804289529831402,
+    "sharePrice": 156.27250787049417,
+    "enterpriseValue": 2308740.213425438
+   },
+   "notes": {
+    "margin": "The EBIT Margin is based on Apple's FY2021–FY2025 historical average. Operating margins have remained steady between the 30%–32% range during the past 5 years, recently sitting on the upper end as seen in Q4 2026 reports (31.1%). A middle ground was chosen to provide basis for Apple's mix of high operating margin within its services, and low margin within its physcial products.",
+    "growth": "The Revenue Growth is based on Apple's FY2021-FY2025 historical average, with a gradual 0.1 percentage point decline over the 10-year forecast as the company transitions from its high growth phase into its maturity period, approaching closer to the terminal growth rate.",
+    "reinvestment": "The D&A and CapEx margins are based on  Apple's FY2021-FY2025 historical average. D&A margins are kept static for simplicity, whilst CapEx margins start low to depict a an asset-light operating model, and gradually increase by 0.03 percentage points annually to reflect expanding infrastructure, growing retail presence, and supply chain investments, before maintenance CapEx eventually converges towards D&A in the maturity phase."
+   }
+  },
+  "META": {
+   "ticker": "META",
+   "liveTicker": "META",
+   "name": "Meta Platforms",
+   "units": "USD millions",
+   "historical": {
+    "years": [
+     "FY2021",
+     "FY2022",
+     "FY2023",
+     "FY2024",
+     "FY2025"
+    ],
+    "revenue": [
+     117929.0,
+     116609.0,
+     134902.0,
+     164501.0,
+     200966.0
+    ],
+    "ebit": [
+     46753.0,
+     28944.0,
+     46751.0,
+     69380.0,
+     83276.0
+    ],
+    "da": [
+     7967.0,
+     8686.0,
+     11178.0,
+     15498.0,
+     18616.0
+    ],
+    "capex": [
+     18690.0,
+     31431.0,
+     27045.0,
+     37256.0,
+     69691.0
+    ]
+   },
+   "forecastYears": [
+    "FY2026",
+    "FY2027",
+    "FY2028",
+    "FY2029",
+    "FY2030",
+    "FY2031",
+    "FY2032",
+    "FY2033",
+    "FY2034",
+    "FY2035"
+   ],
+   "drivers": {
+    "growth": [
+     0.19171775286261203,
+     0.18171775286261202,
+     0.171717752862612,
+     0.161717752862612,
+     0.151717752862612,
+     0.14171775286261198,
+     0.13171775286261198,
+     0.12171775286261198,
+     0.11171775286261199,
+     0.10171775286261199
+    ],
+    "ebitMargin": [
+     0.36547174133292293,
+     0.36547174133292293,
+     0.36547174133292293,
+     0.36547174133292293,
+     0.36547174133292293,
+     0.36547174133292293,
+     0.36547174133292293,
+     0.36547174133292293,
+     0.36547174133292293,
+     0.36547174133292293
+    ],
+    "daPct": [
+     0.08235015469006078,
+     0.08235015469006078,
+     0.08235015469006078,
+     0.08235015469006078,
+     0.08235015469006078,
+     0.08235015469006078,
+     0.08235015469006078,
+     0.08235015469006078,
+     0.08235015469006078,
+     0.08235015469006078
+    ],
+    "capexPct": [
+     0.2403529554418463,
+     0.23035295544184628,
+     0.22035295544184627,
+     0.21035295544184626,
+     0.20035295544184625,
+     0.19035295544184624,
+     0.18035295544184624,
+     0.17035295544184623,
+     0.16035295544184622,
+     0.1503529554418462
+    ],
+    "nwc": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "tax": [
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21
+    ]
+   },
+   "balance": {
+    "debt": 114840.0,
+    "cash": 82450.0
+   },
+   "rates": {
+    "erp": 0.0446,
+    "creditSpread": 0.0055,
+    "terminalGrowth": 0.0275
+   },
+   "savedLive": {
+    "marketCap": 1599144.1728,
+    "shares": 2596.224,
+    "beta": 1.2658,
+    "riskFree": 0.051210000000000006
+   },
+   "excel": {
+    "wacc": 0.10345269449291891,
+    "sharePrice": 510.01250593248244,
+    "enterpriseValue": 1356496.7082020533
+   },
+   "notes": {
+    "margin": "The EBIT Margin is based on Meta's FY2021–FY2025 historical average. Operating margins have fluctuated across a wide historical range over the past 5 years due to heavy investment, recently sitting near the upper end in recent reports (~41%–43%). A middle ground was chosen to provide a stable baseline balancing Meta's high-margin Family of Apps advertising revenue with ongoing AI data center and Reality Labs research expenses.",
+    "growth": "The Revenue Growth is based on Meta's FY2021-FY2025 historical average, with a gradual 1 percentage point decline over the 10-year forecast as the company transitions from its high growth phase into its maturity period, approaching closer to the terminal growth rate.",
+    "reinvestment": "The D&A and CapEx margins are based on Meta's FY2021-FY2025 historical average. D&A margins are kept static for simplicity, whilst CapEx margins start high to reflect heavy AI infrastructure and data center investment, and gradually decrease by 1 percentage point annually as capital intensity slows down, before maintenance CapEx eventually converges towards D&A in the maturity phase."
+   }
+  },
+  "NVDA": {
+   "ticker": "NVDA",
+   "liveTicker": "NVDA",
+   "name": "NVIDIA",
+   "units": "USD millions",
+   "historical": {
+    "years": [
+     "FY2021",
+     "FY2022",
+     "FY2023",
+     "FY2024",
+     "FY2025"
+    ],
+    "revenue": [
+     16675.0,
+     26914.0,
+     26974.0,
+     60922.0,
+     130497.0
+    ],
+    "ebit": [
+     4532.0,
+     10041.0,
+     4224.0,
+     32972.0,
+     81453.0
+    ],
+    "da": [
+     1098.0,
+     1174.0,
+     1544.0,
+     1508.0,
+     1864.0
+    ],
+    "capex": [
+     1128.0,
+     976.0,
+     1833.0,
+     1069.0,
+     3236.0
+    ]
+   },
+   "forecastYears": [
+    "FY2026",
+    "FY2027",
+    "FY2028",
+    "FY2029",
+    "FY2030",
+    "FY2031",
+    "FY2032",
+    "FY2033",
+    "FY2034",
+    "FY2035"
+   ],
+   "drivers": {
+    "growth": [
+     0.7088272049935999,
+     0.6688272049935998,
+     0.6288272049935998,
+     0.5888272049935998,
+     0.5488272049935997,
+     0.5088272049935997,
+     0.4688272049935997,
+     0.4288272049935997,
+     0.38882720499359974,
+     0.34882720499359976
+    ],
+    "ebitMargin": [
+     0.3933696925518027,
+     0.3933696925518027,
+     0.3933696925518027,
+     0.3933696925518027,
+     0.3933696925518027,
+     0.3933696925518027,
+     0.3933696925518027,
+     0.3933696925518027,
+     0.3933696925518027,
+     0.3933696925518027
+    ],
+    "daPct": [
+     0.041148923722723996,
+     0.041148923722723996,
+     0.041148923722723996,
+     0.041148923722723996,
+     0.041148923722723996,
+     0.041148923722723996,
+     0.041148923722723996,
+     0.041148923722723996,
+     0.041148923722723996,
+     0.041148923722723996
+    ],
+    "capexPct": [
+     0.04284173803467962,
+     0.04284173803467962,
+     0.04284173803467962,
+     0.04284173803467962,
+     0.04284173803467962,
+     0.04284173803467962,
+     0.04284173803467962,
+     0.04284173803467962,
+     0.04284173803467962,
+     0.04284173803467962
+    ],
+    "nwc": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "tax": [
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21,
+     0.21
+    ]
+   },
+   "balance": {
+    "debt": 38860.0,
+    "cash": 62470.0
+   },
+   "rates": {
+    "erp": 0.0446,
+    "creditSpread": 0.0055,
+    "terminalGrowth": 0.0275
+   },
+   "savedLive": {
+    "marketCap": 3671153.0,
+    "shares": 24100.0,
+    "beta": 2.3129,
+    "riskFree": 0.051210000000000006
+   },
+   "excel": {
+    "wacc": 0.15321772295973626,
+    "sharePrice": 349.27078845897597,
+    "enterpriseValue": 8393816.00186132
+   },
+   "notes": {
+    "margin": "The EBIT Margin reflects NVIDIA's FY2021–FY2025 historical average. Operating margins have expanded significantly during the past 5 years due to rising AI data center demand, recently sitting near the upper end above 60%. A middle ground was chosen to provide a stable baseline balancing NVIDIA's high-margin computing and CUDA software ecosystem with ongoing supply chain costs and heavy R&D investments into AI.",
+    "growth": "The Revenue Growth is based on Meta's FY2021-FY2025 historical average, with an aggressive 4 percentage point decline over the 10-year forecast as the company transitions from its high growth phase into its maturity period, approaching closer to the terminal growth rate, while still remaining extremely high due to massive growth surges in previous years (~125% in FY2024 and ~114% in FY2025)",
+    "reinvestment": "The D&A and CapEx margins are based on NVIDIA's FY2021–FY2025 historical average. D&A margins are kept static, whilst CapEx margins are also static to reflect an asset-light  semiconductor model where capital intensity remains structurally low, naturally aligning with D&A throughout the forecast period."
+   }
+  }
+ }
+}

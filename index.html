@@ -234,7 +234,7 @@
     <p class="sub">Pick a company to see what it's really worth.</p>
     <a class="learn" href="/guides">
       <span class="learn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg></span>
-      <span><b>New to DCF?</b> Read the field guide: formulas, examples, calculators</span>
+      <span><b>New to DCF?</b> Read the field guide: definitions, formulas, examples</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
     </a>
     <label class="search">
@@ -251,8 +251,8 @@
 
 <nav aria-label="Main">
   <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</button>
-  <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</button>
-  <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</button>
+  <button data-go="base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</button>
+  <button data-go="sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</button>
   <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</button>
   <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</button>
   <button data-soon><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</button>
@@ -261,14 +261,14 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-  // Demo data only — not live prices. Real figures come later from the research data files.
+  // Fallback demo data — replaced by live prices from /api/quotes when available.
   const SI = "https://cdn.jsdelivr.net/npm/simple-icons@13.0.0/icons/";
   const companies = [
     { ticker: "MSFT", name: "Microsoft", logo: "ms",            price: 412.30, seed: 3 },
     { ticker: "AAPL", name: "Apple",     logo: SI + "apple.svg",  price: 228.15, seed: 7 },
     { ticker: "GOOGL",name: "Alphabet", logo: SI + "google.svg", price: 176.40, seed: 11 },
-    { ticker: "NVDA", name: "Nvidia",    logo: SI + "nvidia.svg", price: 138.90, seed: 5 },
-    { ticker: "TSLA", name: "Tesla",     logo: SI + "tesla.svg",  price: 251.70, seed: 2 },
+    { ticker: "NVDA", name: "NVIDIA",    logo: SI + "nvidia.svg", price: 138.90, seed: 5 },
+    { ticker: "META", name: "Meta",      logo: SI + "meta.svg",   price: 615.00, seed: 2 },
   ];
 
   // Seeded random walk so each sparkline looks the same on every load.
@@ -363,7 +363,10 @@
     clearTimeout(t);
     t = setTimeout(() => toast.classList.remove("show"), 2200);
   }
-  cta.addEventListener("click", () => say(`${selected.name} base case page is coming soon.`));
+  cta.addEventListener("click", () => { if (selected) location.href = `/company?t=${selected.ticker}`; });
+  document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => {
+    if (selected) location.href = `/company?t=${selected.ticker}#${b.dataset.go}`;
+  }));
   document.querySelectorAll("[data-soon]").forEach(b => b.addEventListener("click", () => say("This page is coming soon.")));
 </script>
 </body>

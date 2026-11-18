@@ -2,7 +2,7 @@
 // Runs as a Cloudflare Pages Function. Results are cached at the edge for 5 minutes
 // so every visitor shares one upstream fetch.
 
-const TICKERS = ["MSFT", "AAPL", "GOOGL", "NVDA", "TSLA"];
+const TICKERS = ["MSFT", "AAPL", "GOOGL", "NVDA", "META"];
 const TTL_SECONDS = 300;
 
 async function fetchTicker(ticker) {
