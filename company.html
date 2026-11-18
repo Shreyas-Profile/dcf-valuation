@@ -60,7 +60,21 @@
   summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; font-size: 14px; }
   summary::-webkit-details-marker { display: none; }
   summary span:last-child { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
-  summary .why { color: var(--accent); font-size: 12px; margin-left: 6px; }
+  summary .q { display: inline-grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid var(--accent); color: var(--accent); font-size: 11px; font-weight: 700; margin-left: 7px; vertical-align: 1px; line-height: 1; }
+  details[open] summary .q { background: var(--accent); color: #04140b; }
+  .group { font-size: 12px; font-weight: 600; color: var(--accent); margin: 18px 0 2px; letter-spacing: .02em; }
+  .group:first-of-type { margin-top: 0; }
+  .slider.off { opacity: .4; }
+  .rate-note { font-size: 12px; color: var(--muted); background: var(--surface-2); border-radius: 10px; padding: 8px 10px; margin-top: 4px; }
+  .sens-wrap { overflow-x: auto; margin: 0 -4px; }
+  .sens { width: 100%; border-collapse: separate; border-spacing: 3px; font-family: var(--mono); font-size: 11.5px; }
+  .sens th { color: var(--muted); font-weight: 500; padding: 4px 2px; white-space: nowrap; }
+  .sens thead th { font-size: 10.5px; }
+  .sens th.corner { font-family: Inter, sans-serif; font-size: 9.5px; text-align: left; }
+  .sens td { text-align: center; padding: 8px 2px; border-radius: 6px; background: var(--surface-2); white-space: nowrap; }
+  .sens td.mid { outline: 2px solid var(--text); outline-offset: -2px; font-weight: 700; }
+  .sens td.na { color: var(--muted); }
+  .sens-note { color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 10px; }
   details p { color: var(--muted); font-size: 13px; line-height: 1.55; padding: 0 0 12px; }
 
   .bars { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; align-items: end; height: 150px; margin-top: 4px; }
@@ -141,6 +155,11 @@
     </div>
 
     <div class="card">
+      <h2>Sensitivity table</h2>
+      <div id="b-sens"></div>
+    </div>
+
+    <div class="card">
       <h2>Key assumptions</h2>
       <div id="b-assumptions"></div>
     </div>
@@ -172,6 +191,11 @@
     <button class="reset" id="s-reset" disabled>Reset to base case</button>
 
     <div class="card">
+      <h2>Sensitivity table</h2>
+      <div id="s-sens"></div>
+    </div>
+
+    <div class="card">
       <h2>Free cash flow: yours vs base</h2>
       <div class="bars" id="s-bars"></div>
       <div class="bar-x" id="s-bars-x"></div>
@@ -196,7 +220,7 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script type="module">
-import { runDcf } from "/js/dcf.js";
+import { runDcf, sensitivity, line } from "/js/dcf.js";
 
 const $ = (id) => document.getElementById(id);
 const pct = (x, d = 1) => (x * 100).toFixed(d) + "%";
@@ -247,6 +271,7 @@ async function load() {
   livePrice = quotes?.quotes?.find((q) => q.ticker === model.ticker)?.price ?? c.price ?? null;
 
   base = runDcf(model, live);
+  makeSliders();
   state = defaults();
   document.title = `${model.name} · DCF Sandbox`;
   $("title").innerHTML = `${model.name}<small>${model.ticker}</small>`;
@@ -256,10 +281,6 @@ async function load() {
   buildSliders();
   renderSandbox();
   route();
-}
-
-function defaults() {
-  return { growth: 0, ebitMargin: 0, capexPct: 0, tax: model.drivers.tax[0], wacc: base.wacc, terminalGrowth: base.terminalGrowth };
 }
 
 function priceBlock(value) {
@@ -283,7 +304,7 @@ function bars(el, xEl, result, compare) {
   xEl.innerHTML = result.years.map((y) => `<span>${short(y.year)}</span>`).join("");
 }
 
-function bridgeRows(r, liveShares) {
+function bridgeRows(r, liveShares, L = live) {
   return [
     ["PV of 10 years of cash flow", big(r.npv)],
     ["PV of terminal value", big(r.pvTerminal)],
@@ -291,7 +312,7 @@ function bridgeRows(r, liveShares) {
     ["− Debt", big(model.balance.debt)],
     ["+ Cash", big(model.balance.cash)],
     ["Equity value", big(r.equityValue)],
-    [`÷ Shares outstanding ${liveShares}`, (live.shares / 1000).toFixed(2) + "B"],
+    [`÷ Shares outstanding ${liveShares}`, (L.shares / 1000).toFixed(2) + "B"],
   ].map(([a, b]) => `<div class="row"><span>${a}</span><span>${b}</span></div>`).join("")
     + `<div class="row total"><span>Value per share</span><span>${r.valid ? usd(r.sharePrice) : "–"}</span></div>`;
 }
@@ -307,10 +328,11 @@ function renderBase(api) {
   $("b-verdict").className = "verdict " + p.cls;
   $("b-verdict").hidden = !p.verdict;
   bars($("b-bars"), $("b-bars-x"), base);
+  renderSens($("b-sens"), {}, live);
 
   const range = (arr) => (arr[0].toFixed(4) === arr.at(-1).toFixed(4) ? pct(arr[0]) : `${pct(arr[0])} → ${pct(arr.at(-1))}`);
   const item = (label, value, note) => note
-    ? `<details><summary><span>${label}<span class="why">why?</span></span><span>${value}</span></summary><p>${note}</p></details>`
+    ? `<details><summary><span>${label}<span class="q" aria-label="Why?" title="Why?">?</span></span><span>${value}</span></summary><p>${note}</p></details>`
     : `<details><summary><span>${label}</span><span>${value}</span></summary></details>`;
   $("b-assumptions").innerHTML = [
     item("Revenue growth", range(d.growth), model.notes.growth),
@@ -345,39 +367,134 @@ function renderBase(api) {
     `His spreadsheet's value when saved: ${usd(model.excel.sharePrice)}.`;
 }
 
+// ----- Sensitivity table (WACC × terminal growth) -----
+function renderSens(el, changes, liveForRun) {
+  const s = sensitivity(model, liveForRun, changes);
+  const cell = (v, i, j) => {
+    if (v == null) return `<td class="na">–</td>`;
+    let style = "";
+    if (livePrice != null) {
+      const gap = v / livePrice - 1;
+      const a = Math.min(Math.abs(gap), 0.6) / 0.6 * 0.42 + 0.06;
+      style = `style="background:${gap >= 0 ? `rgba(47,210,122,${a.toFixed(3)})` : `rgba(255,92,92,${a.toFixed(3)})`}"`;
+    }
+    const centre = i === s.centre && j === s.centre ? ' class="mid"' : "";
+    return `<td${centre} ${style}>${v >= 10000 ? "$" + (v / 1000).toFixed(1) + "k" : "$" + v.toFixed(0)}</td>`;
+  };
+  el.innerHTML = `<div class="sens-wrap"><table class="sens">
+      <thead><tr><th class="corner">WACC ↓ · g →</th>${s.tgs.map((g) => `<th>${pct(g, 2)}</th>`).join("")}</tr></thead>
+      <tbody>${s.grid.map((row, i) => `<tr><th>${pct(s.waccs[i], 2)}</th>${row.map((v, j) => cell(v, i, j)).join("")}</tr>`).join("")}</tbody>
+    </table></div>
+    <p class="sens-note">Value per share at each WACC (rows) and terminal growth rate (columns). The outlined cell is ${el.id === "b-sens" ? "Arush's base case" : "your current settings"}.${livePrice != null ? " Green = above the market price, red = below." : ""}</p>`;
+}
+
 // ----- Sandbox -----
-const SLIDERS = [
-  { key: "growth", label: "Revenue growth", hint: "added to every year", min: -0.10, max: 0.10, step: 0.005, show: (v) => pp(v), baseText: () => "Base: as in the model" },
-  { key: "ebitMargin", label: "EBIT margin", hint: "added to every year", min: -0.15, max: 0.15, step: 0.005, show: (v) => pp(v), baseText: () => `Base: ${pct(model.drivers.ebitMargin[0])}` },
-  { key: "capexPct", label: "CapEx (% of revenue)", hint: "added to every year", min: -0.05, max: 0.05, step: 0.0025, show: (v) => pp(v), baseText: () => `Base: ${pct(model.drivers.capexPct[0])} in FY2026` },
-  { key: "tax", label: "Tax rate", min: 0, max: 0.40, step: 0.005, show: (v) => pct(v), baseText: () => `Base: ${pct(model.drivers.tax[0])}` },
-  // WACC slider moves by "change from base" (browsers round slider values, so the
-  // base WACC itself, e.g. 9.5316%, can't sit exactly on a slider step).
-  { key: "wacc", label: "WACC", offset: () => base.wacc, min: () => -Math.min(50, Math.floor((base.wacc - 0.03) / 0.001)) / 1000, max: 0.05, step: 0.001, show: (v) => pct(v, 1), baseText: () => `Base: ${pct(base.wacc, 1)}` },
-  { key: "terminalGrowth", label: "Terminal growth", min: 0, max: 0.05, step: 0.0025, show: (v) => pct(v, 2), baseText: () => `Base: ${pct(model.rates.terminalGrowth, 2)}` },
-];
-const val = (f) => (typeof f === "function" ? f() : f);
-const off = (s) => (s.offset ? s.offset() : 0);
-const toSlider = (s) => String(state[s.key] - off(s));
-const setSliders = () => SLIDERS.forEach((s) => ($("sl-" + s.key).value = toSlider(s)));
+// Every slider stores an absolute value (e.g. EBIT margin 43.1%) and moves in round steps (50.0%, 50.5%…).
+// The step nearest Arush's number is his exact value, so moving a slider back to where it started
+// gives exactly his base case (browsers round slider values, so his 43.1378% can't be a step itself).
+let SLIDERS = [];
+function makeSliders() {
+  const d = model.drivers;
+  const yr = model.forecastYears[0];
+  const perYr = (v) => (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(2) + " pp/yr";
+  SLIDERS = [
+    { group: "Revenue" },
+    { key: "growthStart", label: `Revenue growth (${yr})`, lo: -0.10, hi: Math.max(0.5, d.growth[0] + 0.25), step: 0.005, show: (v) => pct(v), base: d.growth[0] },
+    { key: "growthStep", label: "Growth change per year", hint: "negative = growth slows down", lo: Math.min(-0.03, d.growth[1] - d.growth[0] - 0.02), hi: 0.03, step: 0.0005, show: perYr, base: d.growth[1] - d.growth[0] },
+    { group: "Margins & reinvestment" },
+    { key: "ebitMargin", label: "EBIT margin", hint: "every year", lo: 0, hi: 0.70, step: 0.005, show: (v) => pct(v), base: d.ebitMargin[0] },
+    { key: "daPct", label: "D&A (% of revenue)", hint: "every year", lo: 0, hi: 0.20, step: 0.0025, show: (v) => pct(v), base: d.daPct[0] },
+    { key: "capexStart", label: `CapEx (% of revenue, ${yr})`, lo: 0, hi: 0.40, step: 0.0025, show: (v) => pct(v), base: d.capexPct[0] },
+    { key: "capexStep", label: "CapEx change per year", hint: "negative = spending falls", lo: -0.02, hi: 0.02, step: 0.0005, show: perYr, base: d.capexPct[1] - d.capexPct[0] },
+    { key: "tax", label: "Tax rate", lo: 0, hi: 0.40, step: 0.005, show: (v) => pct(v), base: d.tax[0] },
+    { group: "Discount rate (WACC)" },
+    { key: "riskFree", label: "Risk-free rate", rate: true, lo: 0, hi: 0.10, step: 0.0005, show: (v) => pct(v, 2), base: live.riskFree },
+    { key: "beta", label: "Beta", rate: true, lo: 0, hi: 3.5, step: 0.01, show: (v) => v.toFixed(2), base: live.beta },
+    { key: "erp", label: "Equity risk premium", rate: true, lo: 0, hi: 0.10, step: 0.0005, show: (v) => pct(v, 2), base: model.rates.erp },
+    { key: "wacc", label: "WACC", hint: "or set it directly", lo: 0.03, hi: 0.25, step: 0.001, show: (v) => pct(v, 2), base: base.wacc },
+    { group: "Long term" },
+    { key: "terminalGrowth", label: "Terminal growth", lo: 0, hi: 0.05, step: 0.0025, show: (v) => pct(v, 2), base: model.rates.terminalGrowth },
+  ];
+  SLIDERS.forEach((s) => {
+    if (!s.key) return;
+    // Always keep Arush's value inside the range, with room either side.
+    s.min = Math.min(s.lo, Math.floor(s.base / s.step) * s.step - 4 * s.step);
+    s.max = Math.max(Math.ceil(s.hi / s.step - 1e-9) * s.step, Math.ceil(s.base / s.step) * s.step + 4 * s.step);
+    if (s.lo >= 0) s.min = Math.max(0, s.min);
+  });
+}
+const realSliders = () => SLIDERS.filter((s) => s.key);
+const byKey = (k) => SLIDERS.find((s) => s.key === k);
+
+function defaults() {
+  const st = {};
+  realSliders().forEach((s) => (st[s.key] = s.base));
+  st.waccOverride = null; // null = WACC is calculated from the risk-free rate, beta and ERP
+  return st;
+}
+
+function isChanged(k) {
+  if (k === "wacc") return state.waccOverride != null;
+  return Math.abs(state[k] - byKey(k).base) > 1e-9;
+}
+
+// Turn the slider state into "changes" for the engine. Untouched sliders change nothing,
+// so with nothing moved the sandbox equals the base case exactly.
+function buildChanges() {
+  const ch = { drivers: {} };
+  if (isChanged("growthStart") || isChanged("growthStep")) ch.drivers.growth = line(state.growthStart, state.growthStep);
+  if (isChanged("ebitMargin")) ch.drivers.ebitMargin = line(state.ebitMargin, 0);
+  if (isChanged("daPct")) ch.drivers.daPct = line(state.daPct, 0);
+  if (isChanged("capexStart") || isChanged("capexStep")) ch.drivers.capexPct = line(state.capexStart, state.capexStep).map((v) => Math.max(0, v));
+  if (isChanged("tax")) ch.drivers.tax = line(state.tax, 0);
+  if (isChanged("erp")) ch.erp = state.erp;
+  if (state.waccOverride != null) ch.wacc = state.waccOverride;
+  if (isChanged("terminalGrowth")) ch.terminalGrowth = state.terminalGrowth;
+  const runLive = { ...live, riskFree: state.riskFree, beta: state.beta };
+  return { ch, runLive };
+}
+
+const snap = (s, v) => Math.min(s.max, Math.max(s.min, s.min + Math.round((v - s.min) / s.step) * s.step));
+const sameStep = (s, a, b) => Math.abs(snap(s, a) - snap(s, b)) < s.step / 2;
+function sliderValue(s) {
+  return String(snap(s, s.key === "wacc" ? currentWacc() : state[s.key]));
+}
+function currentWacc() {
+  if (state.waccOverride != null) return state.waccOverride;
+  const { ch, runLive } = buildChanges();
+  return runDcf(model, runLive, ch).wacc;
+}
+const setSliders = () => realSliders().forEach((s) => ($("sl-" + s.key).value = sliderValue(s)));
 
 function buildSliders() {
-  $("s-sliders").innerHTML = `<h2>Change the assumptions</h2>` + SLIDERS.map((s) => `
-    <div class="slider">
+  makeSliders();
+  $("s-sliders").innerHTML = `<h2>Change the assumptions</h2>` + SLIDERS.map((s) => s.group
+    ? `<h3 class="group">${s.group}</h3>`
+    : `<div class="slider" id="row-${s.key}">
       <label class="slider-head" for="sl-${s.key}"><span>${s.label}</span><output id="out-${s.key}"></output></label>
-      <div class="slider-sub"><span>${s.baseText()}${s.hint ? " · " + s.hint : ""}</span><button type="button" data-reset="${s.key}" hidden>reset</button></div>
-      <input type="range" id="sl-${s.key}" data-key="${s.key}" min="${val(s.min)}" max="${val(s.max)}" step="${s.step}" value="${toSlider(s)}">
-    </div>`).join("");
+      <div class="slider-sub"><span>Base: ${s.show(s.base)}${s.hint ? " · " + s.hint : ""}</span><button type="button" data-reset="${s.key}" hidden>reset</button></div>
+      <input type="range" id="sl-${s.key}" data-key="${s.key}" min="${s.min}" max="${s.max}" step="${s.step}" value="${sliderValue(s)}">
+    </div>`).join("") + `<p class="rate-note" id="rate-note" hidden>You've set WACC directly, so risk-free rate, beta and ERP are ignored. Reset WACC to use them again.</p>`;
+
   $("s-sliders").addEventListener("input", (e) => {
-    const s = SLIDERS.find((x) => x.key === e.target.dataset.key);
+    const s = byKey(e.target.dataset.key);
     if (!s) return;
-    state[s.key] = off(s) + parseFloat(e.target.value);
+    const v = parseFloat(e.target.value);
+    if (s.key === "wacc") {
+      // Back on the calculated WACC's step → go back to calculating it.
+      state.waccOverride = null;
+      const calc = currentWacc();
+      state.waccOverride = sameStep(s, v, calc) ? null : v;
+    } else {
+      state[s.key] = sameStep(s, v, s.base) ? s.base : v;
+    }
     renderSandbox();
   });
   $("s-sliders").addEventListener("click", (e) => {
     const k = e.target.dataset.reset;
     if (!k) return;
-    state[k] = defaults()[k];
+    if (k === "wacc") state.waccOverride = null;
+    else state[k] = byKey(k).base;
     setSliders();
     renderSandbox();
   });
@@ -389,17 +506,23 @@ function buildSliders() {
 }
 
 function renderSandbox() {
-  const def = defaults();
-  const changed = SLIDERS.filter((s) => Math.abs(state[s.key] - def[s.key]) > 1e-9);
-  // Untouched sliders don't override anything, so the sandbox equals the base case exactly.
-  const changes = {};
-  changed.forEach((s) => (changes[s.key] = state[s.key]));
-  const r = runDcf(model, live, changes);
+  const { ch, runLive } = buildChanges();
+  const r = runDcf(model, runLive, ch);
+  const changed = realSliders().filter((s) => isChanged(s.key));
 
-  SLIDERS.forEach((s) => {
-    $("out-" + s.key).textContent = s.show(state[s.key]);
-    document.querySelector(`[data-reset="${s.key}"]`).hidden = !changed.includes(s);
+  realSliders().forEach((s) => {
+    $("out-" + s.key).textContent = s.show(s.key === "wacc" ? r.wacc : state[s.key]);
+    document.querySelector(`[data-reset="${s.key}"]`).hidden = !isChanged(s.key);
   });
+  // The WACC thumb follows the calculated WACC until the user sets it directly.
+  if (state.waccOverride == null) $("sl-wacc").value = sliderValue(byKey("wacc"));
+  const overridden = state.waccOverride != null;
+  ["riskFree", "beta", "erp"].forEach((k) => {
+    $("row-" + k).classList.toggle("off", overridden);
+    $("sl-" + k).disabled = overridden;
+  });
+  $("rate-note").hidden = !overridden;
+
   $("s-reset").disabled = changed.length === 0;
   const close = r.valid && r.wacc - r.terminalGrowth < 0.02;
   $("s-warn").textContent = !r.valid
@@ -414,12 +537,13 @@ function renderSandbox() {
     $("s-delta").textContent = "";
   } else {
     $("s-value").textContent = usd(r.sharePrice);
-    const ch = r.sharePrice / base.sharePrice - 1;
-    $("s-delta").textContent = changed.length ? `${ch >= 0 ? "+" : "−"}${pct(Math.abs(ch))}` : "";
-    $("s-delta").className = "delta " + (ch >= 0 ? "up" : "down");
+    const chg = r.sharePrice / base.sharePrice - 1;
+    $("s-delta").textContent = changed.length ? `${chg >= 0 ? "+" : "−"}${pct(Math.abs(chg))}` : "";
+    $("s-delta").className = "delta " + (chg >= 0 ? "up" : "down");
     bars($("s-bars"), $("s-bars-x"), r, base);
   }
-  $("s-bridge").innerHTML = r.valid ? bridgeRows(r, "") : `<p class="label">Fix the warning above to see the valuation.</p>`;
+  renderSens($("s-sens"), ch, runLive);
+  $("s-bridge").innerHTML = r.valid ? bridgeRows(r, "", runLive) : `<p class="label">Fix the warning above to see the valuation.</p>`;
 }
 
 // ----- Routing between Base case and Sandbox -----
