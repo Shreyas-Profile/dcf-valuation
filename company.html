@@ -248,14 +248,14 @@ function fail(msg) {
 
 async function load() {
   const [modelsRes, liveRes] = await Promise.allSettled([
-    fetch("/data/models.json?v=2").then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
+    fetch("/data/models.json?v=3").then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
     fetch("/api/fundamentals").then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
   ]);
   if (modelsRes.status !== "fulfilled") return fail("Couldn't load the model data. Try refreshing.");
   model = modelsRes.value.companies[ticker];
   if (!model) return fail("No model for this company yet.");
 
-  // Live numbers where we have them, otherwise the values saved in Arush's spreadsheet.
+  // Live numbers where we have them, otherwise the values saved in the spreadsheet.
   const api = liveRes.status === "fulfilled" ? liveRes.value : null;
   const c = api?.companies?.[model.liveTicker] || {};
   const pick = (k, v) => { isLive[k] = typeof v === "number" && isFinite(v) && v > 0; return isLive[k] ? v : model.savedLive[k]; };
@@ -362,10 +362,10 @@ function renderBase(api) {
   const anyLive = Object.values(isLive).some(Boolean);
   const when = api?.updated ? new Date(api.updated).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
   $("b-foot").innerHTML =
-    `Model by Arush Pinisetti. Figures in USD. ` +
+    `Figures in USD. ` +
     (anyLive ? `LIVE values from Yahoo Finance (delayed), updated ${when}. ` : "") +
     (Object.values(isLive).every(Boolean) ? "" : `SAVED values are from when the spreadsheet was last saved. `) +
-    `His spreadsheet's value when saved: ${usd(model.excel.sharePrice)}.`;
+    `Spreadsheet value when saved: ${usd(model.excel.sharePrice)}.`;
 }
 
 // ----- Sensitivity table (WACC × terminal growth) -----
@@ -386,12 +386,12 @@ function renderSens(el, changes, liveForRun) {
       <thead><tr><th class="corner">WACC ↓ · g →</th>${s.tgs.map((g) => `<th>${pct(g, 2)}</th>`).join("")}</tr></thead>
       <tbody>${s.grid.map((row, i) => `<tr><th>${pct(s.waccs[i], 2)}</th>${row.map((v, j) => cell(v, i, j)).join("")}</tr>`).join("")}</tbody>
     </table></div>
-    ${el.id === "s-sens" ? `<p class="sens-note">Outlined = your settings.${livePrice != null ? " Green = above market price." : ""}</p>` : `<p class="sens-note">Value per share at each WACC (rows) and terminal growth rate (columns). The outlined cell is ${el.id === "b-sens" ? "Arush's base case" : "your current settings"}.${livePrice != null ? " Green = above the market price, red = below." : ""}</p>`}`;
+    ${el.id === "s-sens" ? `<p class="sens-note">Outlined = your settings.${livePrice != null ? " Green = above market price." : ""}</p>` : `<p class="sens-note">Value per share at each WACC (rows) and terminal growth rate (columns). The outlined cell is ${el.id === "b-sens" ? "the base case" : "your current settings"}.${livePrice != null ? " Green = above the market price, red = below." : ""}</p>`}`;
 }
 
 // ----- Sandbox -----
 // Every slider stores an absolute value (e.g. EBIT margin 43.1%) and moves in round steps (50.0%, 50.5%…).
-// The step nearest Arush's number is his exact value, so moving a slider back to where it started
+// The step nearest the model's number is its exact value, so moving a slider back to where it started
 // gives exactly his base case (browsers round slider values, so his 43.1378% can't be a step itself).
 let SLIDERS = [];
 function makeSliders() {
@@ -418,7 +418,7 @@ function makeSliders() {
   ];
   SLIDERS.forEach((s) => {
     if (!s.key) return;
-    // Always keep Arush's value inside the range, with room either side.
+    // Always keep the model's value inside the range, with room either side.
     s.min = Math.min(s.lo, Math.floor(s.base / s.step) * s.step - 4 * s.step);
     s.max = Math.max(Math.ceil(s.hi / s.step - 1e-9) * s.step, Math.ceil(s.base / s.step) * s.step + 4 * s.step);
     if (s.lo >= 0) s.min = Math.max(0, s.min);

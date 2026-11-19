@@ -1,8 +1,8 @@
-// GET /api/fundamentals — the 4 numbers Arush's Excel pulls live (Stocks data type):
+// GET /api/fundamentals — the 4 numbers the Excel model pulls live (Stocks data type):
 // market cap, shares outstanding, beta, and the risk-free rate (US 10-year Treasury yield).
 // Also returns the latest share price so the app can compare it to the intrinsic value.
 // Cached at the edge for 30 minutes. Any field that can't be fetched is simply left out,
-// and the page falls back to the value saved in Arush's spreadsheet.
+// and the page falls back to the value saved in the spreadsheet.
 
 const TICKERS = ["MSFT", "GOOG", "AAPL", "META", "NVDA"];
 const TTL_SECONDS = 1800;
@@ -58,7 +58,7 @@ export async function onRequestGet({ request, waitUntil }) {
       shares: shares !== undefined ? shares / 1e6 : undefined,
       beta: num(q?.beta),
     };
-    // Drop missing fields so the page knows to use Arush's saved value.
+    // Drop missing fields so the page knows to use the saved value.
     companies[t] = Object.fromEntries(Object.entries(entry).filter(([, v]) => v !== undefined));
   });
 

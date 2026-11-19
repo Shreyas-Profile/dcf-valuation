@@ -1,4 +1,4 @@
-// Macro scenarios: each one is a set of shocks applied on top of Arush's base case.
+// Macro scenarios: each one is a set of shocks applied on top of the base case.
 // Effect kinds:
 //   rf     → risk-free rate (changes cost of equity and cost of debt)
 //   erp    → equity risk premium

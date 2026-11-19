@@ -93,7 +93,7 @@
 </nav>
 
 <script type="module">
-import { loadAll, ORDER, pct, usd, signedPct, lastTicker, wireNav } from "/js/data.js?v=1";
+import { loadAll, ORDER, pct, usd, signedPct, lastTicker, wireNav } from "/js/data.js?v=2";
 import { runDcf } from "/js/dcf.js?v=2";
 import { SCENARIOS, runScenario } from "/js/scenarios.js?v=1";
 
@@ -147,7 +147,7 @@ try {
   }).join("");
 
   const anyLive = list.some(({ c }) => Object.values(c.isLive).some(Boolean));
-  $("foot").textContent = `Models by ${data.author || "Arush Pinisetti"}. ${anyLive ? "Uses live market data from Yahoo Finance (delayed)." : "Live data unavailable, so values saved in the spreadsheet are used."} Not financial advice.`;
+  $("foot").textContent = `${anyLive ? "Uses live market data from Yahoo Finance (delayed)." : "Live data unavailable, so values saved in the spreadsheet are used."} Not financial advice.`;
   $("loading").hidden = true;
   $("main").hidden = false;
 } catch {

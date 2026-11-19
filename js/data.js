@@ -1,5 +1,5 @@
 // Shared loader for the Macro, Analysis and More pages.
-// Same rules as the company page: live numbers where Yahoo has them, otherwise the values saved in Arush's spreadsheet.
+// Same rules as the company page: live numbers where Yahoo has them, otherwise the values saved in the spreadsheet.
 
 export const ORDER = ["MSFT", "AAPL", "GOOGL", "NVDA", "META"];
 
@@ -12,7 +12,7 @@ const json = (url) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r
 
 export async function loadAll() {
   const [modelsRes, liveRes, quotesRes] = await Promise.allSettled([
-    json("/data/models.json?v=2"),
+    json("/data/models.json?v=3"),
     json("/api/fundamentals"),
     json("/api/quotes"),
   ]);

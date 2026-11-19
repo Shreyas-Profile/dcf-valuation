@@ -1,11 +1,11 @@
-// DCF engine — a line-by-line copy of Arush's Excel model.
+// DCF engine — a line-by-line copy of the Excel model.
 // All money values are in USD millions (same as the spreadsheet).
 //
 // model   = one company from /data/models.json
 // live    = { marketCap, shares, beta, riskFree }  (live numbers, or the ones saved in the Excel file)
 // changes = what the user changed in the sandbox (all optional):
 //   drivers        → { growth, ebitMargin, daPct, capexPct, nwc, tax }: any of these 10-year arrays
-//                    replaces the one in Arush's model
+//                    replaces the one in the model
 //   erp            → equity risk premium
 //   wacc           → use this WACC instead of calculating it
 //   terminalGrowth → perpetual growth rate
@@ -76,5 +76,5 @@ export function sensitivity(model, live, changes = {}, { size = 2, waccStep = 0.
   return { waccs, tgs, grid, centre: size };
 }
 
-// Arush's schedules are straight lines: year-1 value, then a fixed change each year.
+// The schedules are straight lines: year-1 value, then a fixed change each year.
 export const line = (start, step, n = 10) => Array.from({ length: n }, (_, i) => start + i * step);

@@ -26,7 +26,7 @@
   .tag { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: .06em; padding: 2px 5px; border-radius: 5px; margin-left: 6px; vertical-align: 1px; }
   .tag.live { background: var(--accent-soft); color: var(--accent); }
   .tag.saved { background: var(--surface-2); color: var(--muted); }
-  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .people { display: grid; gap: 8px; }
   .people div { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
   .people b { display: block; font-size: 14px; }
   .people span { color: var(--muted); font-size: 12px; }
@@ -55,7 +55,7 @@
 
   <div class="card links">
     <a href="/guides"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg></span><span class="tx"><b>Learn DCF</b><span>Definitions, formulas, examples</span></span><span class="chev">›</span></a>
-    <a id="lk-base" href="/company?t=MSFT#base"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg></span><span class="tx"><b>Base case</b><span>Arush's valuation, line by line</span></span><span class="chev">›</span></a>
+    <a id="lk-base" href="/company?t=MSFT#base"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg></span><span class="tx"><b>Base case</b><span>The valuation, line by line</span></span><span class="chev">›</span></a>
     <a id="lk-sandbox" href="/company?t=MSFT#sandbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span><span class="tx"><b>Sandbox</b><span>Change the assumptions yourself</span></span><span class="chev">›</span></a>
     <a id="lk-macro" href="/macro"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg></span><span class="tx"><b>Macro scenarios</b><span>Rate hikes, recessions, tax changes…</span></span><span class="chev">›</span></a>
     <a href="/analysis"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><span class="tx"><b>Analysis</b><span>All 5 companies compared</span></span><span class="chev">›</span></a>
@@ -69,7 +69,6 @@
   <div class="card">
     <h2>Made by</h2>
     <div class="people">
-      <div><b>Arush Pinisetti</b><span>Financial models</span></div>
       <div><b>Shreyas Pavuluri</b><span>App</span></div>
     </div>
   </div>
@@ -92,7 +91,7 @@
 </nav>
 
 <script type="module">
-import { lastTicker, wireNav, pct } from "/js/data.js?v=1";
+import { lastTicker, wireNav, pct } from "/js/data.js?v=2";
 const t = lastTicker();
 wireNav(t);
 document.getElementById("lk-base").href = `/company?t=${t}#base`;
@@ -110,8 +109,8 @@ document.getElementById("data").innerHTML =
   row(`Risk-free rate (US 10Y)${tag(ok)}`, ok ? pct(api.riskFree, 2) : "saved") +
   row(`Market cap, shares, beta${tag(n === 5)}`, `${n}/5 companies live`) +
   row("Last updated", when) +
-  row("Forecasts", "Arush's Excel models") +
-  `<p class="label" style="margin-top:10px">Live data comes from Yahoo Finance (delayed). If it's down, the app uses the values saved in Arush's spreadsheet.</p>`;
+  row("Forecasts", "Excel models") +
+  `<p class="label" style="margin-top:10px">Live data comes from Yahoo Finance (delayed). If it's down, the app uses the values saved in the spreadsheet.</p>`;
 </script>
 </body>
 </html>
