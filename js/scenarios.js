@@ -8,7 +8,7 @@
 //   tax    → tax rate
 //   tg     → terminal growth
 // All shocks are in percentage points (0.01 = 1 pp) and are multiplied by the strength (mild 0.5 / normal 1 / severe 2).
-import { runDcf } from "/js/dcf.js?v=2";
+import { runDcf, waccParts } from "/js/dcf.js?v=2";
 
 const LABEL = { rf: "Risk-free rate", erp: "Equity risk premium", growth: "Revenue growth", margin: "EBIT margin", capex: "CapEx", tax: "Tax rate", tg: "Terminal growth" };
 const DRIVER = { growth: "growth", margin: "ebitMargin", capex: "capexPct", tax: "tax" };
@@ -93,12 +93,15 @@ export const GROUPS = [...new Set(SCENARIOS.map((s) => s.group))];
 export const byId = (id) => SCENARIOS.find((s) => s.id === id);
 
 // Turn a scenario into inputs for the DCF engine.
-export function applyScenario(sc, model, live, m = 1) {
+// start = where to apply it from: nothing (Arush's base case) or the user's sandbox settings
+//         ({ ch, runLive } from sandboxChanges).
+export function applyScenario(sc, model, live, m = 1, start = null) {
   const n = model.forecastYears.length;
-  const drivers = {};
-  const L = { ...live };
-  let erp = model.rates.erp;
-  let terminalGrowth = model.rates.terminalGrowth;
+  const from = start?.ch || {};
+  const drivers = { ...(from.drivers || {}) };
+  const L = { ...(start?.runLive || live) };
+  let erp = from.erp ?? model.rates.erp;
+  let terminalGrowth = from.terminalGrowth ?? model.rates.terminalGrowth;
   for (const e of sc.effects) {
     const d = e.d * m;
     if (e.k === "rf") L.riskFree = Math.max(0, L.riskFree + d);
@@ -113,14 +116,23 @@ export function applyScenario(sc, model, live, m = 1) {
       drivers[key] = arr;
     }
   }
-  return { changes: { drivers, erp, terminalGrowth }, live: L };
+  const changes = { drivers, erp, terminalGrowth };
+  // If the user typed in their own WACC, rates can't flow through the formula,
+  // so move their WACC by however much the scenario moves the calculated one.
+  if (from.wacc != null) {
+    const tax0 = (from.drivers?.tax || model.drivers.tax)[0];
+    const before = waccParts(model, start?.runLive || live, tax0, from.erp ?? model.rates.erp).wacc;
+    const after = waccParts(model, L, (drivers.tax || model.drivers.tax)[0], erp).wacc;
+    changes.wacc = from.wacc + (after - before);
+  }
+  return { changes, live: L };
 }
 
-export function runScenario(sc, co, m = 1) {
-  const base = runDcf(co.model, co.live);
-  const { changes, live } = applyScenario(sc, co.model, co.live, m);
+export function runScenario(sc, co, m = 1, start = null) {
+  const base = start ? runDcf(co.model, start.runLive, start.ch) : runDcf(co.model, co.live);
+  const { changes, live } = applyScenario(sc, co.model, co.live, m, start);
   const r = runDcf(co.model, live, changes);
-  return { base, r, change: r.valid ? r.sharePrice / base.sharePrice - 1 : null };
+  return { base, r, change: r.valid && base.valid ? r.sharePrice / base.sharePrice - 1 : null };
 }
 
 // "Revenue growth −8.0 pp (2026–2027)"

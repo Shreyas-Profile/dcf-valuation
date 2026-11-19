@@ -26,7 +26,7 @@
   .tag { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: .06em; padding: 2px 5px; border-radius: 5px; margin-left: 6px; vertical-align: 1px; }
   .tag.live { background: var(--accent-soft); color: var(--accent); }
   .tag.saved { background: var(--surface-2); color: var(--muted); }
-  .people { display: grid; gap: 8px; }
+  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .people div { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
   .people b { display: block; font-size: 14px; }
   .people span { color: var(--muted); font-size: 12px; }
@@ -69,6 +69,7 @@
   <div class="card">
     <h2>Made by</h2>
     <div class="people">
+      <div><b>Arush Pinisetti</b><span>Models &amp; analysis</span></div>
       <div><b>Shreyas Pavuluri</b><span>App</span></div>
     </div>
   </div>

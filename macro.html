@@ -11,8 +11,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/app.css?v=1">
 <style>
-  .summary { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--muted); margin: -4px 2px 14px; }
-  .summary b { color: var(--text); font-family: var(--mono); font-weight: 500; margin-left: 4px; }
+  .summary { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; margin: -4px 0 10px; }
+  .summary div { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; font-size: 11.5px; color: var(--muted); }
+  .summary b { display: block; color: var(--text); font-family: var(--mono); font-weight: 500; font-size: 14px; margin-top: 2px; }
+  .hint { font-size: 12.5px; color: var(--muted); margin: 0 2px 14px; line-height: 1.45; }
+  .hint a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .tile .imp .k { font-family: Inter, sans-serif; color: var(--muted); font-size: 11px; width: 50px; flex: none; }
+  .tile .imp + .imp { margin-top: 0; }
+  .cmp .row span:first-child { color: var(--muted); }
+  .cmp .row b { font-weight: 600; color: var(--text); }
+  .cmp .row em { font-style: normal; margin-left: 8px; }
   .group { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: .02em; margin: 6px 2px 10px; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
   .tile { text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; padding: 0; }
@@ -62,7 +70,8 @@
   <main id="main" hidden>
     <div class="chips" id="chips" role="tablist" aria-label="Company"></div>
     <div class="seg" id="strength" role="tablist" aria-label="Strength"></div>
-    <div class="summary"><span>Base case<b id="base">–</b></span><span>Market price<b id="price">–</b></span></div>
+    <div class="summary"><div>Base case<b id="base">–</b></div><div id="sb-box" hidden>Your sandbox<b id="sb">–</b></div><div>Market price<b id="price">–</b></div></div>
+    <p class="hint" id="hint"></p>
     <div id="list"></div>
     <p class="foot">Each scenario changes the base case by the amounts shown. Tap one to see what changes.</p>
   </main>
@@ -74,9 +83,8 @@
   <h2 class="title" id="sh-title"></h2>
   <p class="blurb" id="sh-blurb"></p>
   <div class="card">
-    <div class="label">Value per share in this scenario</div>
-    <div class="result"><span class="big" id="sh-value"></span><span class="delta" id="sh-delta"></span></div>
-    <div class="mini"><span>Base case<b id="sh-base"></b></span><span>Market price<b id="sh-price"></b></span></div>
+    <h2>Value per share</h2>
+    <div class="cmp" id="sh-cmp"></div>
   </div>
   <div class="card">
     <h2>What changes</h2>
@@ -84,7 +92,7 @@
     <p class="why" id="sh-why" style="margin-top:10px"></p>
   </div>
   <div class="card">
-    <h2>Free cash flow</h2>
+    <h2>Free cash flow (base case)</h2>
     <div class="bars" id="sh-bars"></div>
     <div class="bar-x" id="sh-bars-x"></div>
     <div class="legend"><span><i style="background:var(--border)"></i>Base</span><span><i style="background:var(--accent)"></i>Scenario</span></div>
@@ -101,8 +109,10 @@
 </nav>
 
 <script type="module">
-import { loadAll, ORDER, usd, signedPct, rememberTicker, lastTicker, wireNav } from "/js/data.js?v=2";
-import { SCENARIOS, GROUPS, STRENGTHS, byId, runScenario, describe, picture } from "/js/scenarios.js?v=1";
+import { loadAll, ORDER, usd, usd0, signedPct, rememberTicker, lastTicker, wireNav } from "/js/data.js?v=2";
+import { SCENARIOS, GROUPS, STRENGTHS, byId, runScenario, describe, picture } from "/js/scenarios.js?v=2";
+import { sandboxChanges, loadSandbox, hasSandbox } from "/js/sandbox.js?v=1";
+import { runDcf } from "/js/dcf.js?v=2";
 
 const $ = (id) => document.getElementById(id);
 const short = (y) => "’" + String(y).slice(-2);
@@ -113,6 +123,12 @@ const co = () => data.companies[ticker];
 function changePill(ch) {
   if (ch == null) return `<span class="pill na">–</span>`;
   return `<span class="pill ${ch >= 0 ? "up" : "down"}">${signedPct(ch)}</span>`;
+}
+
+// The user's sandbox settings for this company (saved by the company page), or null if untouched.
+function sandboxStart() {
+  const saved = loadSandbox(ticker);
+  return hasSandbox(saved) ? sandboxChanges(co().model, co().live, saved) : null;
 }
 
 function render() {
@@ -128,15 +144,28 @@ function render() {
     `<button class="${s.key === strength ? "on" : ""}" role="tab" aria-selected="${s.key === strength}" data-k="${s.key}">${s.label}</button>`).join("");
 
   const base = runScenario(SCENARIOS[0], c, 0).base;
+  const sb = sandboxStart();
   $("base").textContent = usd(base.sharePrice);
   $("price").textContent = c.price != null ? usd(c.price) : "–";
+  $("sb-box").hidden = !sb;
+  if (sb) { const v = runDcf(c.model, sb.runLive, sb.ch); $("sb").textContent = v.valid ? usd(v.sharePrice) : "–"; }
+  $("hint").innerHTML = sb
+    ? `Each scenario is applied to the base case and to your sandbox. <a href="/company?t=${ticker}#sandbox">Edit sandbox</a>`
+    : `Move sliders in the <a href="/company?t=${ticker}#sandbox">Sandbox</a> to see scenarios on your own version too.`;
 
   $("list").innerHTML = GROUPS.map((g) => `<h3 class="group">${g}</h3><div class="grid">` +
     SCENARIOS.filter((s) => s.group === g).map((s) => {
       const { r, change } = runScenario(s, c, m());
+      let rows;
+      if (sb) {
+        const y = runScenario(s, c, m(), sb);
+        const line = (k, x) => `<span class="imp"><span class="k">${k}</span>${changePill(x.change)}<span class="val">${x.r.valid ? usd0(x.r.sharePrice) : "–"}</span></span>`;
+        rows = line("Base", { r, change }) + line("Sandbox", y);
+      } else {
+        rows = `<span class="imp">${changePill(change)}<span class="val">${r.valid ? usd(r.sharePrice) : "–"}</span></span>`;
+      }
       return `<button class="tile" data-s="${s.id}" aria-label="${s.title}">${picture(s)}
-        <div class="t"><span class="name">${s.title}</span>
-        <span class="imp">${changePill(change)}<span class="val">${r.valid ? usd(r.sharePrice) : "–"}</span></span></div></button>`;
+        <div class="t"><span class="name">${s.title}</span>${rows}</div></button>`;
     }).join("") + `</div>`).join("");
   if (openId) fillSheet(openId);
 }
@@ -147,11 +176,11 @@ function fillSheet(id) {
   $("sh-pic").innerHTML = picture(s);
   $("sh-title").textContent = s.title;
   $("sh-blurb").textContent = s.blurb;
-  $("sh-value").textContent = r.valid ? usd(r.sharePrice) : "–";
-  $("sh-delta").textContent = change == null ? "" : signedPct(change);
-  $("sh-delta").className = "delta " + (change >= 0 ? "up" : "down");
-  $("sh-base").textContent = usd(base.sharePrice);
-  $("sh-price").textContent = c.price != null ? usd(c.price) : "–";
+  const cmpRow = (label, x) => `<div class="row"><span>${label}</span><span>${x.base.valid ? usd(x.base.sharePrice) : "–"} → <b>${x.r.valid ? usd(x.r.sharePrice) : "–"}</b><em class="${x.change == null ? "" : x.change >= 0 ? "up" : "down"}">${x.change == null ? "–" : signedPct(x.change)}</em></span></div>`;
+  const sb = sandboxStart();
+  $("sh-cmp").innerHTML = cmpRow("Base case", { base, r, change })
+    + (sb ? cmpRow("Your sandbox", runScenario(s, c, m(), sb)) : "")
+    + `<div class="row"><span>Market price</span><span>${c.price != null ? usd(c.price) : "–"}</span></div>`;
   $("sh-eff").innerHTML = s.effects.map((e) => {
     const d = describe(e, c.model, m());
     return `<div class="row"><span>${d.label}</span><span class="${d.bad ? "bad" : "good"}">${d.value}</span></div>`;

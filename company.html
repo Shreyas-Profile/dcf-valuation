@@ -220,7 +220,8 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script type="module">
-import { runDcf, sensitivity, line } from "/js/dcf.js?v=2";
+import { runDcf, sensitivity } from "/js/dcf.js?v=2";
+import { KEYS, sandboxChanges, loadSandbox, saveSandbox } from "/js/sandbox.js?v=1";
 
 const $ = (id) => document.getElementById(id);
 const pct = (x, d = 1) => (x * 100).toFixed(d) + "%";
@@ -274,6 +275,10 @@ async function load() {
   try { localStorage.setItem("lastTicker", ticker); } catch {}
   makeSliders();
   state = defaults();
+  // Bring back the sliders the user moved last time (the Macro page uses them too).
+  const saved = loadSandbox(ticker);
+  KEYS.forEach((k) => { if (k in saved) state[k] = saved[k]; });
+  if ("waccOverride" in saved) state.waccOverride = saved.waccOverride;
   document.title = `${model.name} · DCF Sandbox`;
   $("title").innerHTML = `${model.name}<small>${model.ticker}</small>`;
   $("loading").hidden = true;
@@ -441,18 +446,14 @@ function isChanged(k) {
 
 // Turn the slider state into "changes" for the engine. Untouched sliders change nothing,
 // so with nothing moved the sandbox equals the base case exactly.
+function savedFromState() {
+  const saved = {};
+  KEYS.forEach((k) => { if (isChanged(k)) saved[k] = state[k]; });
+  if (state.waccOverride != null) saved.waccOverride = state.waccOverride;
+  return saved;
+}
 function buildChanges() {
-  const ch = { drivers: {} };
-  if (isChanged("growthStart") || isChanged("growthStep")) ch.drivers.growth = line(state.growthStart, state.growthStep);
-  if (isChanged("ebitMargin")) ch.drivers.ebitMargin = line(state.ebitMargin, 0);
-  if (isChanged("daPct")) ch.drivers.daPct = line(state.daPct, 0);
-  if (isChanged("capexStart") || isChanged("capexStep")) ch.drivers.capexPct = line(state.capexStart, state.capexStep).map((v) => Math.max(0, v));
-  if (isChanged("tax")) ch.drivers.tax = line(state.tax, 0);
-  if (isChanged("erp")) ch.erp = state.erp;
-  if (state.waccOverride != null) ch.wacc = state.waccOverride;
-  if (isChanged("terminalGrowth")) ch.terminalGrowth = state.terminalGrowth;
-  const runLive = { ...live, riskFree: state.riskFree, beta: state.beta };
-  return { ch, runLive };
+  return sandboxChanges(model, live, savedFromState());
 }
 
 const snap = (s, v) => Math.min(s.max, Math.max(s.min, s.min + Math.round((v - s.min) / s.step) * s.step));
@@ -507,6 +508,7 @@ function buildSliders() {
 }
 
 function renderSandbox() {
+  saveSandbox(ticker, savedFromState());
   const { ch, runLive } = buildChanges();
   const r = runDcf(model, runLive, ch);
   const changed = realSliders().filter((s) => isChanged(s.key));
