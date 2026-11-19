@@ -22,7 +22,7 @@
   .app { width: 100%; max-width: 480px; min-height: 100dvh; padding: 0 16px 110px; }
   a { color: inherit; }
 
-  header { position: sticky; top: 0; z-index: 3; background: linear-gradient(var(--bg) 85%, transparent); padding: 18px 0 12px; display: flex; align-items: center; gap: 12px; }
+  header { position: sticky; top: 0; z-index: 3; background: var(--bg); padding: 18px 0 12px; display: flex; align-items: center; gap: 12px; }
   .back { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); text-decoration: none; }
   .head-text { flex: 1; min-width: 0; }
   .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
@@ -87,7 +87,7 @@
   .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 10px; }
   .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 
-  .result { position: sticky; top: 74px; z-index: 2; }
+  .result { position: sticky; top: var(--head, 70px); z-index: 2; }
   .result { padding: 14px 18px; box-shadow: 0 10px 24px rgba(0,0,0,.45); }
   .result .big { font-size: 30px; }
   .mini { display: flex; gap: 16px; margin-top: 6px; font-size: 13px; color: var(--muted); }
@@ -180,7 +180,7 @@
   <!-- SANDBOX -->
   <section id="view-sandbox" hidden>
     <div class="card result">
-      <div class="label">Your intrinsic value per share</div>
+      <div class="label">Your value per share</div>
       <div><span class="big" id="s-value">–</span><span class="delta" id="s-delta"></span></div>
       <div class="mini"><span>Base case <b id="s-base">–</b></span><span>Market price <b id="s-price">–</b></span></div>
       <div class="warn" id="s-warn" role="status"></div>
@@ -188,7 +188,7 @@
 
     <div class="card" id="s-sliders"></div>
 
-    <button class="reset" id="s-reset" disabled>Reset to base case</button>
+    <button class="reset" id="s-reset" disabled>Reset all</button>
 
     <div class="card">
       <h2>Sensitivity table</h2>
@@ -196,7 +196,7 @@
     </div>
 
     <div class="card">
-      <h2>Free cash flow: yours vs base</h2>
+      <h2>Free cash flow</h2>
       <div class="bars" id="s-bars"></div>
       <div class="bar-x" id="s-bars-x"></div>
       <div class="legend"><span><i style="background:var(--border)"></i>Base</span><span><i style="background:var(--accent)"></i>Yours</span></div>
@@ -385,7 +385,7 @@ function renderSens(el, changes, liveForRun) {
       <thead><tr><th class="corner">WACC ↓ · g →</th>${s.tgs.map((g) => `<th>${pct(g, 2)}</th>`).join("")}</tr></thead>
       <tbody>${s.grid.map((row, i) => `<tr><th>${pct(s.waccs[i], 2)}</th>${row.map((v, j) => cell(v, i, j)).join("")}</tr>`).join("")}</tbody>
     </table></div>
-    <p class="sens-note">Value per share at each WACC (rows) and terminal growth rate (columns). The outlined cell is ${el.id === "b-sens" ? "Arush's base case" : "your current settings"}.${livePrice != null ? " Green = above the market price, red = below." : ""}</p>`;
+    ${el.id === "s-sens" ? `<p class="sens-note">Outlined = your settings.${livePrice != null ? " Green = above market price." : ""}</p>` : `<p class="sens-note">Value per share at each WACC (rows) and terminal growth rate (columns). The outlined cell is ${el.id === "b-sens" ? "Arush's base case" : "your current settings"}.${livePrice != null ? " Green = above the market price, red = below." : ""}</p>`}`;
 }
 
 // ----- Sandbox -----
@@ -396,22 +396,22 @@ let SLIDERS = [];
 function makeSliders() {
   const d = model.drivers;
   const yr = model.forecastYears[0];
-  const perYr = (v) => (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(2) + " pp/yr";
+  const perYr = (v) => (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(2) + " pp";
   SLIDERS = [
     { group: "Revenue" },
     { key: "growthStart", label: `Revenue growth (${yr})`, lo: -0.10, hi: Math.max(0.5, d.growth[0] + 0.25), step: 0.005, show: (v) => pct(v), base: d.growth[0] },
-    { key: "growthStep", label: "Growth change per year", hint: "negative = growth slows down", lo: Math.min(-0.03, d.growth[1] - d.growth[0] - 0.02), hi: 0.03, step: 0.0005, show: perYr, base: d.growth[1] - d.growth[0] },
+    { key: "growthStep", label: "Growth change / yr", lo: Math.min(-0.03, d.growth[1] - d.growth[0] - 0.02), hi: 0.03, step: 0.0005, show: perYr, base: d.growth[1] - d.growth[0] },
     { group: "Margins & reinvestment" },
-    { key: "ebitMargin", label: "EBIT margin", hint: "every year", lo: 0, hi: 0.70, step: 0.005, show: (v) => pct(v), base: d.ebitMargin[0] },
-    { key: "daPct", label: "D&A (% of revenue)", hint: "every year", lo: 0, hi: 0.20, step: 0.0025, show: (v) => pct(v), base: d.daPct[0] },
-    { key: "capexStart", label: `CapEx (% of revenue, ${yr})`, lo: 0, hi: 0.40, step: 0.0025, show: (v) => pct(v), base: d.capexPct[0] },
-    { key: "capexStep", label: "CapEx change per year", hint: "negative = spending falls", lo: -0.02, hi: 0.02, step: 0.0005, show: perYr, base: d.capexPct[1] - d.capexPct[0] },
+    { key: "ebitMargin", label: "EBIT margin", lo: 0, hi: 0.70, step: 0.005, show: (v) => pct(v), base: d.ebitMargin[0] },
+    { key: "daPct", label: "D&A % of revenue", lo: 0, hi: 0.20, step: 0.0025, show: (v) => pct(v), base: d.daPct[0] },
+    { key: "capexStart", label: `CapEx % of revenue (${yr})`, lo: 0, hi: 0.40, step: 0.0025, show: (v) => pct(v), base: d.capexPct[0] },
+    { key: "capexStep", label: "CapEx change / yr", lo: -0.02, hi: 0.02, step: 0.0005, show: perYr, base: d.capexPct[1] - d.capexPct[0] },
     { key: "tax", label: "Tax rate", lo: 0, hi: 0.40, step: 0.005, show: (v) => pct(v), base: d.tax[0] },
     { group: "Discount rate (WACC)" },
     { key: "riskFree", label: "Risk-free rate", rate: true, lo: 0, hi: 0.10, step: 0.0005, show: (v) => pct(v, 2), base: live.riskFree },
     { key: "beta", label: "Beta", rate: true, lo: 0, hi: 3.5, step: 0.01, show: (v) => v.toFixed(2), base: live.beta },
     { key: "erp", label: "Equity risk premium", rate: true, lo: 0, hi: 0.10, step: 0.0005, show: (v) => pct(v, 2), base: model.rates.erp },
-    { key: "wacc", label: "WACC", hint: "or set it directly", lo: 0.03, hi: 0.25, step: 0.001, show: (v) => pct(v, 2), base: base.wacc },
+    { key: "wacc", label: "WACC", lo: 0.03, hi: 0.25, step: 0.001, show: (v) => pct(v, 2), base: base.wacc },
     { group: "Long term" },
     { key: "terminalGrowth", label: "Terminal growth", lo: 0, hi: 0.05, step: 0.0025, show: (v) => pct(v, 2), base: model.rates.terminalGrowth },
   ];
@@ -468,13 +468,13 @@ const setSliders = () => realSliders().forEach((s) => ($("sl-" + s.key).value = 
 
 function buildSliders() {
   makeSliders();
-  $("s-sliders").innerHTML = `<h2>Change the assumptions</h2>` + SLIDERS.map((s) => s.group
+  $("s-sliders").innerHTML = SLIDERS.map((s) => s.group
     ? `<h3 class="group">${s.group}</h3>`
     : `<div class="slider" id="row-${s.key}">
       <label class="slider-head" for="sl-${s.key}"><span>${s.label}</span><output id="out-${s.key}"></output></label>
-      <div class="slider-sub"><span>Base: ${s.show(s.base)}${s.hint ? " · " + s.hint : ""}</span><button type="button" data-reset="${s.key}" hidden>reset</button></div>
+      <div class="slider-sub"><span>Base ${s.show(s.base)}</span><button type="button" data-reset="${s.key}" hidden>reset</button></div>
       <input type="range" id="sl-${s.key}" data-key="${s.key}" min="${s.min}" max="${s.max}" step="${s.step}" value="${sliderValue(s)}">
-    </div>`).join("") + `<p class="rate-note" id="rate-note" hidden>You've set WACC directly, so risk-free rate, beta and ERP are ignored. Reset WACC to use them again.</p>`;
+    </div>`).join("") + `<p class="rate-note" id="rate-note" hidden>WACC set directly, so the 3 sliders above are off.</p>`;
 
   $("s-sliders").addEventListener("input", (e) => {
     const s = byKey(e.target.dataset.key);
@@ -526,8 +526,8 @@ function renderSandbox() {
   $("s-reset").disabled = changed.length === 0;
   const close = r.valid && r.wacc - r.terminalGrowth < 0.02;
   $("s-warn").textContent = !r.valid
-    ? "Terminal growth must be lower than WACC, otherwise the company would be worth infinity. Lower terminal growth or raise WACC."
-    : "WACC and terminal growth are very close, so the terminal value balloons. Treat this result as unrealistic.";
+    ? "WACC must be higher than terminal growth."
+    : "WACC is too close to terminal growth. Value is unrealistic.";
   $("s-warn").classList.toggle("show", !r.valid || close);
   $("s-base").textContent = usd(base.sharePrice);
   $("s-price").textContent = livePrice != null ? usd(livePrice) : "–";
@@ -543,7 +543,7 @@ function renderSandbox() {
     bars($("s-bars"), $("s-bars-x"), r, base);
   }
   renderSens($("s-sens"), ch, runLive);
-  $("s-bridge").innerHTML = r.valid ? bridgeRows(r, "", runLive) : `<p class="label">Fix the warning above to see the valuation.</p>`;
+  $("s-bridge").innerHTML = r.valid ? bridgeRows(r, "", runLive) : `<p class="label">–</p>`;
 }
 
 // ----- Routing between Base case and Sandbox -----
@@ -560,6 +560,9 @@ function route() {
   });
 }
 window.addEventListener("hashchange", () => { route(); window.scrollTo(0, 0); });
+// Keep the sandbox result box glued right under the top bar (no see-through gap).
+const setHead = () => document.documentElement.style.setProperty("--head", document.querySelector("header").offsetHeight + "px");
+new ResizeObserver(setHead).observe(document.querySelector("header"));
 
 const toast = $("toast");
 let tt;
