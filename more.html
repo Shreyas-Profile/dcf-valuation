@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>More · DCF</title>
+<meta name="description" content="How the DCF valuation app works, where its data comes from, and who built it.">
+<meta name="theme-color" content="#0b0d10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css?v=1">
+<style>
+  .links a { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); text-decoration: none; font-size: 14px; }
+  .links a:first-child { border-top: none; padding-top: 0; }
+  .links .ic { width: 34px; height: 34px; flex: none; border-radius: 10px; background: var(--surface-2); display: grid; place-items: center; color: var(--accent); }
+  .links .ic svg { width: 18px; height: 18px; }
+  .links .tx { flex: 1; min-width: 0; }
+  .links .tx b { display: block; font-weight: 600; }
+  .links .tx span { color: var(--muted); font-size: 12.5px; }
+  .links .chev { color: var(--muted); }
+  ol.steps { list-style: none; counter-reset: s; }
+  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 8px 0; font-size: 14px; line-height: 1.45; }
+  ol.steps li::before { content: counter(s); width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 12px; display: grid; place-items: center; }
+  ol.steps li span { color: var(--muted); }
+  .tag { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: .06em; padding: 2px 5px; border-radius: 5px; margin-left: 6px; vertical-align: 1px; }
+  .tag.live { background: var(--accent-soft); color: var(--accent); }
+  .tag.saved { background: var(--surface-2); color: var(--muted); }
+  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .people div { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+  .people b { display: block; font-size: 14px; }
+  .people span { color: var(--muted); font-size: 12px; }
+  .warn-note { font-size: 13px; color: var(--muted); line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <a class="back" href="/" aria-label="Back to companies"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a>
+    <div class="head-text">
+      <div class="eyebrow">More</div>
+      <h1>About this app</h1>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><div>Forecast cash flow <span>for the next 10 years.</span></div></li>
+      <li><div>Add a terminal value <span>for every year after that.</span></div></li>
+      <li><div>Discount it all to today <span>using WACC.</span></div></li>
+      <li><div>Subtract debt, add cash, divide by shares <span>to get a value per share.</span></div></li>
+    </ol>
+  </div>
+
+  <div class="card links">
+    <a href="/guides"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg></span><span class="tx"><b>Learn DCF</b><span>Definitions, formulas, examples</span></span><span class="chev">›</span></a>
+    <a id="lk-base" href="/company?t=MSFT#base"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg></span><span class="tx"><b>Base case</b><span>Arush's valuation, line by line</span></span><span class="chev">›</span></a>
+    <a id="lk-sandbox" href="/company?t=MSFT#sandbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span><span class="tx"><b>Sandbox</b><span>Change the assumptions yourself</span></span><span class="chev">›</span></a>
+    <a id="lk-macro" href="/macro"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg></span><span class="tx"><b>Macro scenarios</b><span>Rate hikes, recessions, tax changes…</span></span><span class="chev">›</span></a>
+    <a href="/analysis"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><span class="tx"><b>Analysis</b><span>All 5 companies compared</span></span><span class="chev">›</span></a>
+  </div>
+
+  <div class="card">
+    <h2>Data</h2>
+    <div id="data"><p class="label">Checking live data…</p></div>
+  </div>
+
+  <div class="card">
+    <h2>Made by</h2>
+    <div class="people">
+      <div><b>Arush Pinisetti</b><span>Financial models</span></div>
+      <div><b>Shreyas Pavuluri</b><span>App</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Disclaimer</h2>
+    <p class="warn-note">This is a learning project, not financial advice. A DCF is only as good as its assumptions, and small changes can move the value a lot.</p>
+  </div>
+
+  <p class="foot"><a href="https://github.com/Shreyas-Profile/dcf-valuation">Source code on GitHub</a></p>
+</div>
+
+<nav aria-label="Main">
+  <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</a>
+  <a data-nav="base" href="/company?t=MSFT#base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</a>
+  <a data-nav="sandbox" href="/company?t=MSFT#sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</a>
+  <a data-nav="macro" href="/macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</a>
+  <a href="/analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</a>
+  <a href="/more" class="on" aria-current="page"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</a>
+</nav>
+
+<script type="module">
+import { lastTicker, wireNav, pct } from "/js/data.js?v=1";
+const t = lastTicker();
+wireNav(t);
+document.getElementById("lk-base").href = `/company?t=${t}#base`;
+document.getElementById("lk-sandbox").href = `/company?t=${t}#sandbox`;
+document.getElementById("lk-macro").href = `/macro?t=${t}`;
+
+const tag = (ok) => `<span class="tag ${ok ? "live" : "saved"}">${ok ? "LIVE" : "SAVED"}</span>`;
+const row = (a, b) => `<div class="row"><span>${a}</span><span>${b}</span></div>`;
+let api = null;
+try { const r = await fetch("/api/fundamentals"); if (r.ok) api = await r.json(); } catch {}
+const ok = api && typeof api.riskFree === "number";
+const n = api ? Object.values(api.companies || {}).filter((c) => c.marketCap && c.shares && c.beta).length : 0;
+const when = api?.updated ? new Date(api.updated).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "–";
+document.getElementById("data").innerHTML =
+  row(`Risk-free rate (US 10Y)${tag(ok)}`, ok ? pct(api.riskFree, 2) : "saved") +
+  row(`Market cap, shares, beta${tag(n === 5)}`, `${n}/5 companies live`) +
+  row("Last updated", when) +
+  row("Forecasts", "Arush's Excel models") +
+  `<p class="label" style="margin-top:10px">Live data comes from Yahoo Finance (delayed). If it's down, the app uses the values saved in Arush's spreadsheet.</p>`;
+</script>
+</body>
+</html>

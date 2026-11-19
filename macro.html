@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Macro scenarios · DCF</title>
+<meta name="description" content="See how interest rates, recessions, tax changes and other world events change a company's DCF value.">
+<meta name="theme-color" content="#0b0d10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css?v=1">
+<style>
+  .summary { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--muted); margin: -4px 2px 14px; }
+  .summary b { color: var(--text); font-family: var(--mono); font-weight: 500; margin-left: 4px; }
+  .group { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: .02em; margin: 6px 2px 10px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .tile { text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; padding: 0; }
+  .tile:hover { border-color: #3a414c; }
+  .tile svg { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; }
+  .tile .t { padding: 10px 11px 11px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .tile .name { font-size: 13.5px; font-weight: 600; line-height: 1.25; }
+  .tile .imp { display: flex; justify-content: space-between; align-items: baseline; margin-top: auto; font-family: var(--mono); font-size: 12px; }
+  .pill { padding: 2px 7px; border-radius: 6px; font-weight: 500; }
+  .pill.up { background: var(--accent-soft); }
+  .pill.down { background: var(--down-soft); }
+  .pill.na { background: var(--surface-2); color: var(--muted); }
+  .tile .val { color: var(--muted); }
+
+  .sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 8; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .sheet-bg.show { opacity: 1; pointer-events: auto; }
+  .sheet { position: fixed; left: 50%; bottom: 0; width: 100%; max-width: 480px; max-height: 92dvh; overflow-y: auto; transform: translate(-50%, 102%); transition: transform .25s ease; z-index: 9;
+    background: var(--bg); border: 1px solid var(--border); border-bottom: none; border-radius: 22px 22px 0 0; padding: 0 16px calc(20px + env(safe-area-inset-bottom)); }
+  .sheet.show { transform: translate(-50%, 0); }
+  .sheet .pic { margin: 0 -16px 14px; border-radius: 22px 22px 0 0; overflow: hidden; position: relative; }
+  .sheet .pic svg { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; }
+  .close { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: rgba(11,13,16,.75); cursor: pointer; display: grid; place-items: center; }
+  .sheet h2.title { font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
+  .sheet .blurb { color: var(--muted); font-size: 14px; margin: 4px 0 14px; line-height: 1.45; }
+  .result { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .result .big { font-family: var(--mono); font-size: 34px; letter-spacing: -.03em; }
+  .result .delta { font-family: var(--mono); font-size: 15px; }
+  .mini { display: flex; gap: 16px; margin-top: 6px; font-size: 13px; color: var(--muted); }
+  .mini b { color: var(--text); font-family: var(--mono); font-weight: 500; margin-left: 4px; }
+  .why { font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+  .eff .bad { color: var(--down); } .eff .good { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <a class="back" id="back" href="/" aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a>
+    <div class="head-text">
+      <div class="eyebrow">Macro scenarios</div>
+      <h1 id="title">Loading…</h1>
+    </div>
+  </header>
+
+  <p class="loading" id="loading">Loading the models…</p>
+  <p class="error" id="error" hidden>Couldn't load the model data. Try refreshing.</p>
+
+  <main id="main" hidden>
+    <div class="chips" id="chips" role="tablist" aria-label="Company"></div>
+    <div class="seg" id="strength" role="tablist" aria-label="Strength"></div>
+    <div class="summary"><span>Base case<b id="base">–</b></span><span>Market price<b id="price">–</b></span></div>
+    <div id="list"></div>
+    <p class="foot">Each scenario changes Arush's base case by the amounts shown. Tap one to see what changes.</p>
+  </main>
+</div>
+
+<div class="sheet-bg" id="sheet-bg"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title" hidden>
+  <div class="pic"><div id="sh-pic"></div><button class="close" id="sh-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <h2 class="title" id="sh-title"></h2>
+  <p class="blurb" id="sh-blurb"></p>
+  <div class="card">
+    <div class="label">Value per share in this scenario</div>
+    <div class="result"><span class="big" id="sh-value"></span><span class="delta" id="sh-delta"></span></div>
+    <div class="mini"><span>Base case<b id="sh-base"></b></span><span>Market price<b id="sh-price"></b></span></div>
+  </div>
+  <div class="card">
+    <h2>What changes</h2>
+    <div class="eff" id="sh-eff"></div>
+    <p class="why" id="sh-why" style="margin-top:10px"></p>
+  </div>
+  <div class="card">
+    <h2>Free cash flow</h2>
+    <div class="bars" id="sh-bars"></div>
+    <div class="bar-x" id="sh-bars-x"></div>
+    <div class="legend"><span><i style="background:var(--border)"></i>Base</span><span><i style="background:var(--accent)"></i>Scenario</span></div>
+  </div>
+</section>
+
+<nav aria-label="Main">
+  <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</a>
+  <a data-nav="base" href="/company?t=MSFT#base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</a>
+  <a data-nav="sandbox" href="/company?t=MSFT#sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</a>
+  <a data-nav="macro" href="/macro" class="on" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</a>
+  <a href="/analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</a>
+  <a href="/more"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</a>
+</nav>
+
+<script type="module">
+import { loadAll, ORDER, usd, signedPct, rememberTicker, lastTicker, wireNav } from "/js/data.js?v=1";
+import { SCENARIOS, GROUPS, STRENGTHS, byId, runScenario, describe, picture } from "/js/scenarios.js?v=1";
+
+const $ = (id) => document.getElementById(id);
+const short = (y) => "’" + String(y).slice(-2);
+let data, ticker = lastTicker(), strength = "normal", openId = null;
+const m = () => STRENGTHS.find((s) => s.key === strength).m;
+const co = () => data.companies[ticker];
+
+function changePill(ch) {
+  if (ch == null) return `<span class="pill na">–</span>`;
+  return `<span class="pill ${ch >= 0 ? "up" : "down"}">${signedPct(ch)}</span>`;
+}
+
+function render() {
+  const c = co();
+  rememberTicker(ticker);
+  wireNav(ticker);
+  $("back").href = `/company?t=${ticker}`;
+  document.title = `${c.model.name} · Macro scenarios`;
+  $("title").innerHTML = `${c.model.name}<small>${c.model.ticker}</small>`;
+  $("chips").innerHTML = ORDER.filter((t) => data.companies[t]).map((t) =>
+    `<button class="chip${t === ticker ? " on" : ""}" role="tab" aria-selected="${t === ticker}" data-t="${t}">${t}</button>`).join("");
+  $("strength").innerHTML = STRENGTHS.map((s) =>
+    `<button class="${s.key === strength ? "on" : ""}" role="tab" aria-selected="${s.key === strength}" data-k="${s.key}">${s.label}</button>`).join("");
+
+  const base = runScenario(SCENARIOS[0], c, 0).base;
+  $("base").textContent = usd(base.sharePrice);
+  $("price").textContent = c.price != null ? usd(c.price) : "–";
+
+  $("list").innerHTML = GROUPS.map((g) => `<h3 class="group">${g}</h3><div class="grid">` +
+    SCENARIOS.filter((s) => s.group === g).map((s) => {
+      const { r, change } = runScenario(s, c, m());
+      return `<button class="tile" data-s="${s.id}" aria-label="${s.title}">${picture(s)}
+        <div class="t"><span class="name">${s.title}</span>
+        <span class="imp">${changePill(change)}<span class="val">${r.valid ? usd(r.sharePrice) : "–"}</span></span></div></button>`;
+    }).join("") + `</div>`).join("");
+  if (openId) fillSheet(openId);
+}
+
+function fillSheet(id) {
+  const s = byId(id), c = co();
+  const { base, r, change } = runScenario(s, c, m());
+  $("sh-pic").innerHTML = picture(s);
+  $("sh-title").textContent = s.title;
+  $("sh-blurb").textContent = s.blurb;
+  $("sh-value").textContent = r.valid ? usd(r.sharePrice) : "–";
+  $("sh-delta").textContent = change == null ? "" : signedPct(change);
+  $("sh-delta").className = "delta " + (change >= 0 ? "up" : "down");
+  $("sh-base").textContent = usd(base.sharePrice);
+  $("sh-price").textContent = c.price != null ? usd(c.price) : "–";
+  $("sh-eff").innerHTML = s.effects.map((e) => {
+    const d = describe(e, c.model, m());
+    return `<div class="row"><span>${d.label}</span><span class="${d.bad ? "bad" : "good"}">${d.value}</span></div>`;
+  }).join("");
+  $("sh-why").textContent = s.why;
+  const all = r.years.concat(base.years).map((y) => Math.abs(y.ufcf));
+  const max = Math.max(...all, 1);
+  const h = (v) => Math.max(1.5, (Math.abs(v) / max) * 100).toFixed(1) + "%";
+  $("sh-bars").innerHTML = r.years.map((y, i) =>
+    `<div class="bar"><i class="base" style="height:${h(base.years[i].ufcf)}"></i><i class="${y.ufcf < 0 ? "neg" : ""}" style="height:${h(y.ufcf)}"></i></div>`).join("");
+  $("sh-bars-x").innerHTML = r.years.map((y) => `<span>${short(y.year)}</span>`).join("");
+}
+
+let lastFocus = null;
+function openSheet(id) {
+  openId = id;
+  lastFocus = document.activeElement;
+  fillSheet(id);
+  $("sheet").hidden = false;
+  $("sheet").scrollTop = 0;
+  void $("sheet").offsetHeight; // apply the hidden position first so the slide-in animates
+  $("sheet").classList.add("show");
+  $("sheet-bg").classList.add("show");
+  document.body.style.overflow = "hidden";
+  $("sh-close").focus({ preventScroll: true });
+}
+function closeSheet() {
+  if (!openId) return;
+  openId = null;
+  $("sheet").classList.remove("show");
+  $("sheet-bg").classList.remove("show");
+  document.body.style.overflow = "";
+  setTimeout(() => { if (!openId) $("sheet").hidden = true; }, 260);
+  lastFocus?.focus?.({ preventScroll: true });
+}
+
+$("chips").addEventListener("click", (e) => { const t = e.target.closest("[data-t]")?.dataset.t; if (t) { ticker = t; history.replaceState(null, "", `/macro?t=${t}`); render(); } });
+$("strength").addEventListener("click", (e) => { const k = e.target.closest("[data-k]")?.dataset.k; if (k) { strength = k; render(); } });
+$("list").addEventListener("click", (e) => { const s = e.target.closest("[data-s]")?.dataset.s; if (s) openSheet(s); });
+$("sh-close").addEventListener("click", closeSheet);
+$("sheet-bg").addEventListener("click", closeSheet);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+
+try {
+  data = await loadAll();
+  if (!data.companies[ticker]) ticker = ORDER.find((t) => data.companies[t]);
+  $("loading").hidden = true;
+  $("main").hidden = false;
+  render();
+} catch {
+  $("loading").hidden = true;
+  $("error").hidden = false;
+  $("title").textContent = "Macro scenarios";
+}
+</script>
+</body>
+</html>

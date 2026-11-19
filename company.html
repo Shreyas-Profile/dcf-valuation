@@ -213,9 +213,9 @@
   <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</a>
   <a href="#base" id="nav-base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</a>
   <a href="#sandbox" id="nav-sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</a>
-  <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</button>
-  <button data-soon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</button>
-  <button data-soon><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</button>
+  <a href="/macro" id="nav-macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</a>
+  <a href="/analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</a>
+  <a href="/more"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</a>
 </nav>
 <div class="toast" id="toast" role="status"></div>
 
@@ -271,6 +271,7 @@ async function load() {
   livePrice = quotes?.quotes?.find((q) => q.ticker === model.ticker)?.price ?? c.price ?? null;
 
   base = runDcf(model, live);
+  try { localStorage.setItem("lastTicker", ticker); } catch {}
   makeSliders();
   state = defaults();
   document.title = `${model.name} · DCF Sandbox`;
@@ -564,14 +565,9 @@ window.addEventListener("hashchange", () => { route(); window.scrollTo(0, 0); })
 const setHead = () => document.documentElement.style.setProperty("--head", document.querySelector("header").offsetHeight + "px");
 new ResizeObserver(setHead).observe(document.querySelector("header"));
 
-const toast = $("toast");
-let tt;
-document.querySelectorAll("[data-soon]").forEach((b) => b.addEventListener("click", () => {
-  toast.textContent = "This page is coming soon.";
-  toast.classList.add("show");
-  clearTimeout(tt);
-  tt = setTimeout(() => toast.classList.remove("show"), 2200);
-}));
+if (ticker) {
+  $("nav-macro").href = `/macro?t=${ticker}`;
+}
 
 if (!ticker) fail("No company selected.");
 else load().catch((e) => { console.error(e); fail("Something went wrong loading this company."); });
