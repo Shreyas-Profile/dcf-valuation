@@ -7,7 +7,7 @@ compatibility_date = "2026-11-01"
 
 [vars]
 # Public "Sign in with Google" client ID (not a secret).
-GOOGLE_CLIENT_ID = "REPLACE_WITH_GOOGLE_CLIENT_ID"
+GOOGLE_CLIENT_ID = "723959219542-3631kod03u6qo53512191cglen2uehac.apps.googleusercontent.com"
 
 # Accounts and saved valuations. Create once with: npx wrangler d1 create dcf-valuation
 # then paste the database_id it prints below. Tables are created automatically on first use.
