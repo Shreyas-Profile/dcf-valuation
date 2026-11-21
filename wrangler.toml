@@ -1,0 +1,6 @@
+# Cloudflare Pages config.
+# Only the public/ folder is uploaded as the website. Secrets (.dev.vars) and code outside public/
+# must never be served, so never deploy "." — always deploy public/ (the default below).
+name = "dcf-valuation"
+pages_build_output_dir = "public"
+compatibility_date = "2026-11-01"
