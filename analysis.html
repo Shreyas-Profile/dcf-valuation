@@ -146,6 +146,12 @@ try {
       <a class="box" href="/macro?t=${t}" style="text-decoration:none"><span>Biggest boost</span><b>${best.s.title}</b><em class="up">${signedPct(best.ch, 0)}</em></a></div>`;
   }).join("");
 
+  window.dcfChatContext = () => ["Analysis page: all 5 companies compared (normal-strength scenarios).",
+    ...list.map(({ t, c, base }) => {
+      const sorted = results[t].filter((x) => x.ch != null).sort((a, b) => a.ch - b.ch);
+      return `- ${c.model.name} (${t}): value ${usd(base.sharePrice)}, price ${c.price != null ? usd(c.price) : "unknown"}${c.price != null ? ` (${signedPct(base.sharePrice / c.price - 1)} vs price)` : ""}, WACC ${pct(base.wacc)}, growth ${pct(c.model.drivers.growth[0])} in year 1, EBIT margin ${pct(c.model.drivers.ebitMargin[0])}, terminal value ${pct(base.terminalShare, 0)} of EV, biggest risk ${sorted[0].s.title} (${signedPct(sorted[0].ch)}), biggest boost ${sorted.at(-1).s.title} (${signedPct(sorted.at(-1).ch)}).`;
+    })].join("\n");
+
   const anyLive = list.some(({ c }) => Object.values(c.isLive).some(Boolean));
   $("foot").textContent = `${anyLive ? "Uses live market data from Yahoo Finance (delayed)." : "Live data unavailable, so values saved in the spreadsheet are used."} Not financial advice.`;
   $("loading").hidden = true;
@@ -155,5 +161,6 @@ try {
   $("error").hidden = false;
 }
 </script>
+<script type="module" src="/js/chat.js?v=1" data-bottom="84"></script>
 </body>
 </html>

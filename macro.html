@@ -224,6 +224,25 @@ $("sh-close").addEventListener("click", closeSheet);
 $("sheet-bg").addEventListener("click", closeSheet);
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
 
+// What the "Ask AI" helper sees.
+window.dcfChatContext = () => {
+  if (!data) return "Macro page (still loading).";
+  const c = co(), sb = sandboxStart();
+  const base = runDcf(c.model, c.live);
+  const lines = [
+    `Macro scenarios for ${c.model.name} (${c.model.ticker}). Strength: ${strength}.`,
+    `Base case value ${usd(base.sharePrice)}; market price ${c.price != null ? usd(c.price) : "unknown"}${sb ? `; user's sandbox value ${usd(runDcf(c.model, sb.runLive, sb.ch).sharePrice)}` : "; no sandbox changes"}.`,
+    "Scenario results (change in value per share):",
+    ...SCENARIOS.map((s) => {
+      const b = runScenario(s, c, m());
+      const y = sb ? runScenario(s, c, m(), sb) : null;
+      return `- ${s.title}: base ${b.change == null ? "invalid" : signedPct(b.change)}${y ? `, sandbox ${y.change == null ? "invalid" : signedPct(y.change)}` : ""}. Shocks: ${s.effects.map((e) => { const d = describe(e, c.model, m()); return d.label + " " + d.value; }).join(", ")}.`;
+    }),
+  ];
+  if (openId) lines.push(`The user has the "${byId(openId).title}" scenario open. ${byId(openId).why}`);
+  return lines.join("\n");
+};
+
 try {
   data = await loadAll();
   if (!data.companies[ticker]) ticker = ORDER.find((t) => data.companies[t]);
@@ -236,5 +255,6 @@ try {
   $("title").textContent = "Macro scenarios";
 }
 </script>
+<script type="module" src="/js/chat.js?v=1" data-bottom="84"></script>
 </body>
 </html>

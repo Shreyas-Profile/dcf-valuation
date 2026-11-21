@@ -372,5 +372,10 @@
     location.href = p === "macro" && selected ? `/macro?t=${selected.ticker}` : `/${p}`;
   }));
 </script>
+<script>
+  window.dcfChatContext = () => "Home page: the user picks a company (Microsoft, Apple, Alphabet, NVIDIA or Meta). Cards show live prices: " +
+    [...document.querySelectorAll(".card[data-ticker]")].map((c) => c.innerText.replace(/\s+/g, " ").trim()).join(" | ");
+</script>
+<script type="module" src="/js/chat.js?v=1" data-bottom="150"></script>
 </body>
 </html>

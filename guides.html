@@ -522,5 +522,9 @@ addEventListener("scroll", () => {
 addEventListener("hashchange", route);
 route();
 </script>
+<script>
+  window.dcfChatContext = () => "Learn page (DCF guides). Section open: " + (location.hash || "index") + ". Visible heading: " + (document.querySelector("h1, h2")?.innerText || "");
+</script>
+<script type="module" src="/js/chat.js?v=1" data-bottom="20"></script>
 </body>
 </html>

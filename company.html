@@ -237,6 +237,8 @@ const big = (m) => {
 const short = (y) => "’" + String(y).slice(-2);
 const tag = (isLive) => `<span class="tag ${isLive ? "live" : "saved"}">${isLive ? "LIVE" : "SAVED"}</span>`;
 
+// Long-run US nominal GDP growth (about 2% real growth + 2% inflation).
+const GDP_GROWTH = 0.04;
 const ticker = (new URLSearchParams(location.search).get("t") || "").toUpperCase();
 let model, live, isLive, livePrice, base, state;
 
@@ -528,10 +530,16 @@ function renderSandbox() {
 
   $("s-reset").disabled = changed.length === 0;
   const close = r.valid && r.wacc - r.terminalGrowth < 0.02;
+  // A company can't grow faster than the economy (or the government's borrowing rate) forever.
+  const rf = runLive.riskFree;
+  const cap = Math.min(rf, GDP_GROWTH);
+  const tooFast = r.terminalGrowth > cap + 1e-9;
   $("s-warn").textContent = !r.valid
     ? "WACC must be higher than terminal growth."
-    : "WACC is too close to terminal growth. Value is unrealistic.";
-  $("s-warn").classList.toggle("show", !r.valid || close);
+    : tooFast
+      ? `Terminal growth (${pct(r.terminalGrowth, 2)}) can't be above ${rf < GDP_GROWTH ? `the risk-free rate (${pct(rf, 2)})` : `long-run GDP growth (${pct(GDP_GROWTH, 1)})`}. No company grows faster than the economy forever.`
+      : "WACC is too close to terminal growth. Value is unrealistic.";
+  $("s-warn").classList.toggle("show", !r.valid || close || tooFast);
   $("s-base").textContent = usd(base.sharePrice);
   $("s-price").textContent = livePrice != null ? usd(livePrice) : "–";
 
@@ -571,8 +579,35 @@ if (ticker) {
   $("nav-macro").href = `/macro?t=${ticker}`;
 }
 
+// What the "Ask AI" helper sees: a text summary of this page.
+window.dcfChatContext = () => {
+  if (!model || !base) return "Company page (still loading).";
+  const d = model.drivers, w = base.parts;
+  const lines = [
+    `Company: ${model.name} (${model.ticker}). Tab open: ${location.hash === "#sandbox" ? "Sandbox" : "Base case"}.`,
+    `Market price: ${livePrice != null ? usd(livePrice) : "unknown"}. Base case value per share: ${usd(base.sharePrice)}.`,
+    `Base inputs: revenue growth ${pct(d.growth[0])} in ${model.forecastYears[0]} → ${pct(d.growth.at(-1))} in ${model.forecastYears.at(-1)}; EBIT margin ${pct(d.ebitMargin[0])}; D&A ${pct(d.daPct[0])} of revenue; CapEx ${pct(d.capexPct[0])} → ${pct(d.capexPct.at(-1))} of revenue; tax ${pct(d.tax[0])}; terminal growth ${pct(model.rates.terminalGrowth, 2)}.`,
+    `WACC ${pct(base.wacc, 2)} = risk-free ${pct(live.riskFree, 2)}${isLive.riskFree ? " (live)" : ""}, beta ${live.beta.toFixed(2)}${isLive.beta ? " (live)" : ""}, ERP ${pct(model.rates.erp, 2)}, cost of equity ${pct(w.costEquity, 2)}, after-tax cost of debt ${pct(w.afterTaxDebt, 2)}, weights equity ${pct(w.weightEquity)} / debt ${pct(w.weightDebt)}.`,
+    `Bridge: PV of 10 years of cash flow ${big(base.npv)} + PV of terminal value ${big(base.pvTerminal)} (${pct(base.terminalShare, 0)} of EV) = EV ${big(base.enterpriseValue)}; − debt ${big(model.balance.debt)} + cash ${big(model.balance.cash)} = equity ${big(base.equityValue)}; ÷ ${(live.shares / 1000).toFixed(2)}B shares.`,
+    `Why these inputs (from the model's notes): Growth: ${model.notes.growth} Margin: ${model.notes.margin} Reinvestment: ${model.notes.reinvestment}`,
+  ];
+  if (state) {
+    const changed = realSliders().filter((s) => isChanged(s.key));
+    if (changed.length) {
+      const { ch, runLive } = buildChanges();
+      const r = runDcf(model, runLive, ch);
+      lines.push(`Sandbox changes: ${changed.map((s) => `${s.label} ${s.show(s.base)} → ${s.show(s.key === "wacc" ? r.wacc : state[s.key])}`).join("; ")}.`);
+      lines.push(`Sandbox value per share: ${r.valid ? usd(r.sharePrice) : "invalid"} (WACC ${pct(r.wacc, 2)}, terminal growth ${pct(r.terminalGrowth, 2)}).`);
+      const warn = $("s-warn");
+      if (warn.classList.contains("show")) lines.push(`Warning shown: ${warn.textContent}`);
+    } else lines.push("Sandbox: no sliders moved yet (equals the base case).");
+  }
+  return lines.join("\n");
+};
+
 if (!ticker) fail("No company selected.");
 else load().catch((e) => { console.error(e); fail("Something went wrong loading this company."); });
 </script>
+<script type="module" src="/js/chat.js?v=1" data-bottom="84"></script>
 </body>
 </html>
