@@ -109,7 +109,7 @@
   .loading, .error { color: var(--muted); text-align: center; padding: 60px 0; }
   [hidden] { display: none !important; }
 
-  nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; display: grid; grid-template-columns: repeat(6, 1fr); background: rgba(11,13,16,.92); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 4; }
+  nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(11,13,16,.92); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 4; }
   nav a, nav button { background: none; border: none; color: var(--muted); font: inherit; font-size: 10.5px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 0; cursor: pointer; text-decoration: none; }
   nav .on { color: var(--accent); }
   nav svg { width: 22px; height: 22px; }
@@ -127,10 +127,6 @@
     </div>
   </header>
 
-  <div class="tabs" role="tablist">
-    <a href="#base" id="tab-base" role="tab">Base case</a>
-    <a href="#sandbox" id="tab-sandbox" role="tab">Sandbox</a>
-  </div>
 
   <p class="loading" id="loading">Loading the model…</p>
   <p class="error" id="error" hidden></p>
@@ -144,7 +140,6 @@
         <div><span class="label">Market price</span><b id="b-price">–</b></div>
         <div><span class="label">Difference</span><b id="b-diff">–</b></div>
       </div>
-      <div class="verdict" id="b-verdict"></div>
     </div>
 
     <div class="card">
@@ -201,20 +196,13 @@
       <div class="bar-x" id="s-bars-x"></div>
       <div class="legend"><span><i style="background:var(--border)"></i>Base</span><span><i style="background:var(--accent)"></i>Yours</span></div>
     </div>
-
-    <div class="card">
-      <h2>Your valuation</h2>
-      <div class="rows" id="s-bridge"></div>
-    </div>
   </section>
 </div>
 
 <nav aria-label="Main">
   <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</a>
-  <a href="#base" id="nav-base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</a>
-  <a href="#sandbox" id="nav-sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</a>
-  <a href="/macro" id="nav-macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</a>
-  <a href="/analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</a>
+  <a href="/dcf" class="on" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Companies</a>
+  <a href="/guides"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>Learn</a>
   <a href="/more"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</a>
 </nav>
 <div class="toast" id="toast" role="status"></div>
@@ -332,9 +320,6 @@ function renderBase(api) {
   const p = priceBlock(base.sharePrice);
   $("b-diff").textContent = p.diff;
   $("b-diff").className = p.cls;
-  $("b-verdict").textContent = p.verdict;
-  $("b-verdict").className = "verdict " + p.cls;
-  $("b-verdict").hidden = !p.verdict;
   bars($("b-bars"), $("b-bars-x"), base);
   renderSens($("b-sens"), {}, live);
 
@@ -554,7 +539,6 @@ function renderSandbox() {
     bars($("s-bars"), $("s-bars-x"), r, base);
   }
   renderSens($("s-sens"), ch, runLive);
-  $("s-bridge").innerHTML = r.valid ? bridgeRows(r, "", runLive) : `<p class="label">–</p>`;
 }
 
 // ----- Routing between Base case and Sandbox -----
@@ -564,20 +548,12 @@ function route() {
   $("view-base").hidden = view !== "base";
   $("view-sandbox").hidden = view !== "sandbox";
   $("eyebrow").textContent = view === "base" ? "Base case" : "Sandbox";
-  ["base", "sandbox"].forEach((v) => {
-    $("tab-" + v).classList.toggle("on", v === view);
-    $("tab-" + v).setAttribute("aria-selected", v === view);
-    $("nav-" + v).classList.toggle("on", v === view);
-  });
 }
 window.addEventListener("hashchange", () => { route(); window.scrollTo(0, 0); });
 // Keep the sandbox result box glued right under the top bar (no see-through gap).
 const setHead = () => document.documentElement.style.setProperty("--head", document.querySelector("header").offsetHeight + "px");
 new ResizeObserver(setHead).observe(document.querySelector("header"));
 
-if (ticker) {
-  $("nav-macro").href = `/macro?t=${ticker}`;
-}
 
 // What the "Ask AI" helper sees: a text summary of this page.
 window.dcfChatContext = () => {

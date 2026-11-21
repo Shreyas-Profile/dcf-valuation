@@ -74,10 +74,6 @@
       <p class="note">Change in value per share for each macro scenario (normal strength). Green = up, red = down.</p>
     </div>
 
-    <div class="card">
-      <h2>Biggest risk and boost</h2>
-      <div id="riskboost"></div>
-    </div>
 
     <p class="foot" id="foot"></p>
   </main>
@@ -85,10 +81,8 @@
 
 <nav aria-label="Main">
   <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</a>
-  <a data-nav="base" href="/company?t=MSFT#base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</a>
-  <a data-nav="sandbox" href="/company?t=MSFT#sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</a>
-  <a data-nav="macro" href="/macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</a>
-  <a href="/analysis" class="on" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</a>
+  <a href="/dcf" class="on" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Companies</a>
+  <a href="/guides"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>Learn</a>
   <a href="/more"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</a>
 </nav>
 
@@ -137,14 +131,6 @@ try {
       const ch = results[t][i].ch;
       return `<td style="${tint(ch)}">${ch == null ? "–" : (ch >= 0 ? "+" : "−") + Math.abs(ch * 100).toFixed(0) + "%"}</td>`;
     }).join("")}</tr>`).join("") + `</tbody>`;
-
-  $("riskboost").innerHTML = list.map(({ t, c }) => {
-    const sorted = results[t].filter((x) => x.ch != null).sort((a, b) => a.ch - b.ch);
-    const worst = sorted[0], best = sorted.at(-1);
-    return `<div class="rb"><div class="h">${c.model.name}</div>
-      <a class="box" href="/macro?t=${t}" style="text-decoration:none"><span>Biggest risk</span><b>${worst.s.title}</b><em class="down">${signedPct(worst.ch, 0)}</em></a>
-      <a class="box" href="/macro?t=${t}" style="text-decoration:none"><span>Biggest boost</span><b>${best.s.title}</b><em class="up">${signedPct(best.ch, 0)}</em></a></div>`;
-  }).join("");
 
   window.dcfChatContext = () => ["Analysis page: all 5 companies compared (normal-strength scenarios).",
     ...list.map(({ t, c, base }) => {

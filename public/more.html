@@ -53,25 +53,9 @@
     </ol>
   </div>
 
-  <div class="card links">
-    <a href="/guides"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg></span><span class="tx"><b>Learn DCF</b><span>Definitions, formulas, examples</span></span><span class="chev">›</span></a>
-    <a id="lk-base" href="/company?t=MSFT#base"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg></span><span class="tx"><b>Base case</b><span>The valuation, line by line</span></span><span class="chev">›</span></a>
-    <a id="lk-sandbox" href="/company?t=MSFT#sandbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span><span class="tx"><b>Sandbox</b><span>Change the assumptions yourself</span></span><span class="chev">›</span></a>
-    <a id="lk-macro" href="/macro"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg></span><span class="tx"><b>Macro scenarios</b><span>Rate hikes, recessions, tax changes…</span></span><span class="chev">›</span></a>
-    <a href="/analysis"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><span class="tx"><b>Analysis</b><span>All 5 companies compared</span></span><span class="chev">›</span></a>
-  </div>
-
   <div class="card">
     <h2>Data</h2>
     <div id="data"><p class="label">Checking live data…</p></div>
-  </div>
-
-  <div class="card">
-    <h2>Made by</h2>
-    <div class="people">
-      <div><b>Arush Pinisetti</b><span>Models &amp; analysis</span></div>
-      <div><b>Shreyas Pavuluri</b><span>App</span></div>
-    </div>
   </div>
 
   <div class="card">
@@ -79,15 +63,13 @@
     <p class="warn-note">This is a learning project, not financial advice. A DCF is only as good as its assumptions, and small changes can move the value a lot.</p>
   </div>
 
-  <p class="foot"><a href="https://github.com/Shreyas-Profile/dcf-valuation">Source code on GitHub</a></p>
+  <p class="foot"><a href="/privacy">Privacy and terms</a> · <a href="/#about">About us</a> · <a href="https://github.com/Shreyas-Profile/dcf-valuation">Source code</a></p>
 </div>
 
 <nav aria-label="Main">
   <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</a>
-  <a data-nav="base" href="/company?t=MSFT#base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</a>
-  <a data-nav="sandbox" href="/company?t=MSFT#sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</a>
-  <a data-nav="macro" href="/macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</a>
-  <a href="/analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</a>
+  <a href="/dcf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Companies</a>
+  <a href="/guides"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>Learn</a>
   <a href="/more" class="on" aria-current="page"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</a>
 </nav>
 
@@ -95,9 +77,6 @@
 import { lastTicker, wireNav, pct } from "/js/data.js?v=2";
 const t = lastTicker();
 wireNav(t);
-document.getElementById("lk-base").href = `/company?t=${t}#base`;
-document.getElementById("lk-sandbox").href = `/company?t=${t}#sandbox`;
-document.getElementById("lk-macro").href = `/macro?t=${t}`;
 
 const tag = (ok) => `<span class="tag ${ok ? "live" : "saved"}">${ok ? "LIVE" : "SAVED"}</span>`;
 const row = (a, b) => `<div class="row"><span>${a}</span><span>${b}</span></div>`;
