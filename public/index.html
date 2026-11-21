@@ -52,12 +52,18 @@
   .val.current b::after { content: "Open"; font-size: 10px; font-weight: 700; letter-spacing: .06em; color: var(--accent); background: var(--accent-soft); padding: 2px 6px; border-radius: 5px; margin-left: 8px; vertical-align: 2px; }
   .gbtn { min-height: 44px; margin-top: 12px; }
   .msg { font-size: 13px; color: var(--down); margin-top: 8px; }
-  .person { display: grid; grid-template-columns: 48px 1fr; gap: 14px; }
-  .person + .person { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
-  .avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 17px; }
-  .person b { font-size: 16px; }
-  .person small { display: block; color: var(--accent); font-size: 12px; font-weight: 600; margin: 2px 0 8px; }
-  .person p { color: #c9ced6; font-size: 14px; line-height: 1.6; }
+  .about { padding: 6px 18px; }
+  .person { border-top: 1px solid var(--border); }
+  .person:first-child { border-top: none; }
+  .person summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 44px 1fr 20px; align-items: center; gap: 12px; padding: 14px 0; }
+  .person summary::-webkit-details-marker { display: none; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 16px; }
+  .person b { display: block; font-size: 15.5px; }
+  .person small { display: block; color: var(--accent); font-size: 12px; font-weight: 600; margin-top: 2px; }
+  .chev { color: var(--muted); transition: transform .2s; }
+  .person[open] .chev { transform: rotate(180deg); }
+  .person p { color: #c9ced6; font-size: 14px; line-height: 1.65; padding: 0 0 16px 56px; }
+  @media (max-width: 400px) { .person p { padding-left: 0; } }
   footer { color: var(--muted); font-size: 12px; text-align: center; line-height: 1.6; padding: 20px 8px 10px; }
   footer a { color: var(--muted); }
 </style>
@@ -94,17 +100,15 @@
   </div>
 
   <h2 class="sec" id="about">About us</h2>
-  <div class="card">
-    <div class="person">
-      <div class="avatar" style="background:rgba(124,196,255,.15);color:#7cc4ff">A</div>
-      <div><b>Arush Pinisetti</b><small>Co-founder · Models</small>
-        <p>Hi, my name is Arush! I am an aspiring finance professional who is actively preparing for a career in investment banking. I initially wanted to build this app because I always found that the number of resources to explore intrinsic valuation were scarce, and the very few options often isolated those who are new to the concepts. I co-founded this app to allow people to explore DCF analysis further and actually understand why we make certain assumptions and decisions. My role in this process was to build the base case models which you see on the app, and come up with justifications for my metrics. In my spare time I enjoy probing the financial world by writing blogs and building models.</p></div>
-    </div>
-    <div class="person">
-      <div class="avatar" style="background:var(--accent-soft);color:var(--accent)">S</div>
-      <div><b>Shreyas Pavuluri</b><small>Co-founder · Website</small>
-        <p>Hi, my name is Shreyas! I am an aspiring mechanical engineer with a particular interest in the quantum computing industry, AI, and where the frontier of technology is heading. I partnered with Arush on this project because we both agreed that the resources available for learning intrinsic valuation, and finance more broadly, were scarce, and that the few that did exist felt inaccessible to those who were new to the ideas. We co-founded this app so that anyone curious enough to explore DCF analysis could sit down and actually understand why certain assumptions and decisions are made. My role in this process was to build the website and the interface, turning the models into something that people can genuinely use. In my spare time I enjoy exploring the intersection of engineering, AI, and software by building small projects of my own.</p></div>
-    </div>
+  <div class="card about">
+    <details class="person">
+      <summary><span class="avatar" style="background:rgba(124,196,255,.15);color:#7cc4ff">A</span><span><b>Arush Pinisetti</b><small>Co-founder · Models</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <p>Hi, my name is Arush! I am an aspiring finance professional who is actively preparing for a career in investment banking. I initially wanted to build this app because I always found that the number of resources to explore intrinsic valuation were scarce, and the very few options often isolated those who are new to the concepts. I co-founded this app to allow people to explore DCF analysis further and actually understand why we make certain assumptions and decisions. My role in this process was to build the base case models which you see on the app, and come up with justifications for my metrics. In my spare time I enjoy probing the financial world by writing blogs and building models.</p>
+    </details>
+    <details class="person">
+      <summary><span class="avatar" style="background:var(--accent-soft);color:var(--accent)">S</span><span><b>Shreyas Pavuluri</b><small>Co-founder · Website</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <p>Hi, my name is Shreyas! I am an aspiring mechanical engineer with a particular interest in the quantum computing industry, AI, and where the frontier of technology is heading. I partnered with Arush on this project because we both agreed that the resources available for learning intrinsic valuation, and finance more broadly, were scarce, and that the few that did exist felt inaccessible to those who were new to the ideas. We co-founded this app so that anyone curious enough to explore DCF analysis could sit down and actually understand why certain assumptions and decisions are made. My role in this process was to build the website and the interface, turning the models into something that people can genuinely use. In my spare time I enjoy exploring the intersection of engineering, AI, and software by building small projects of my own.</p>
+    </details>
   </div>
 
   <footer>A learning project, not financial advice. Market data from Yahoo Finance (delayed).<br><a href="/more">How it works</a> · <a href="/privacy">Privacy and terms</a></footer>
