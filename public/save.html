@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Save your valuation · DCF Sandbox</title>
+<meta name="description" content="Review and save your DCF valuation.">
+<meta name="theme-color" content="#0b0d10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css?v=1">
+<style>
+  .big { font-family: var(--mono); font-size: 36px; letter-spacing: -.03em; margin-top: 2px; }
+  .delta { font-family: var(--mono); font-size: 14px; margin-left: 8px; }
+  .changes .row span:first-child { color: var(--muted); }
+  label.field { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  input[type=text] { width: 100%; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font: 15px Inter, sans-serif; outline: none; }
+  input[type=text]:focus { border-color: var(--accent); }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; border-radius: 14px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); font: 700 15px Inter, sans-serif; text-decoration: none; cursor: pointer; margin-top: 10px; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #04140b; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .msg { font-size: 13.5px; margin-top: 10px; line-height: 1.5; }
+  .msg.ok { color: var(--accent); } .msg.err { color: var(--down); }
+  #gbtn { min-height: 44px; margin-top: 12px; }
+  .done-box { text-align: center; padding: 8px 0 4px; }
+  .done-box .tick { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; margin: 0 auto 12px; font-size: 26px; font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <a class="back" id="back" href="/analysis" aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a>
+    <div class="head-text">
+      <div class="eyebrow">Step 5 · Save</div>
+      <h1 id="title">Your valuation</h1>
+    </div>
+  </header>
+
+  <p class="loading" id="loading">Loading…</p>
+  <p class="error" id="error" hidden>Couldn't load the model data. Try refreshing.</p>
+
+  <main id="main" hidden>
+    <div class="card">
+      <div class="label">Your value per share</div>
+      <div><span class="big" id="value">–</span><span class="delta" id="delta"></span></div>
+      <div class="changes" style="margin-top:12px">
+        <div class="row"><span>Base case</span><span id="base">–</span></div>
+        <div class="row"><span>Market price</span><span id="price">–</span></div>
+        <div class="row" id="macro-row" hidden><span id="macro-label">Scenario</span><span id="macro-val">–</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>What you changed</h2>
+      <div class="changes" id="changes"></div>
+    </div>
+
+    <div class="card" id="save-card">
+      <h2>Save it</h2>
+      <label class="field" for="name">Name</label>
+      <input type="text" id="name" maxlength="80" autocomplete="off">
+      <div id="signed-in" hidden>
+        <button class="btn primary" id="save" type="button">Save valuation</button>
+        <button class="btn" id="save-new" type="button" hidden>Save as a new copy</button>
+      </div>
+      <div id="signed-out" hidden>
+        <p class="msg" style="color:var(--muted)">Sign in to save. New here? This creates your account.</p>
+        <div id="gbtn"></div>
+      </div>
+      <p class="msg" id="msg" hidden></p>
+    </div>
+
+    <div class="card" id="done-card" hidden>
+      <div class="done-box">
+        <div class="tick">✓</div>
+        <b style="font-size:17px" id="done-title">Saved</b>
+        <p class="label" style="margin-top:6px;line-height:1.5">Find it on the home page under “Your valuations” on any device.</p>
+      </div>
+      <a class="btn primary" href="/">Go to home</a>
+      <a class="btn" id="keep" href="/company">Keep editing</a>
+    </div>
+  </main>
+</div>
+
+<nav aria-label="Main">
+  <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</a>
+  <a data-nav="base" href="/company?t=MSFT#base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</a>
+  <a data-nav="sandbox" href="/company?t=MSFT#sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</a>
+  <a data-nav="macro" href="/macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</a>
+  <a href="/analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</a>
+  <a href="/more"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</a>
+</nav>
+
+<script type="module">
+import { loadAll, usd, signedPct, pct, lastTicker, rememberTicker, wireNav } from "/js/data.js?v=2";
+import { runDcf } from "/js/dcf.js?v=2";
+import { sandboxChanges, sandboxBase, hasSandbox } from "/js/sandbox.js?v=1";
+import { byId, runScenario, STRENGTHS } from "/js/scenarios.js?v=2";
+import { getMe, googleButton, snapshot, getCurrent, setCurrent, saveValuation, esc } from "/js/account.js?v=1";
+
+const $ = (id) => document.getElementById(id);
+const t = lastTicker();
+rememberTicker(t);
+wireNav(t);
+$("back").href = `/analysis?t=${t}`;
+$("keep").href = `/company?t=${t}#sandbox`;
+
+const LABELS = { growthStart: "Revenue growth (year 1)", growthStep: "Growth change / yr", ebitMargin: "EBIT margin", daPct: "D&A % of revenue",
+  capexStart: "CapEx % of revenue (year 1)", capexStep: "CapEx change / yr", tax: "Tax rate", riskFree: "Risk-free rate", beta: "Beta",
+  erp: "Equity risk premium", terminalGrowth: "Terminal growth", waccOverride: "WACC (set directly)" };
+const fmt = (k, v) => k === "beta" ? v.toFixed(2) : (k === "growthStep" || k === "capexStep") ? (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(2) + " pp" : pct(v, 2);
+
+let data, co, summary;
+try {
+  data = await loadAll();
+  co = data.companies[t];
+  if (!co) throw new Error();
+} catch {
+  $("loading").hidden = true; $("error").hidden = false;
+  throw new Error("load failed");
+}
+
+const snap = snapshot(t);
+const base = runDcf(co.model, co.live);
+const sb = hasSandbox(snap.sandbox) ? sandboxChanges(co.model, co.live, snap.sandbox) : null;
+const mine = sb ? runDcf(co.model, sb.runLive, sb.ch) : base;
+const value = mine.valid ? mine.sharePrice : null;
+
+document.title = `Save · ${co.model.name}`;
+$("title").innerHTML = `${co.model.name}<small>${co.model.ticker}</small>`;
+$("value").textContent = value != null ? usd(value) : "–";
+if (sb && value != null) {
+  const ch = value / base.sharePrice - 1;
+  $("delta").textContent = signedPct(ch) + " vs base";
+  $("delta").className = "delta " + (ch >= 0 ? "up" : "down");
+}
+$("base").textContent = usd(base.sharePrice);
+$("price").textContent = co.price != null ? usd(co.price) : "–";
+
+let macroValue = null;
+const sc = snap.macro?.scenario ? byId(snap.macro.scenario) : null;
+if (sc) {
+  const m = STRENGTHS.find((s) => s.key === snap.macro.strength)?.m ?? 1;
+  const r = runScenario(sc, co, m, sb);
+  macroValue = r.r.valid ? r.r.sharePrice : null;
+  $("macro-row").hidden = false;
+  $("macro-label").textContent = `${sc.title} (${snap.macro.strength})`;
+  $("macro-val").textContent = macroValue != null ? `${usd(macroValue)} (${signedPct(r.change)})` : "–";
+}
+
+const b = sandboxBase(co.model, co.live);
+const changed = Object.keys(snap.sandbox);
+$("changes").innerHTML = (changed.length
+  ? changed.map((k) => `<div class="row"><span>${LABELS[k] || k}</span><span>${k === "waccOverride" ? pct(snap.sandbox[k], 2) : `${fmt(k, b[k])} → ${fmt(k, snap.sandbox[k])}`}</span></div>`).join("")
+  : `<div class="row"><span>No sliders moved</span><span>base case</span></div>`)
+  + (sc ? `<div class="row"><span>Macro scenario</span><span>${esc(sc.title)}</span></div>` : "");
+
+summary = { baseValue: base.sharePrice, sandboxValue: value, price: co.price, scenario: sc ? sc.id : null, scenarioValue: macroValue, savedAt: Date.now() };
+
+const cur = getCurrent();
+const editing = cur && cur.ticker === t ? cur : null;
+$("name").value = editing ? editing.name : `${co.model.name} · ${new Date().toLocaleDateString([], { day: "numeric", month: "short" })}`;
+if (editing) { $("save").textContent = "Update saved valuation"; $("save-new").hidden = false; }
+
+$("loading").hidden = true;
+$("main").hidden = false;
+
+function msg(text, kind) { $("msg").hidden = !text; $("msg").className = "msg " + (kind || ""); $("msg").textContent = text || ""; }
+
+async function doSave(asNew) {
+  $("save").disabled = $("save-new").disabled = true;
+  msg("");
+  try {
+    const v = await saveValuation({ id: asNew ? undefined : editing?.id, name: $("name").value, ticker: t, data: { ...snap, summary } });
+    setCurrent({ id: v.id, name: v.name, ticker: v.ticker });
+    $("save-card").hidden = true;
+    $("done-card").hidden = false;
+    $("done-title").textContent = `Saved “${v.name}”`;
+  } catch (e) {
+    msg(e.message, "err");
+    $("save").disabled = $("save-new").disabled = false;
+  }
+}
+$("save").addEventListener("click", () => doSave(false));
+$("save-new").addEventListener("click", () => doSave(true));
+
+function showAccount(user) {
+  $("signed-in").hidden = !user;
+  $("signed-out").hidden = !!user;
+  if (!user) googleButton($("gbtn"), (u) => { showAccount(u); msg(`Signed in as ${u.email}. Now press Save.`, "ok"); }, (m) => msg(m, "err"));
+}
+showAccount(await getMe());
+</script>
+<script type="module" src="/js/flow.js?v=1"></script>
+<script type="module" src="/js/chat.js?v=1" data-bottom="84"></script>
+</body>
+</html>

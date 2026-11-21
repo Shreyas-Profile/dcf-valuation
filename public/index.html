@@ -3,379 +3,196 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DCF Sandbox</title>
-<meta name="description" content="Pick a company and explore its discounted cash flow valuation.">
+<title>DCF Sandbox · Learn how companies are valued</title>
+<meta name="description" content="Learn intrinsic valuation by building a discounted cash flow (DCF) valuation step by step, with real models and live market data.">
 <meta name="theme-color" content="#0b0d10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css?v=1">
 <style>
-  :root {
-    --bg: #0b0d10;
-    --surface: #15181d;
-    --surface-2: #1c2027;
-    --border: #262b33;
-    --text: #f2f4f7;
-    --muted: #8b93a1;
-    --accent: #2fd27a;
-    --accent-soft: rgba(47, 210, 122, 0.12);
-    --down: #ff5c5c;
-    --radius: 18px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--bg); color: var(--text); }
-  body {
-    font-family: Inter, system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100dvh;
-    display: flex;
-    justify-content: center;
-  }
-  .app {
-    width: 100%;
-    max-width: 480px;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    padding: 0 16px;
-  }
-  header {
-    padding: 28px 4px 16px;
-    position: sticky;
-    top: 0;
-    background: linear-gradient(var(--bg) 85%, transparent);
-    z-index: 2;
-  }
-  .eyebrow {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  h1 { font-size: 26px; font-weight: 700; margin-top: 6px; letter-spacing: -0.02em; }
-  .sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
-
-  .learn {
-    margin-top: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: var(--accent-soft);
-    color: var(--text);
-    text-decoration: none;
-    font-size: 14px;
-  }
-  .learn span:nth-child(2) { flex: 1; }
-  .learn .learn-icon svg { color: #04140b; }
-  .learn.guides { margin-top: 8px; background: var(--surface); border: 1px solid var(--border); }
-  .learn svg { color: var(--accent); flex: none; }
-  .learn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .learn-icon {
-    width: 24px; height: 24px; flex: none;
-    display: grid; place-items: center;
-    border-radius: 50%;
-    background: var(--accent); color: #04140b;
-    font-weight: 700; font-size: 14px;
-  }
-  .search {
-    margin-top: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 0 14px;
-    height: 48px;
-    transition: border-color .15s;
-  }
-  .search:focus-within { border-color: var(--accent); }
-  .search svg { flex: none; color: var(--muted); }
-  .search input {
-    flex: 1;
-    background: none;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font: inherit;
-    font-size: 16px;
-  }
-  .search input::placeholder { color: var(--muted); }
-
-  .list { display: flex; flex-direction: column; gap: 12px; padding: 8px 0 120px; }
-  .card {
-    display: grid;
-    grid-template-columns: 48px 1fr auto;
-    align-items: center;
-    gap: 14px;
-    width: 100%;
-    text-align: left;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-    transition: border-color .15s, background .15s, transform .1s;
-  }
-  .card:hover { background: var(--surface-2); }
-  .card:active { transform: scale(0.985); }
-  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .card.selected { border-color: var(--accent); background: linear-gradient(135deg, var(--accent-soft), var(--surface) 60%); }
-
-  .logo {
-    width: 48px; height: 48px;
-    border-radius: 12px;
-    background: var(--surface-2);
-    display: grid;
-    place-items: center;
-  }
-  .logo .mask {
-    width: 26px; height: 26px;
-    background: #fff;
-    -webkit-mask: var(--icon) center / contain no-repeat;
-    mask: var(--icon) center / contain no-repeat;
-  }
-  .ms { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 24px; height: 24px; }
-  .ms span:nth-child(1) { background: #f25022; }
-  .ms span:nth-child(2) { background: #7fba00; }
-  .ms span:nth-child(3) { background: #00a4ef; }
-  .ms span:nth-child(4) { background: #ffb900; }
-
-  .ticker { font-weight: 700; font-size: 17px; letter-spacing: 0.01em; }
-  .name { color: var(--muted); font-size: 13px; margin-top: 2px; }
-  .right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-  .spark { width: 84px; height: 30px; }
-  .price { font-family: "JetBrains Mono", monospace; font-size: 13px; }
-  .chg { font-family: "JetBrains Mono", monospace; font-size: 12px; }
-  .chg small { color: var(--muted); font-size: 10px; }
-  .up { color: var(--accent); }
-  .down { color: var(--down); }
-
-  .empty { text-align: center; color: var(--muted); padding: 40px 0; display: none; }
-  .note { text-align: center; color: var(--muted); font-size: 12px; padding: 4px 0 0; }
-
-  .cta {
-    position: fixed;
-    left: 50%;
-    bottom: calc(76px + env(safe-area-inset-bottom));
-    transform: translate(-50%, 20px);
-    width: calc(100% - 32px);
-    max-width: 448px;
-    height: 54px;
-    border: none;
-    border-radius: 14px;
-    background: var(--accent);
-    color: #04140b;
-    font: inherit;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .2s, transform .2s;
-    z-index: 3;
-  }
-  .cta.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
-
-  nav {
-    position: fixed;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 480px;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    background: rgba(11, 13, 16, 0.92);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
-    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-    z-index: 4;
-    transform: translate(-50%, 110%);
-    transition: transform .25s;
-  }
-  nav.show { transform: translate(-50%, 0); }
-  nav button {
-    background: none; border: none; color: var(--muted);
-    font: inherit; font-size: 10.5px;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    padding: 4px 0; cursor: pointer;
-  }
-  nav button.active { color: var(--accent); }
-  nav svg { width: 22px; height: 22px; }
-
-  .toast {
-    position: fixed;
-    top: 20px; left: 50%;
-    transform: translate(-50%, -80px);
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-size: 14px;
-    transition: transform .25s;
-    z-index: 10;
-    max-width: calc(100% - 32px);
-    text-align: center;
-  }
-  .toast.show { transform: translate(-50%, 0); }
+  .app { padding-bottom: 60px; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0 8px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: -.01em; text-decoration: none; }
+  .brand i { width: 32px; height: 32px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+  .acct { display: flex; align-items: center; gap: 8px; }
+  .acct img, .acct .ini { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--surface-2); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); font: 600 14px Inter, sans-serif; text-decoration: none; cursor: pointer; }
+  .btn.sm { height: 34px; padding: 0 12px; font-size: 13px; border-radius: 10px; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #04140b; }
+  .btn.ghost { background: none; }
+  .btn.danger { color: var(--down); }
+  .hero { padding: 26px 0 22px; }
+  .hero h1 { white-space: normal; font-size: 30px; line-height: 1.15; letter-spacing: -.03em; font-weight: 800; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: var(--muted); font-size: 15px; line-height: 1.55; margin-top: 10px; }
+  .sec { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin: 22px 2px 10px; }
+  .feature { position: relative; overflow: hidden; }
+  .feature h3 { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+  .feature p { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 6px 0 14px; }
+  .feature .tagline { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .steps { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .steps span { font-size: 12px; font-weight: 600; padding: 5px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+  .row-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .feature.main { border-color: rgba(47,210,122,.35); background: linear-gradient(150deg, rgba(47,210,122,.10), var(--surface) 55%); }
+  .feature.main::after { content: ""; position: absolute; right: -40px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: rgba(47,210,122,.08); }
+  .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mini-card { display: block; text-decoration: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; }
+  .mini-card b { display: block; font-size: 15px; margin: 8px 0 3px; }
+  .mini-card span { color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+  .mini-card i { width: 32px; height: 32px; border-radius: 10px; background: var(--surface-2); color: var(--accent); display: grid; place-items: center; }
+  .mini-card.soon { border-style: dashed; background: none; }
+  .mini-card.soon i { color: var(--muted); }
+  .val { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 12px 0; border-top: 1px solid var(--border); }
+  .val:first-child { border-top: none; padding-top: 0; }
+  .val b { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .val .meta { color: var(--muted); font-size: 12px; grid-column: 1; }
+  .val .acts { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 6px; align-items: center; }
+  .val.current b::after { content: "Open"; font-size: 10px; font-weight: 700; letter-spacing: .06em; color: var(--accent); background: var(--accent-soft); padding: 2px 6px; border-radius: 5px; margin-left: 8px; vertical-align: 2px; }
+  .gbtn { min-height: 44px; margin-top: 12px; }
+  .msg { font-size: 13px; color: var(--down); margin-top: 8px; }
+  .person { display: grid; grid-template-columns: 48px 1fr; gap: 14px; }
+  .person + .person { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 17px; }
+  .person b { font-size: 16px; }
+  .person small { display: block; color: var(--accent); font-size: 12px; font-weight: 600; margin: 2px 0 8px; }
+  .person p { color: #c9ced6; font-size: 14px; line-height: 1.6; }
+  footer { color: var(--muted); font-size: 12px; text-align: center; line-height: 1.6; padding: 20px 8px 10px; }
+  footer a { color: var(--muted); }
 </style>
 </head>
 <body>
 <div class="app">
-  <header>
-    <div class="eyebrow">DCF Sandbox</div>
-    <h1>Select a company</h1>
-    <p class="sub">Pick a company to see what it's really worth.</p>
-    <a class="learn" href="/guides">
-      <span class="learn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg></span>
-      <span><b>New to DCF?</b> Read the field guide: definitions, formulas, examples</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-    </a>
-    <label class="search">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Search companies" autocomplete="off" aria-label="Search companies">
-    </label>
-  </header>
+  <div class="top">
+    <a class="brand" href="/"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></i>DCF Sandbox</a>
+    <div class="acct" id="acct"></div>
+  </div>
 
-  <main class="list" id="list" aria-label="Companies"></main>
-  <p class="empty" id="empty">No companies match your search.</p>
+  <section class="hero">
+    <h1>Learn how companies are <span>really</span> valued.</h1>
+    <p>Build a discounted cash flow valuation step by step, using real analyst-style models and live market data. Then save it and come back any time.</p>
+  </section>
+
+  <h2 class="sec">Your valuations</h2>
+  <div class="card" id="mine"><p class="label">Loading…</p></div>
+
+  <h2 class="sec">Features</h2>
+  <div class="card feature main">
+    <span class="tagline">Start here</span>
+    <h3>DCF Sandbox</h3>
+    <p>Value Microsoft, Apple, Alphabet, NVIDIA or Meta. Start from a real base-case model, change the assumptions, test world events, then save your valuation.</p>
+    <div class="steps"><span>1 Base</span><span>2 Sandbox</span><span>3 Macro</span><span>4 Analysis</span><span>5 Save</span></div>
+    <div class="row-btns">
+      <a class="btn primary" id="new-val" href="/dcf">Start a new valuation <span aria-hidden="true">→</span></a>
+      <a class="btn" id="cont-val" href="/dcf" hidden>Continue</a>
+    </div>
+  </div>
+  <div class="mini-grid">
+    <a class="mini-card" href="/guides"><i><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg></i><b>Learn DCF</b><span>Definitions, formulas and examples.</span></a>
+    <div class="mini-card soon"><i><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i><b>More tools</b><span>New features are on the way.</span></div>
+  </div>
+
+  <h2 class="sec" id="about">About us</h2>
+  <div class="card">
+    <div class="person">
+      <div class="avatar" style="background:rgba(124,196,255,.15);color:#7cc4ff">A</div>
+      <div><b>Arush Pinisetti</b><small>Co-founder · Models</small>
+        <p>Hi, my name is Arush! I am an aspiring finance professional who is actively preparing for a career in investment banking. I initially wanted to build this app because I always found that the number of resources to explore intrinsic valuation were scarce, and the very few options often isolated those who are new to the concepts. I co-founded this app to allow people to explore DCF analysis further and actually understand why we make certain assumptions and decisions. My role in this process was to build the base case models which you see on the app, and come up with justifications for my metrics. In my spare time I enjoy probing the financial world by writing blogs and building models.</p></div>
+    </div>
+    <div class="person">
+      <div class="avatar" style="background:var(--accent-soft);color:var(--accent)">S</div>
+      <div><b>Shreyas Pavuluri</b><small>Co-founder · Website</small>
+        <p>Hi, my name is Shreyas! I am an aspiring mechanical engineer with a particular interest in the quantum computing industry, AI, and where the frontier of technology is heading. I partnered with Arush on this project because we both agreed that the resources available for learning intrinsic valuation, and finance more broadly, were scarce, and that the few that did exist felt inaccessible to those who were new to the ideas. We co-founded this app so that anyone curious enough to explore DCF analysis could sit down and actually understand why certain assumptions and decisions are made. My role in this process was to build the website and the interface, turning the models into something that people can genuinely use. In my spare time I enjoy exploring the intersection of engineering, AI, and software by building small projects of my own.</p></div>
+    </div>
+  </div>
+
+  <footer>A learning project, not financial advice. Market data from Yahoo Finance (delayed).<br><a href="/more">How it works</a></footer>
 </div>
 
-<button class="cta" id="cta">Continue</button>
+<script type="module">
+import { getMe, signOut, googleButton, listValuations, getValuation, applyValuation, deleteValuation, startNew, getCurrent, esc } from "/js/account.js?v=1";
 
-<nav aria-label="Main">
-  <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</button>
-  <button data-go="base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>Base</button>
-  <button data-go="sandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Sandbox</button>
-  <button data-page="macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Macro</button>
-  <button data-page="analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</button>
-  <button data-page="more"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</button>
-</nav>
+const $ = (id) => document.getElementById(id);
+const NAMES = { MSFT: "Microsoft", AAPL: "Apple", GOOGL: "Alphabet", NVDA: "NVIDIA", META: "Meta" };
+const money = (x) => (typeof x === "number" && isFinite(x) ? "$" + x.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "–");
+const when = (ms) => new Date(ms).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" });
 
-<div class="toast" id="toast" role="status"></div>
+$("new-val").addEventListener("click", (e) => { e.preventDefault(); startNew(); location.href = "/dcf"; });
 
-<script>
-  // Fallback demo data — replaced by live prices from /api/quotes when available.
-  const SI = "https://cdn.jsdelivr.net/npm/simple-icons@13.0.0/icons/";
-  const companies = [
-    { ticker: "MSFT", name: "Microsoft", logo: "ms",            price: 412.30, seed: 3 },
-    { ticker: "AAPL", name: "Apple",     logo: SI + "apple.svg",  price: 228.15, seed: 7 },
-    { ticker: "GOOGL",name: "Alphabet", logo: SI + "google.svg", price: 176.40, seed: 11 },
-    { ticker: "NVDA", name: "NVIDIA",    logo: SI + "nvidia.svg", price: 138.90, seed: 5 },
-    { ticker: "META", name: "Meta",      logo: SI + "meta.svg",   price: 615.00, seed: 2 },
-  ];
-
-  // Seeded random walk so each sparkline looks the same on every load.
-  function series(seed, n = 30) {
-    let s = seed * 9301 + 49297, v = 100, out = [];
-    for (let i = 0; i < n; i++) {
-      s = (s * 9301 + 49297) % 233280;
-      v += (s / 233280 - 0.46) * 4;
-      out.push(v);
-    }
-    return out;
+function drawAccount(user) {
+  if (!user) {
+    $("acct").innerHTML = `<a class="btn sm" href="/signin">Sign in</a>`;
+    return;
   }
+  const pic = user.picture ? `<img src="${esc(user.picture)}" alt="" referrerpolicy="no-referrer">` : `<span class="ini">${esc((user.name || user.email)[0].toUpperCase())}</span>`;
+  $("acct").innerHTML = `${pic}<button class="btn sm ghost" id="out" type="button">Sign out</button>`;
+  $("out").addEventListener("click", async () => { await signOut(); location.reload(); });
+}
 
-  function spark(data, up) {
-    const w = 84, h = 30, min = Math.min(...data), max = Math.max(...data);
-    const pts = data.map((d, i) => [i / (data.length - 1) * w, h - 2 - (d - min) / (max - min) * (h - 4)]);
-    const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
-    const color = up ? "var(--accent)" : "var(--down)";
-    const id = "g" + Math.random().toString(36).slice(2, 7);
-    return `<svg class="spark" viewBox="0 0 ${w} ${h}" aria-hidden="true">
-      <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/>
-      </linearGradient></defs>
-      <path d="${line} L${w} ${h} L0 ${h} Z" fill="url(#${id})"/>
-      <path d="${line}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-    </svg>`;
+function drawContinue() {
+  const cur = getCurrent();
+  $("cont-val").hidden = !cur;
+  if (cur) {
+    $("cont-val").textContent = `Continue “${cur.name}”`;
+    $("cont-val").href = `/company?t=${cur.ticker}#sandbox`;
   }
+}
 
-  const list = document.getElementById("list");
-  const cta = document.getElementById("cta");
-  let selected = null;
-
-  // live: { TICKER: { price, change1m, closes } } from /api/quotes, or null for demo data.
-  function render(live, meta) {
-    list.innerHTML = companies.map(c => {
-      const q = live && live[c.ticker];
-      const s = q ? q.closes : series(c.seed);
-      const price = q ? q.price : c.price;
-      const chg = q ? q.change1m : (s[s.length - 1] - s[0]) / s[0] * 100;
-      const up = chg >= 0;
-      const logo = c.logo === "ms"
-        ? `<div class="ms"><span></span><span></span><span></span><span></span></div>`
-        : `<div class="mask" style="--icon:url('${c.logo}')"></div>`;
-      return `<button class="card${selected && selected.ticker === c.ticker ? " selected" : ""}" data-ticker="${c.ticker}" data-search="${(c.ticker + " " + c.name).toLowerCase()}">
-        <div class="logo">${logo}</div>
-        <div><div class="ticker">${c.ticker}</div><div class="name">${c.name}</div></div>
-        <div class="right">
-          ${spark(s, up)}
-          <div><span class="price">$${price.toFixed(2)}</span>
-          <span class="chg ${up ? "up" : "down"}">${up ? "+" : ""}${chg.toFixed(1)}% <small>1M</small></span></div>
-        </div>
-      </button>`;
-    }).join("") + `<p class="note">${meta
-      ? `Prices delayed · ${meta.source.replace(/ \(delayed\)$/, "")} · updated ${new Date(meta.updated).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-      : "Demo data, not live prices."}</p>`;
-    filter();
+async function drawMine(user) {
+  const box = $("mine");
+  if (!user) {
+    box.innerHTML = `<b style="font-size:15px">Save your work</b>
+      <p class="label" style="margin-top:4px;line-height:1.5">Sign in to save valuations and pick up where you left off, on any device. New here? Signing in creates your account.</p>
+      <div class="gbtn" id="gbtn"></div><p class="msg" id="gmsg" hidden></p>`;
+    googleButton($("gbtn"), () => location.reload(), (m) => { $("gmsg").hidden = false; $("gmsg").textContent = m; });
+    return;
   }
-
-  render(null);
-  fetch("/api/quotes")
-    .then(r => r.ok ? r.json() : Promise.reject(r.status))
-    .then(d => render(Object.fromEntries(d.quotes.map(q => [q.ticker, q])), d))
-    .catch(() => {}); // keep demo data if live prices are unavailable
-
-  list.addEventListener("click", e => {
-    const card = e.target.closest(".card");
-    if (!card) return;
-    list.querySelectorAll(".card").forEach(c => c.classList.toggle("selected", c === card));
-    selected = companies.find(c => c.ticker === card.dataset.ticker);
-    cta.textContent = `Continue with ${selected.name.split(" ")[0]}`;
-    cta.classList.add("show");
-    document.querySelector("nav").classList.add("show");
-  });
-
-  document.getElementById("q").addEventListener("input", filter);
-  function filter() {
-    const q = document.getElementById("q").value.trim().toLowerCase();
-    let shown = 0;
-    list.querySelectorAll(".card").forEach(c => {
-      const hit = c.dataset.search.includes(q);
-      c.style.display = hit ? "" : "none";
-      shown += hit;
-    });
-    document.getElementById("empty").style.display = shown ? "none" : "block";
+  let list;
+  try { list = await listValuations(); } catch (e) { box.innerHTML = `<p class="label">${esc(e.message)}</p>`; return; }
+  if (!list || !list.length) {
+    box.innerHTML = `<p class="label" style="line-height:1.5">No saved valuations yet. Start one below: at the end of the steps you can save it here.</p>`;
+    return;
   }
+  const cur = getCurrent();
+  box.innerHTML = list.map((v) => {
+    const s = v.data?.summary || {};
+    const val = s.sandboxValue ?? s.baseValue;
+    return `<div class="val${cur?.id === v.id ? " current" : ""}">
+      <b>${esc(v.name)}</b>
+      <span class="meta">${NAMES[v.ticker] || v.ticker} · ${money(val)} per share · ${when(v.updatedAt)}</span>
+      <span class="acts"><button class="btn sm primary" data-open="${esc(v.id)}" type="button">Continue</button>
+      <button class="btn sm ghost danger" data-del="${esc(v.id)}" type="button" aria-label="Delete ${esc(v.name)}">✕</button></span></div>`;
+  }).join("");
+}
 
-  const toast = document.getElementById("toast");
-  let t;
-  function say(msg) {
-    toast.textContent = msg;
-    toast.classList.add("show");
-    clearTimeout(t);
-    t = setTimeout(() => toast.classList.remove("show"), 2200);
+$("mine").addEventListener("click", async (e) => {
+  const open = e.target.closest("[data-open]")?.dataset.open;
+  const del = e.target.closest("[data-del]")?.dataset.del;
+  if (open) {
+    e.target.disabled = true;
+    try {
+      const v = await getValuation(open);
+      applyValuation(v);
+      location.href = `/company?t=${v.ticker}#sandbox`;
+    } catch (err) { alert(err.message); e.target.disabled = false; }
   }
-  cta.addEventListener("click", () => { if (selected) location.href = `/company?t=${selected.ticker}`; });
-  document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => {
-    if (selected) location.href = `/company?t=${selected.ticker}#${b.dataset.go}`;
-  }));
-  document.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", () => {
-    const p = b.dataset.page;
-    location.href = p === "macro" && selected ? `/macro?t=${selected.ticker}` : `/${p}`;
-  }));
+  if (del) {
+    const name = e.target.closest(".val").querySelector("b").textContent;
+    if (!confirm(`Delete “${name}”? This can't be undone.`)) return;
+    try {
+      await deleteValuation(del);
+      if (getCurrent()?.id === del) { localStorage.removeItem("current-valuation"); drawContinue(); }
+      drawMine(await getMe());
+    } catch (err) { alert(err.message); }
+  }
+});
+
+drawContinue();
+const user = await getMe();
+drawAccount(user);
+drawMine(user);
 </script>
-<script>
-  window.dcfChatContext = () => "Home page: the user picks a company (Microsoft, Apple, Alphabet, NVIDIA or Meta). Cards show live prices: " +
-    [...document.querySelectorAll(".card[data-ticker]")].map((c) => c.innerText.replace(/\s+/g, " ").trim()).join(" | ");
-</script>
-<script type="module" src="/js/chat.js?v=1" data-bottom="150"></script>
+<script type="module" src="/js/chat.js?v=1" data-bottom="20"></script>
 </body>
 </html>
