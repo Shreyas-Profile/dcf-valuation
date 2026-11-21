@@ -14,4 +14,4 @@ GOOGLE_CLIENT_ID = "723959219542-3631kod03u6qo53512191cglen2uehac.apps.googleuse
 [[d1_databases]]
 binding = "DB"
 database_name = "dcf-valuation"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "9d3043c7-2d34-4744-8b40-0ff7dcf994e3"
