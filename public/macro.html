@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="/css/app.css?v=1">
 <style>
   .summary { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; margin: -4px 0 10px; }
-  .summary div { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; font-size: 11.5px; color: var(--muted); }
+  .summary div, .summary a { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; font-size: 11.5px; color: var(--muted); }
   .summary b { display: block; color: var(--text); font-family: var(--mono); font-weight: 500; font-size: 14px; margin-top: 2px; }
   .hint { font-size: 12.5px; color: var(--muted); margin: 0 2px 14px; line-height: 1.45; }
   .hint a { color: var(--accent); text-decoration: none; font-weight: 600; }
@@ -70,8 +70,7 @@
   <main id="main" hidden>
     <div class="chips" id="chips" role="tablist" aria-label="Company"></div>
     <div class="seg" id="strength" role="tablist" aria-label="Strength"></div>
-    <div class="summary"><div>Base case<b id="base">–</b></div><div id="sb-box" hidden>Your sandbox<b id="sb">–</b></div><div>Market price<b id="price">–</b></div></div>
-    <p class="hint" id="hint"></p>
+    <div class="summary"><div>Base case<b id="base">–</b></div><a id="sb-box" hidden href="/company#sandbox" style="text-decoration:none">Your sandbox<b id="sb">–</b></a><div>Market price<b id="price">–</b></div></div>
     <div id="list"></div>
   </main>
 </div>
@@ -148,10 +147,8 @@ function render() {
   $("base").textContent = usd(base.sharePrice);
   $("price").textContent = c.price != null ? usd(c.price) : "–";
   $("sb-box").hidden = !sb;
+  $("sb-box").href = `/company?t=${ticker}#sandbox`;
   if (sb) { const v = runDcf(c.model, sb.runLive, sb.ch); $("sb").textContent = v.valid ? usd(v.sharePrice) : "–"; }
-  $("hint").innerHTML = sb
-    ? `Each scenario is applied to the base case and to your sandbox. <a href="/company?t=${ticker}#sandbox">Edit sandbox</a>`
-    : `Move sliders in the <a href="/company?t=${ticker}#sandbox">Sandbox</a> to see scenarios on your own version too.`;
 
   $("list").innerHTML = GROUPS.map((g) => `<h3 class="group">${g}</h3><div class="grid">` +
     SCENARIOS.filter((s) => s.group === g).map((s) => {

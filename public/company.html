@@ -56,6 +56,12 @@
   .tag.saved { background: var(--surface-2); color: var(--muted); }
 
   details { border-top: 1px solid var(--border); }
+  details.card.maths { border-top: 1px solid var(--border); }
+  details.maths summary { padding: 0; align-items: center; }
+  details.maths summary h2 { margin: 0; }
+  details.maths .chev { color: var(--muted); transition: transform .2s; }
+  details.maths[open] .chev { transform: rotate(180deg); }
+  details.maths .sub-h { font-size: 13px; font-weight: 700; color: var(--accent); margin: 18px 0 4px; }
   details:first-of-type { border-top: none; }
   summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; font-size: 14px; }
   summary::-webkit-details-marker { display: none; }
@@ -159,15 +165,13 @@
       <div id="b-assumptions"></div>
     </div>
 
-    <div class="card">
-      <h2>WACC</h2>
+    <details class="card maths">
+      <summary><h2>Show the maths</h2><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <h3 class="sub-h">WACC</h3>
       <div class="rows" id="b-wacc"></div>
-    </div>
-
-    <div class="card">
-      <h2>From cash flow to share price</h2>
+      <h3 class="sub-h">From cash flow to share price</h3>
       <div class="rows" id="b-bridge"></div>
-    </div>
+    </details>
 
     <p class="foot" id="b-foot"></p>
   </section>
