@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Settings · NorthStar Finance</title>
+<meta name="description" content="Your account, preferences and data.">
+<meta name="theme-color" content="#0b0d10">
+<script src="/js/theme.js?v=1"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css?v=1">
+<style>
+  .me { display: flex; align-items: center; gap: 14px; }
+  .me img, .me .ini { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: var(--surface-2); display: grid; place-items: center; font-weight: 800; font-size: 20px; flex: none; }
+  .me b { display: block; font-size: 16px; }
+  .me span { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+  .btns { display: grid; gap: 8px; margin-top: 16px; }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text); font: 600 14px Inter, sans-serif; text-decoration: none; cursor: pointer; width: 100%; }
+  .btn.danger { color: var(--down); border-color: rgba(255,92,92,.35); background: var(--down-soft); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .setting + .setting { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .setting .label { display: block; margin-bottom: 8px; color: var(--text); font-weight: 600; font-size: 14px; }
+  .setting .seg, .setting .chips { margin-bottom: 0; }
+  .setting .chips { flex-wrap: wrap; overflow: visible; }
+  .seg button { color: var(--muted); }
+  .note { color: var(--muted); font-size: 12.5px; line-height: 1.5; margin-top: 12px; }
+  .msg { font-size: 13px; margin-top: 10px; }
+  .msg.ok { color: var(--accent); } .msg.err { color: var(--down); }
+  #gbtn { min-height: 44px; margin-top: 14px; }
+  input[type=text] { width: 100%; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font: 15px Inter, sans-serif; outline: none; margin-top: 8px; }
+  input[type=text]:focus { border-color: var(--down); }
+  .danger-box { margin-top: 10px; padding: 14px; border-radius: 12px; background: var(--down-soft); }
+  .danger-box p { font-size: 13.5px; line-height: 1.5; }
+</style>
+<link rel="stylesheet" href="/css/theme.css?v=2">
+</head>
+<body>
+<div class="app">
+  <header>
+    <a class="back" href="/" aria-label="Back to home"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a>
+    <div class="head-text">
+      <div class="eyebrow">Settings</div>
+      <h1>Your settings</h1>
+    </div>
+  </header>
+
+  <!-- ACCOUNT -->
+  <div class="card">
+    <h2>Account</h2>
+    <div id="acct"><p class="label">Loading…</p></div>
+  </div>
+
+  <!-- APPEARANCE + PREFERENCES -->
+  <div class="card">
+    <h2>Preferences</h2>
+    <div class="setting">
+      <span class="label">Theme</span>
+      <div class="seg" id="theme" role="radiogroup" aria-label="Theme">
+        <button type="button" role="radio" data-v="dark">Dark</button>
+        <button type="button" role="radio" data-v="light">Light</button>
+      </div>
+    </div>
+    <div class="setting">
+      <span class="label">Default company</span>
+      <div class="chips" id="company" role="radiogroup" aria-label="Default company"></div>
+    </div>
+    <div class="setting">
+      <span class="label">Default Macro strength</span>
+      <div class="seg" id="strength" role="radiogroup" aria-label="Default Macro strength">
+        <button type="button" role="radio" data-v="mild">Mild</button>
+        <button type="button" role="radio" data-v="normal">Normal</button>
+        <button type="button" role="radio" data-v="severe">Severe</button>
+      </div>
+    </div>
+    <p class="note" id="where"></p>
+  </div>
+
+  <!-- YOUR DATA -->
+  <div class="card" id="data-card" hidden>
+    <h2>Your data</h2>
+    <div class="btns">
+      <a class="btn" href="/api/account/export" download>Download my data</a>
+      <button class="btn danger" type="button" id="del-open">Delete my account</button>
+    </div>
+    <div class="danger-box" id="del-box" hidden>
+      <p>This deletes your account, all your saved valuations and your settings. <b>It can't be undone.</b> Type <b>DELETE</b> to confirm.</p>
+      <input type="text" id="del-input" autocomplete="off" aria-label="Type DELETE to confirm">
+      <div class="btns">
+        <button class="btn danger" type="button" id="del-go" disabled>Delete everything</button>
+        <button class="btn" type="button" id="del-cancel">Cancel</button>
+      </div>
+    </div>
+    <p class="msg" id="data-msg" hidden></p>
+  </div>
+</div>
+
+<nav aria-label="Main">
+  <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/></svg>Home</a>
+  <a href="/dcf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Companies</a>
+  <a href="/guides"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>Learn</a>
+  <a href="/more" class="on" aria-current="page"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</a>
+</nav>
+
+<script type="module">
+import { getMe, googleButton, signOut, signOutEverywhere, deleteAccount, getPrefs, savePrefs, syncPrefs, esc } from "/js/account.js?v=2";
+
+const $ = (id) => document.getElementById(id);
+const COMPANIES = [["MSFT", "Microsoft"], ["AAPL", "Apple"], ["GOOGL", "Alphabet"], ["NVDA", "NVIDIA"], ["META", "Meta"]];
+let user = null;
+
+function drawPrefs() {
+  const p = getPrefs();
+  const theme = p.theme === "light" ? "light" : "dark";
+  const strength = p.defaultStrength || "normal";
+  const ticker = p.defaultTicker || "MSFT";
+  const mark = (box, v) => box.querySelectorAll("[data-v]").forEach((b) => {
+    const on = b.dataset.v === v;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-checked", on);
+  });
+  $("company").innerHTML = COMPANIES.map(([t, n]) => `<button type="button" class="chip" role="radio" data-v="${t}" title="${n}">${t}</button>`).join("");
+  mark($("theme"), theme);
+  mark($("company"), ticker);
+  mark($("strength"), strength);
+  $("where").textContent = user ? "Saved to your account, so they follow you to any device." : "Saved on this device. Sign in to keep them on every device.";
+}
+
+async function change(key, value) {
+  const synced = await savePrefs({ [key]: value });
+  drawPrefs();
+  $("where").textContent = synced ? "Saved to your account." : user ? "Saved on this device (couldn't reach your account)." : "Saved on this device. Sign in to keep them on every device.";
+}
+$("theme").addEventListener("click", (e) => { const v = e.target.closest("[data-v]")?.dataset.v; if (v) change("theme", v); });
+$("company").addEventListener("click", (e) => { const v = e.target.closest("[data-v]")?.dataset.v; if (v) change("defaultTicker", v); });
+$("strength").addEventListener("click", (e) => { const v = e.target.closest("[data-v]")?.dataset.v; if (v) change("defaultStrength", v); });
+
+function drawAccount() {
+  if (!user) {
+    $("acct").innerHTML = `<p class="label" style="line-height:1.5">Sign in to save valuations and keep your settings on every device.</p><div id="gbtn"></div><p class="msg err" id="gmsg" hidden></p>`;
+    googleButton($("gbtn"), () => location.reload(), (m) => { $("gmsg").hidden = false; $("gmsg").textContent = m; });
+    $("data-card").hidden = true;
+    return;
+  }
+  const pic = user.picture ? `<img src="${esc(user.picture)}" alt="" referrerpolicy="no-referrer">` : `<span class="ini">${esc((user.name || user.email)[0].toUpperCase())}</span>`;
+  $("acct").innerHTML = `<div class="me">${pic}<div><b>${esc(user.name || "")}</b><span>${esc(user.email)}</span></div></div>
+    <div class="btns"><button class="btn" type="button" id="out">Sign out</button>
+    <button class="btn" type="button" id="out-all">Sign out on all devices</button></div><p class="msg" id="acct-msg" hidden></p>`;
+  $("out").addEventListener("click", async () => { await signOut(); location.href = "/"; });
+  $("out-all").addEventListener("click", async (e) => {
+    if (!confirm("Sign out on every device, including this one?")) return;
+    e.target.disabled = true;
+    try { await signOutEverywhere(); location.href = "/"; }
+    catch (err) { $("acct-msg").hidden = false; $("acct-msg").className = "msg err"; $("acct-msg").textContent = err.message; e.target.disabled = false; }
+  });
+  $("data-card").hidden = false;
+}
+
+$("del-open").addEventListener("click", () => { $("del-box").hidden = false; $("del-open").hidden = true; $("del-input").focus(); });
+$("del-cancel").addEventListener("click", () => { $("del-box").hidden = true; $("del-open").hidden = false; $("del-input").value = ""; $("del-go").disabled = true; });
+$("del-input").addEventListener("input", () => { $("del-go").disabled = $("del-input").value.trim() !== "DELETE"; });
+$("del-go").addEventListener("click", async () => {
+  $("del-go").disabled = true;
+  try {
+    await deleteAccount();
+    $("del-box").hidden = true;
+    $("data-msg").hidden = false; $("data-msg").className = "msg ok";
+    $("data-msg").textContent = "Your account and everything saved with it have been deleted.";
+    setTimeout(() => (location.href = "/"), 1800);
+  } catch (err) {
+    $("data-msg").hidden = false; $("data-msg").className = "msg err"; $("data-msg").textContent = err.message;
+    $("del-go").disabled = false;
+  }
+});
+
+drawPrefs();
+user = await getMe();
+if (user) await syncPrefs(true);
+drawAccount();
+drawPrefs();
+</script>
+<script type="module" src="/js/chat.js?v=1" data-bottom="84"></script>
+</body>
+</html>

@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sign in · DCF Sandbox</title>
+<title>Sign in · NorthStar Finance</title>
 <meta name="description" content="Sign in to save your valuations and continue them on any device.">
 <meta name="theme-color" content="#0b0d10">
+<script src="/js/theme.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -19,12 +20,13 @@
   .sub { color: var(--muted); font-size: 14.5px; line-height: 1.55; margin: 8px 0 20px; }
   #gbtn { min-height: 44px; }
   .perks { list-style: none; margin-top: 20px; display: grid; gap: 8px; }
-  .perks li { display: flex; gap: 10px; font-size: 14px; color: #c9ced6; }
+  .perks li { display: flex; gap: 10px; font-size: 14px; color: var(--body, #c9ced6); }
   .perks li::before { content: "✓"; color: var(--accent); font-weight: 700; }
   .msg { font-size: 13px; margin-top: 12px; }
   .msg.err { color: var(--down); }
   .fine { color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 18px; text-align: center; }
 </style>
+<link rel="stylesheet" href="/css/theme.css?v=2">
 </head>
 <body>
 <div class="app wrap">
@@ -32,7 +34,7 @@
   <div class="card">
     <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
     <h1 id="title">Sign in or sign up</h1>
-    <p class="sub" id="sub">Use your Google account. If you're new, this creates your DCF Sandbox account.</p>
+    <p class="sub" id="sub">Use your Google account. If you're new, this creates your NorthStar Finance account.</p>
     <div id="gbtn"></div>
     <p class="msg" id="msg" hidden></p>
   </div>
@@ -40,7 +42,7 @@
 </div>
 
 <script type="module">
-import { getMe, googleButton, esc } from "/js/account.js?v=1";
+import { getMe, googleButton, esc } from "/js/account.js?v=2";
 const $ = (id) => document.getElementById(id);
 const raw = new URLSearchParams(location.search).get("next") || "/";
 // Only go back to pages on this site.

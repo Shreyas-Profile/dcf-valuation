@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Save your valuation · DCF Sandbox</title>
+<title>Save your valuation · NorthStar Finance</title>
 <meta name="description" content="Review and save your DCF valuation.">
 <meta name="theme-color" content="#0b0d10">
+<script src="/js/theme.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -27,6 +28,7 @@
   .done-box { text-align: center; padding: 8px 0 4px; }
   .done-box .tick { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; margin: 0 auto 12px; font-size: 26px; font-weight: 800; }
 </style>
+<link rel="stylesheet" href="/css/theme.css?v=2">
 </head>
 <body>
 <div class="app">
@@ -92,11 +94,11 @@
 </nav>
 
 <script type="module">
-import { loadAll, usd, signedPct, pct, lastTicker, rememberTicker, wireNav } from "/js/data.js?v=2";
+import { loadAll, usd, signedPct, pct, lastTicker, rememberTicker, wireNav } from "/js/data.js?v=3";
 import { runDcf } from "/js/dcf.js?v=2";
 import { sandboxChanges, sandboxBase, hasSandbox } from "/js/sandbox.js?v=1";
 import { byId, runScenario, STRENGTHS } from "/js/scenarios.js?v=2";
-import { getMe, googleButton, snapshot, getCurrent, setCurrent, saveValuation, esc } from "/js/account.js?v=1";
+import { getMe, googleButton, snapshot, getCurrent, setCurrent, saveValuation, esc } from "/js/account.js?v=2";
 
 const $ = (id) => document.getElementById(id);
 const t = lastTicker();
@@ -191,7 +193,7 @@ function showAccount(user) {
 }
 showAccount(await getMe());
 </script>
-<script type="module" src="/js/flow.js?v=1"></script>
+<script type="module" src="/js/flow.js?v=2"></script>
 <script type="module" src="/js/chat.js?v=1" data-bottom="84"></script>
 </body>
 </html>

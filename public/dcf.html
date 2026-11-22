@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pick a company · DCF Sandbox</title>
+<title>Pick a company · NorthStar Finance</title>
 <meta name="description" content="Pick a company and explore its discounted cash flow valuation.">
 <meta name="theme-color" content="#0b0d10">
+<script src="/js/theme.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -228,6 +229,7 @@
   .home-link { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 13px; font-weight: 600; text-decoration: none; margin-bottom: 10px; }
   .home-link:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="/css/theme.css?v=2">
 </head>
 <body>
 <div class="app">
@@ -344,6 +346,13 @@
     cta.classList.add("show");
     document.querySelector("nav").classList.add("show");
   });
+
+  // Pre-select the default company from Settings.
+  try {
+    const d = JSON.parse(localStorage.getItem("prefs") || "{}").defaultTicker;
+    const card = d && list.querySelector(`[data-ticker="${d}"]`);
+    if (card) card.click();
+  } catch {}
 
   document.getElementById("q").addEventListener("input", filter);
   function filter() {

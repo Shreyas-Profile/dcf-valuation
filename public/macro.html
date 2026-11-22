@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Macro scenarios · DCF</title>
+<title>Macro scenarios · NorthStar Finance</title>
 <meta name="description" content="See how interest rates, recessions, tax changes and other world events change a company's DCF value.">
 <meta name="theme-color" content="#0b0d10">
+<script src="/js/theme.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -53,6 +54,7 @@
   .why { font-size: 13.5px; line-height: 1.5; color: var(--muted); }
   .eff .bad { color: var(--down); } .eff .good { color: var(--accent); }
 </style>
+<link rel="stylesheet" href="/css/theme.css?v=2">
 </head>
 <body>
 <div class="app">
@@ -105,15 +107,15 @@
 </nav>
 
 <script type="module">
-import { loadAll, ORDER, usd, usd0, signedPct, rememberTicker, lastTicker, wireNav } from "/js/data.js?v=2";
+import { loadAll, ORDER, usd, usd0, signedPct, rememberTicker, lastTicker, wireNav } from "/js/data.js?v=3";
 import { SCENARIOS, GROUPS, STRENGTHS, byId, runScenario, describe, picture } from "/js/scenarios.js?v=2";
 import { sandboxChanges, loadSandbox, hasSandbox } from "/js/sandbox.js?v=1";
-import { loadMacro, saveMacro } from "/js/account.js?v=1";
+import { loadMacro, saveMacro, getPrefs } from "/js/account.js?v=2";
 import { runDcf } from "/js/dcf.js?v=2";
 
 const $ = (id) => document.getElementById(id);
 const short = (y) => "’" + String(y).slice(-2);
-let data, ticker = lastTicker(), strength = loadMacro(lastTicker())?.strength || "normal", openId = null;
+let data, ticker = lastTicker(), strength = loadMacro(lastTicker())?.strength || getPrefs().defaultStrength || "normal", openId = null;
 // Remember the chosen strength and the last scenario opened, so it can be saved with the valuation.
 const remember = () => saveMacro(ticker, { scenario: openId || loadMacro(ticker)?.scenario || null, strength });
 const m = () => STRENGTHS.find((s) => s.key === strength).m;
@@ -215,7 +217,7 @@ function closeSheet() {
   lastFocus?.focus?.({ preventScroll: true });
 }
 
-$("chips").addEventListener("click", (e) => { const t = e.target.closest("[data-t]")?.dataset.t; if (t) { ticker = t; strength = loadMacro(t)?.strength || "normal"; history.replaceState(null, "", `/macro?t=${t}`); render(); window.dispatchEvent(new Event("dcf:ticker")); } });
+$("chips").addEventListener("click", (e) => { const t = e.target.closest("[data-t]")?.dataset.t; if (t) { ticker = t; strength = loadMacro(t)?.strength || getPrefs().defaultStrength || "normal"; history.replaceState(null, "", `/macro?t=${t}`); render(); window.dispatchEvent(new Event("dcf:ticker")); } });
 $("strength").addEventListener("click", (e) => { const k = e.target.closest("[data-k]")?.dataset.k; if (k) { strength = k; remember(); render(); } });
 $("list").addEventListener("click", (e) => { const s = e.target.closest("[data-s]")?.dataset.s; if (s) openSheet(s); });
 $("sh-close").addEventListener("click", closeSheet);
@@ -253,7 +255,7 @@ try {
   $("title").textContent = "Macro scenarios";
 }
 </script>
-<script type="module" src="/js/flow.js?v=1"></script>
+<script type="module" src="/js/flow.js?v=2"></script>
 <script type="module" src="/js/chat.js?v=1" data-bottom="84"></script>
 </body>
 </html>

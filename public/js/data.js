@@ -45,6 +45,7 @@ export function lastTicker() {
   const q = (new URLSearchParams(location.search).get("t") || "").toUpperCase();
   if (ORDER.includes(q)) return q;
   try { const s = localStorage.getItem("lastTicker"); if (ORDER.includes(s)) return s; } catch {}
+  try { const d = JSON.parse(localStorage.getItem("prefs") || "{}").defaultTicker; if (ORDER.includes(d)) return d; } catch {}
   return "MSFT";
 }
 

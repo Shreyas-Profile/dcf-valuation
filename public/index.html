@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DCF Sandbox · Learn how companies are valued</title>
+<title>NorthStar Finance · Learn how companies are valued</title>
 <meta name="description" content="Learn intrinsic valuation by building a discounted cash flow (DCF) valuation step by step, with real models and live market data.">
 <meta name="theme-color" content="#0b0d10">
+<script src="/js/theme.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -16,6 +17,8 @@
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: -.01em; text-decoration: none; }
   .brand i { width: 32px; height: 32px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
   .acct { display: flex; align-items: center; gap: 8px; }
+  .acct-link { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; padding: 4px 8px 4px 4px; border-radius: 999px; border: 1px solid var(--border); }
+  .acct-link:hover { color: var(--text); }
   .acct img, .acct .ini { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--surface-2); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--border);
     background: var(--surface); color: var(--text); font: 600 14px Inter, sans-serif; text-decoration: none; cursor: pointer; }
@@ -62,16 +65,17 @@
   .person small { display: block; color: var(--accent); font-size: 12px; font-weight: 600; margin-top: 2px; }
   .chev { color: var(--muted); transition: transform .2s; }
   .person[open] .chev { transform: rotate(180deg); }
-  .person p { color: #c9ced6; font-size: 14px; line-height: 1.65; padding: 0 0 16px 56px; }
+  .person p { color: var(--body, #c9ced6); font-size: 14px; line-height: 1.65; padding: 0 0 16px 56px; }
   @media (max-width: 400px) { .person p { padding-left: 0; } }
   footer { color: var(--muted); font-size: 12px; text-align: center; line-height: 1.6; padding: 20px 8px 10px; }
   footer a { color: var(--muted); }
 </style>
+<link rel="stylesheet" href="/css/theme.css?v=2">
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <a class="brand" href="/"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></i>DCF Sandbox</a>
+    <a class="brand" href="/"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></i>NorthStar Finance</a>
     <div class="acct" id="acct"></div>
   </div>
 
@@ -114,7 +118,7 @@
 </div>
 
 <script type="module">
-import { getMe, signOut, googleButton, listValuations, getValuation, applyValuation, deleteValuation, startNew, getCurrent, esc } from "/js/account.js?v=1";
+import { getMe, syncPrefs, googleButton, listValuations, getValuation, applyValuation, deleteValuation, startNew, getCurrent, esc } from "/js/account.js?v=2";
 
 const $ = (id) => document.getElementById(id);
 const NAMES = { MSFT: "Microsoft", AAPL: "Apple", GOOGL: "Alphabet", NVDA: "NVIDIA", META: "Meta" };
@@ -125,12 +129,11 @@ $("new-val").addEventListener("click", (e) => { e.preventDefault(); startNew(); 
 
 function drawAccount(user) {
   if (!user) {
-    $("acct").innerHTML = `<a class="btn sm" href="/signin">Sign in</a>`;
+    $("acct").innerHTML = `<a class="btn sm ghost" href="/settings" aria-label="Settings" style="padding:0 9px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></a><a class="btn sm" href="/signin">Sign in</a>`;
     return;
   }
   const pic = user.picture ? `<img src="${esc(user.picture)}" alt="" referrerpolicy="no-referrer">` : `<span class="ini">${esc((user.name || user.email)[0].toUpperCase())}</span>`;
-  $("acct").innerHTML = `${pic}<button class="btn sm ghost" id="out" type="button">Sign out</button>`;
-  $("out").addEventListener("click", async () => { await signOut(); location.reload(); });
+  $("acct").innerHTML = `<a href="/settings" class="acct-link" aria-label="Settings">${pic}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></a>`;
 }
 
 function drawContinue() {
@@ -193,6 +196,7 @@ $("mine").addEventListener("click", async (e) => {
 
 drawContinue();
 const user = await getMe();
+syncPrefs(!!user);
 drawAccount(user);
 drawMine(user);
 </script>

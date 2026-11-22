@@ -11,7 +11,7 @@ const MAX_BODY_BYTES = 40000;
 const RATE_LIMIT = 30;            // requests per IP per window (per Cloudflare isolate)
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 
-const SYSTEM = `You are the helper inside "DCF Sandbox" (dcf.shreyas.uk), a learning app that values Microsoft, Apple, Alphabet, NVIDIA and Meta with discounted cash flow (DCF) models.
+const SYSTEM = `You are the helper inside "NorthStar Finance" (dcf.shreyas.uk), a finance learning app. Its main feature, the DCF Sandbox, values Microsoft, Apple, Alphabet, NVIDIA and Meta with discounted cash flow (DCF) models.
 Most users are students who are new to finance. Explain things simply and clearly, like a friendly tutor.
 
 How to answer:
@@ -91,7 +91,7 @@ export async function onRequestPost({ request, env }) {
         Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://dcf.shreyas.uk",
-        "X-Title": "DCF Sandbox",
+        "X-Title": "NorthStar Finance",
       },
       body: JSON.stringify({
         model: env.CHAT_MODEL || MODEL,

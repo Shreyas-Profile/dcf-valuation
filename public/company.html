@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DCF Sandbox</title>
+<title>NorthStar Finance</title>
 <meta name="description" content="Base case DCF valuation and sandbox for a company.">
 <meta name="theme-color" content="#0b0d10">
+<script src="/js/theme.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -122,6 +123,7 @@
   .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -80px); background: var(--surface-2); border: 1px solid var(--border); padding: 12px 18px; border-radius: 12px; font-size: 14px; transition: transform .25s; z-index: 10; max-width: calc(100% - 32px); text-align: center; }
   .toast.show { transform: translate(-50%, 0); }
 </style>
+<link rel="stylesheet" href="/css/theme.css?v=2">
 </head>
 <body>
 <div class="app">
@@ -273,7 +275,7 @@ async function load() {
   const saved = loadSandbox(ticker);
   KEYS.forEach((k) => { if (k in saved) state[k] = saved[k]; });
   if ("waccOverride" in saved) state.waccOverride = saved.waccOverride;
-  document.title = `${model.name} · DCF Sandbox`;
+  document.title = `${model.name} · NorthStar Finance`;
   $("title").innerHTML = `${model.name}<small>${model.ticker}</small>`;
   $("loading").hidden = true;
 
@@ -588,7 +590,7 @@ window.dcfChatContext = () => {
 if (!ticker) fail("No company selected.");
 else load().catch((e) => { console.error(e); fail("Something went wrong loading this company."); });
 </script>
-<script type="module" src="/js/flow.js?v=1"></script>
+<script type="module" src="/js/flow.js?v=2"></script>
 <script type="module" src="/js/chat.js?v=1" data-bottom="84"></script>
 </body>
 </html>

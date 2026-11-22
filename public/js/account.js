@@ -52,6 +52,7 @@ export async function googleButton(el, onSignedIn, onError = () => {}) {
           const j = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error(j.error || "Sign-in failed.");
           mePromise = Promise.resolve(j.user);
+          await syncPrefs(true);
           onSignedIn(j.user);
         } catch (e) { onError(e.message); }
       },
@@ -129,3 +130,56 @@ export async function deleteValuation(id) {
 }
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// ----- settings (theme, default company, default scenario strength) -----
+// Kept in localStorage so every page can use them straight away; when signed in they're also saved to
+// your account, and the account's copy wins when you sign in on a new device.
+export function getPrefs() {
+  try { const p = JSON.parse(localStorage.getItem("prefs") || "{}"); return p && typeof p === "object" ? p : {}; } catch { return {}; }
+}
+export function applyTheme(theme) {
+  const light = theme === "light";
+  if (light) document.documentElement.setAttribute("data-theme", "light");
+  else document.documentElement.removeAttribute("data-theme");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", light ? "#f5f6f8" : "#0b0d10");
+}
+function storePrefs(p) { try { localStorage.setItem("prefs", JSON.stringify(p)); } catch {} applyTheme(p.theme); }
+
+// Save one or more settings. Returns true if they were also saved to the account.
+export async function savePrefs(change) {
+  const p = { ...getPrefs(), ...change };
+  storePrefs(p);
+  if (!(await getMe())) return false;
+  const r = await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(p) }).catch(() => null);
+  return !!r?.ok;
+}
+
+// Pull the account's settings into this device (call after signing in, or on the home/settings page).
+export async function syncPrefs(signedIn) {
+  if (!signedIn) return getPrefs();
+  try {
+    const r = await fetch("/api/settings");
+    if (!r.ok) return getPrefs();
+    const { prefs } = await r.json();
+    const merged = { ...getPrefs(), ...prefs };
+    storePrefs(merged);
+    return merged;
+  } catch { return getPrefs(); }
+}
+
+export async function signOutEverywhere() {
+  const r = await fetch("/api/auth/logout-all", { method: "POST", headers: { "Content-Type": "application/json" } });
+  if (!r.ok) throw new Error("Couldn't sign out everywhere.");
+  clearCurrent();
+  mePromise = null;
+}
+
+export async function deleteAccount() {
+  const r = await fetch("/api/account", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirm: "DELETE" }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || "Couldn't delete your account.");
+  startNew();
+  try { localStorage.removeItem("prefs"); localStorage.removeItem("lastTicker"); sessionStorage.clear(); } catch {}
+  applyTheme("dark");
+  mePromise = null;
+}
